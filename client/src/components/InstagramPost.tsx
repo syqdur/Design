@@ -57,15 +57,16 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
     return () => unsubscribe();
   }, [item.id]);
 
+  const loadLocationTags = async () => {
+    try {
+      const locationTagsData = await getLocationTags(item.id);
+      setLocationTags(locationTagsData);
+    } catch (error) {
+      console.error('Error loading location tags:', error);
+    }
+  };
+
   useEffect(() => {
-    const loadLocationTags = async () => {
-      try {
-        const locationTagsData = await getLocationTags(item.id);
-        setLocationTags(locationTagsData);
-      } catch (error) {
-        console.error('Error loading location tags:', error);
-      }
-    };
     loadLocationTags();
   }, [item.id]);
 
@@ -405,7 +406,8 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
             isAdmin={isAdmin}
             isDarkMode={isDarkMode}
             onTagsUpdated={() => {
-              // Trigger a fresh subscription to reload tags
+              // Reload location tags when they are updated
+              loadLocationTags();
             }}
             getUserDisplayName={getUserDisplayName || ((name) => name)}
             mediaUploader={item.uploadedBy}
@@ -466,9 +468,8 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
           <div className="space-y-2">
           {displayComments.map((comment) => {
             const canDeleteThisComment = isAdmin || comment.userName === userName;
-            const commentAvatarUrl = getUserAvatar 
-              ? getUserAvatar(comment.userName, comment.deviceId) 
-              : `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(comment.userName)}&backgroundColor=transparent`;
+            const customAvatar = getUserAvatar?.(comment.userName, comment.deviceId);
+            const commentAvatarUrl = customAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(comment.userName)}&backgroundColor=transparent`;
             
             return (
               <div key={comment.id} className="text-sm flex items-start gap-3 group">

@@ -47,404 +47,148 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
   getUserDisplayName
 }) => {
   const [users, setUsers] = useState<UserInfo[]>([]);
-  const [liveUsers, setLiveUsers] = useState<LiveUser[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [deletingUser, setDeletingUser] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string>('');
+  const [deletingUser, setDeletingUser] = useState<string>('');
+  const [lastUpdate, setLastUpdate] = useState(new Date());
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
   const [showBulkConfirm, setShowBulkConfirm] = useState(false);
-  const [uploadingProfilePic, setUploadingProfilePic] = useState<string | null>(null);
+  const [uploadingProfilePic, setUploadingProfilePic] = useState<string>('');
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
-  // Generate avatar URL with custom profile picture support
-  const getAvatarUrl = (username: string, deviceId?: string) => {
-    // Try to get custom avatar first
-    const customAvatar = getUserAvatar?.(username, deviceId);
-    if (customAvatar) return customAvatar;
+  const formatTimeAgo = (timestamp: string) => {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffInHours = Math.floor((now.getTime() - time.getTime()) / (1000 * 60 * 60));
     
-    // Fallback to generated avatar
-    return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(username)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+    if (diffInHours < 1) return 'vor wenigen Minuten';
+    if (diffInHours === 1) return 'vor 1 Stunde';
+    if (diffInHours < 24) return `vor ${diffInHours} Stunden`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays === 1) return 'gestern';
+    return `vor ${diffInDays} Tagen`;
   };
 
-  // Get display name with fallback to username
-  const getDisplayName = (username: string, deviceId?: string) => {
-    const displayName = getUserDisplayName?.(username, deviceId);
-    return (displayName && displayName !== username) ? displayName : username;
+  const loadUserData = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const userMap = new Map<string, UserInfo>();
+      
+      // Load from live_users collection
+      const liveUsersQuery = collection(db, 'live_users');
+      const liveUsersSnapshot = await getDocs(liveUsersQuery);
+      
+      liveUsersSnapshot.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.userName && data.deviceId) {
+          const userKey = `${data.userName}-${data.deviceId}`;
+          
+          // Handle different timestamp formats
+          let lastSeenTime;
+          try {
+            if (data.lastSeen && typeof data.lastSeen.toDate === 'function') {
+              lastSeenTime = data.lastSeen.toDate();
+            } else if (data.lastSeen) {
+              lastSeenTime = new Date(data.lastSeen);
+            } else {
+              lastSeenTime = new Date();
+            }
+          } catch (e) {
+            lastSeenTime = new Date();
+          }
+          
+          const isRecent = (new Date().getTime() - lastSeenTime.getTime()) < 5 * 60 * 1000;
+          
+          userMap.set(userKey, {
+            userName: data.userName,
+            deviceId: data.deviceId,
+            lastSeen: lastSeenTime.toISOString(),
+            isOnline: isRecent,
+            contributionCount: data.contributionCount || 0,
+            lastActivity: formatTimeAgo(lastSeenTime.toISOString())
+          });
+        }
+      });
+
+      // Load from userProfiles database
+      const profilesQuery = collection(db, 'userProfiles');
+      const profilesSnapshot = await getDocs(profilesQuery);
+      
+      profilesSnapshot.docs.forEach(doc => {
+        const data = doc.data();
+        if (data.userName && data.deviceId) {
+          const userKey = `${data.userName}-${data.deviceId}`;
+          if (!userMap.has(userKey)) {
+            userMap.set(userKey, {
+              userName: data.userName,
+              deviceId: data.deviceId,
+              lastSeen: data.createdAt || new Date().toISOString(),
+              isOnline: false,
+              contributionCount: 0,
+              lastActivity: 'Profil erstellt'
+            });
+          }
+        }
+      });
+
+      setUsers(Array.from(userMap.values()));
+      setLastUpdate(new Date());
+    } catch (error: any) {
+      console.error('Error loading user data:', error);
+      console.error('Error details:', error?.message || 'Unknown error');
+      setError(`Fehler beim Laden der Benutzerdaten: ${error?.message || 'Unbekannter Fehler'}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Auto-refresh every 30 seconds
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const interval = setInterval(() => {
-      setLastUpdate(new Date());
-      loadUserData();
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [isOpen]);
-
-  // Listen for profile picture updates from other components
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleProfileUpdate = (event: CustomEvent) => {
-      console.log('🔄 Profile picture updated, refreshing User Management data...');
-      loadUserData();
-      setLastUpdate(new Date());
-    };
-
-    window.addEventListener('profilePictureUpdated', handleProfileUpdate as EventListener);
-    
-    return () => {
-      window.removeEventListener('profilePictureUpdated', handleProfileUpdate as EventListener);
-    };
-  }, [isOpen]);
-
-  // Load user data when modal opens
   useEffect(() => {
     if (isOpen) {
       loadUserData();
     }
   }, [isOpen]);
 
-  // Subscribe to live users with error handling
-  useEffect(() => {
-    if (!isOpen) return;
-
-    console.log('👥 Subscribing to live users...');
-    
-    try {
-      const q = query(
-        collection(db, 'live_users'),
-        orderBy('lastSeen', 'desc')
-      );
-      
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        try {
-          const now = new Date();
-          const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
-          const activeUsers: LiveUser[] = [];
-          
-          snapshot.docs.forEach(doc => {
-            try {
-              const data = doc.data();
-              if (data && data.lastSeen && data.userName && data.deviceId) {
-                const lastSeen = new Date(data.lastSeen);
-                const isActive = lastSeen > fiveMinutesAgo;
-                
-                if (isActive) {
-                  activeUsers.push({
-                    id: doc.id,
-                    userName: data.userName,
-                    deviceId: data.deviceId,
-                    lastSeen: data.lastSeen,
-                    isActive: true
-                  });
-                }
-              }
-            } catch (docError) {
-              console.warn('Error processing live user document:', docError);
-            }
-          });
-          
-          console.log(`👥 Found ${activeUsers.length} active users`);
-          setLiveUsers(activeUsers);
-          setError(null);
-          
-        } catch (snapshotError) {
-          console.error('Error processing live users snapshot:', snapshotError);
-          setError('Fehler beim Laden der Live-Benutzer');
-        }
-      }, (error) => {
-        console.error('❌ Error loading live users:', error);
-        setError('Fehler beim Laden der Live-Benutzer');
-        setLiveUsers([]);
-      });
-
-      return unsubscribe;
-    } catch (subscriptionError) {
-      console.error('❌ Error setting up live users subscription:', subscriptionError);
-      setError('Fehler beim Einrichten der Live-Benutzer-Überwachung');
-      return () => {};
-    }
-  }, [isOpen]);
-
-  const loadUserData = async () => {
-    if (!isOpen) return;
-
-    setIsLoading(true);
-    setError(null);
-    console.log('👥 === LOADING USER MANAGEMENT DATA ===');
-
-    try {
-      // Get all users from live_users collection (this has all visitors)
-      const liveUsersQuery = query(collection(db, 'live_users'));
-      const liveUsersSnapshot = await getDocs(liveUsersQuery);
-      
-      console.log(`📊 Found ${liveUsersSnapshot.docs.length} documents in live_users collection`);
-      
-      // Get all media items to count contributions
-      const mediaQuery = query(collection(db, 'media'), orderBy('uploadedAt', 'desc'));
-      const mediaSnapshot = await getDocs(mediaQuery);
-      
-      // Aggregate user data from live_users (all visitors)
-      const userMap = new Map<string, UserInfo>();
-      
-      // First, add all visitors from live_users
-      liveUsersSnapshot.docs.forEach((doc, index) => {
-        try {
-          const data = doc.data();
-          console.log(`📋 Processing user ${index + 1}:`, {
-            userName: data.userName,
-            deviceId: data.deviceId?.substring(0, 8) + '...',
-            lastSeen: data.lastSeen
-          });
-          
-          if (data && data.userName && data.deviceId && data.lastSeen) {
-            const key = `${data.userName}-${data.deviceId}`;
-            
-            if (!userMap.has(key)) {
-              userMap.set(key, {
-                userName: data.userName,
-                deviceId: data.deviceId,
-                lastSeen: data.lastSeen,
-                isOnline: false,
-                contributionCount: 0,
-                lastActivity: data.lastSeen
-              });
-              console.log(`✅ Added user: ${data.userName}`);
-            }
-          } else {
-            console.log(`❌ Invalid user data:`, data);
-          }
-        } catch (docError) {
-          console.warn('Error processing live user document:', docError);
-        }
-      });
-      
-      // Also get users from userProfiles database
-      console.log('👤 Loading users from userProfiles database...');
-      const profilesQuery = query(collection(db, 'userProfiles'));
-      const profilesSnapshot = await getDocs(profilesQuery);
-      
-      console.log(`📊 Found ${profilesSnapshot.docs.length} profiles in userProfiles database`);
-      
-      profilesSnapshot.docs.forEach((doc, index) => {
-        try {
-          const data = doc.data();
-          console.log(`👤 Profile ${index + 1}:`, {
-            docId: doc.id,
-            userName: data.userName,
-            displayName: data.displayName,
-            deviceId: data.deviceId?.substring(0, 8) + '...',
-            hasRequiredFields: !!(data.userName && data.deviceId)
-          });
-          
-          if (data && data.userName && data.deviceId) {
-            const key = `${data.userName}-${data.deviceId}`;
-            
-            if (!userMap.has(key)) {
-              // Add profile-only user (not in live_users)
-              userMap.set(key, {
-                userName: data.userName,
-                deviceId: data.deviceId,
-                lastSeen: data.updatedAt || data.createdAt || new Date().toISOString(),
-                isOnline: false, // Profile-only users are offline
-                contributionCount: 0,
-                lastActivity: data.updatedAt || data.createdAt || new Date().toISOString()
-              });
-              console.log(`✅ Added profile-only user: ${data.userName} (${data.displayName || 'no display name'})`);
-            } else {
-              // User exists in live_users, just mark they have a profile
-              const user = userMap.get(key)!;
-              user.contributionCount = Math.max(user.contributionCount, 1);
-              console.log(`🔄 Updated existing user: ${data.userName} with profile info`);
-            }
-          } else {
-            console.log(`❌ Skipping profile - missing required fields:`, {
-              userName: data.userName,
-              deviceId: data.deviceId ? 'present' : 'missing'
-            });
-          }
-        } catch (docError) {
-          console.warn('Error processing profile document:', docError);
-        }
-      });
-      
-      // Then add contribution counts from media and find users who only exist in media
-      console.log(`📸 Processing ${mediaSnapshot.docs.length} media items for user discovery...`);
-      mediaSnapshot.docs.forEach((doc, index) => {
-        try {
-          const data = doc.data();
-          if (data && data.userName && data.deviceId && data.uploadedAt) {
-            const key = `${data.userName}-${data.deviceId}`;
-            
-            if (!userMap.has(key)) {
-              // User exists in media but not in live_users or userProfiles
-              console.log(`📸 Found media-only user: ${data.userName} (from media ${index + 1})`);
-              userMap.set(key, {
-                userName: data.userName,
-                deviceId: data.deviceId,
-                lastSeen: data.uploadedAt,
-                isOnline: false,
-                contributionCount: 0,
-                lastActivity: data.uploadedAt
-              });
-            }
-            
-            const user = userMap.get(key)!;
-            user.contributionCount++;
-            
-            // Update last activity if this is more recent
-            if (new Date(data.uploadedAt) > new Date(user.lastActivity)) {
-              user.lastActivity = data.uploadedAt;
-            }
-          }
-        } catch (docError) {
-          console.warn('Error processing media document:', docError);
-        }
-      });
-      
-      // Also check comments for additional users
-      console.log(`💬 Checking comments for additional users...`);
-      const commentsQuery = query(collection(db, 'comments'));
-      const commentsSnapshot = await getDocs(commentsQuery);
-      console.log(`💬 Processing ${commentsSnapshot.docs.length} comments for user discovery...`);
-      
-      commentsSnapshot.docs.forEach((doc, index) => {
-        try {
-          const data = doc.data();
-          if (data && data.userName && data.deviceId && data.createdAt) {
-            const key = `${data.userName}-${data.deviceId}`;
-            
-            if (!userMap.has(key)) {
-              console.log(`💬 Found comment-only user: ${data.userName} (from comment ${index + 1})`);
-              userMap.set(key, {
-                userName: data.userName,
-                deviceId: data.deviceId,
-                lastSeen: data.createdAt,
-                isOnline: false,
-                contributionCount: 0,
-                lastActivity: data.createdAt
-              });
-            }
-            
-            const user = userMap.get(key)!;
-            user.contributionCount++;
-            
-            // Update last activity if this is more recent
-            if (new Date(data.createdAt) > new Date(user.lastActivity)) {
-              user.lastActivity = data.createdAt;
-            }
-          }
-        } catch (docError) {
-          console.warn('Error processing comment document:', docError);
-        }
-      });
-      
-      // Convert to array and update with live status
-      const allUsers = Array.from(userMap.values());
-      
-      // Update online status based on current liveUsers state
-      const now = new Date();
-      const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
-      
-      allUsers.forEach(user => {
-        try {
-          // Check if user is currently online (last seen within 5 minutes)
-          const lastSeenDate = new Date(user.lastSeen);
-          user.isOnline = lastSeenDate > fiveMinutesAgo;
-        } catch (userError) {
-          console.warn('Error processing user data:', userError);
-        }
-      });
-      
-      // Sort by online status, then by last activity
-      allUsers.sort((a, b) => {
-        if (a.isOnline !== b.isOnline) {
-          return a.isOnline ? -1 : 1; // Online users first
-        }
-        return new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime();
-      });
-      
-      console.log(`👥 Loaded ${allUsers.length} total users from both live_users and userProfiles`);
-      console.log(`🟢 ${allUsers.filter(u => u.isOnline).length} currently online`);
-      
-      setUsers(allUsers);
-      
-    } catch (error) {
-      console.error('❌ Error loading user data:', error);
-      setError('Fehler beim Laden der Benutzerdaten');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Admin Profile Picture Management
-  const handleProfilePictureUpload = async (userName: string, deviceId: string, file: File) => {
-    const userKey = `${userName}-${deviceId}`;
-    setUploadingProfilePic(userKey);
-    
-    try {
-      console.log(`📸 Admin uploading profile picture for ${userName}...`);
-      
-      // Upload the profile picture using the existing service
-      const downloadURL = await uploadUserProfilePicture(file, userName, deviceId);
-      
-      console.log(`✅ Profile picture uploaded successfully for ${userName}: ${downloadURL}`);
-      
-      // Force immediate refresh of user data
-      await loadUserData();
-      
-      // Trigger a custom event to notify other components about profile picture update
-      const profileUpdateEvent = new CustomEvent('profilePictureUpdated', {
-        detail: { userName, deviceId, downloadURL }
-      });
-      window.dispatchEvent(profileUpdateEvent);
-      
-      // Force a re-render by updating the last update timestamp
-      setLastUpdate(new Date());
-      
-    } catch (error) {
-      console.error('❌ Error uploading profile picture:', error);
-      setError(`Fehler beim Hochladen des Profilbilds für ${userName}`);
-    } finally {
-      setUploadingProfilePic(null);
-    }
-  };
-
   const triggerFileInput = (userName: string, deviceId: string) => {
     const userKey = `${userName}-${deviceId}`;
-    const input = fileInputRefs.current[userKey];
-    if (input) {
-      input.click();
-    }
+    fileInputRefs.current[userKey]?.click();
   };
 
   const handleFileChange = async (userName: string, deviceId: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        setError('Bitte wählen Sie eine Bilddatei aus');
-        return;
-      }
-      
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setError('Bilddatei ist zu groß. Maximum 5MB erlaubt.');
-        return;
-      }
-      
-      await handleProfilePictureUpload(userName, deviceId, file);
+    if (!file) return;
+
+    const userKey = `${userName}-${deviceId}`;
+    setUploadingProfilePic(userKey);
+
+    try {
+      const profilePictureUrl = await uploadUserProfilePicture(file, userName, deviceId);
+
+      // Trigger profile updated event
+      window.dispatchEvent(new CustomEvent('profileUpdated', {
+        detail: { userName, deviceId, profilePicture: profilePictureUrl }
+      }));
+
+      // Refresh user data
+      await loadUserData();
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      setError('Fehler beim Hochladen des Profilbilds');
+    } finally {
+      setUploadingProfilePic('');
+      // Reset file input
+      const input = fileInputRefs.current[userKey];
+      if (input) input.value = '';
     }
-    
-    // Reset file input
-    event.target.value = '';
+  };
+
+  const startDeleteUser = (userName: string, deviceId: string) => {
+    const userKey = `${userName}-${deviceId}`;
+    setDeleteConfirm(userKey);
   };
 
   const bulkDeleteUsers = async () => {
@@ -455,22 +199,15 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
 
     setBulkDeleting(true);
     setShowBulkConfirm(false);
-
+    
     try {
-      console.log(`🗑️ Bulk deleting ${selectedUsers.size} users...`);
-      
       const batch = writeBatch(db);
-      let deletedCount = 0;
-
+      
       for (const userKey of Array.from(selectedUsers)) {
-        console.log(`🗑️ Processing: ${userKey}`);
+        if (userKey.length < 37) continue;
         
-        // Extract userName and deviceId from userKey
         const deviceId = userKey.slice(-36);
         const userName = userKey.slice(0, -37);
-        
-        console.log(`  👤 User: "${userName}", Device: "${deviceId}"`);
-        deletedCount++;
         
         // Delete from live_users collection
         const liveUsersQuery = query(
@@ -478,73 +215,23 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
           where('deviceId', '==', deviceId)
         );
         const liveUsersSnapshot = await getDocs(liveUsersQuery);
-        liveUsersSnapshot.docs.forEach(doc => {
-          console.log(`🗑️ Deleting live_users entry: ${doc.id}`);
-          batch.delete(doc.ref);
-        });
+        liveUsersSnapshot.docs.forEach(doc => batch.delete(doc.ref));
         
         // Delete from userProfiles collection
         const profilesQuery = query(
           collection(db, 'userProfiles'),
-          where('userName', '==', userName),
           where('deviceId', '==', deviceId)
         );
         const profilesSnapshot = await getDocs(profilesQuery);
-        console.log(`🗑️ Found ${profilesSnapshot.docs.length} profile entries for ${userName}`);
-        profilesSnapshot.docs.forEach(doc => {
-          console.log(`🗑️ Deleting profile entry: ${doc.id}`);
-          batch.delete(doc.ref);
-        });
-        
-        // Delete all user content
-        const mediaQuery = query(collection(db, 'media'), where('deviceId', '==', deviceId));
-        const mediaSnapshot = await getDocs(mediaQuery);
-        mediaSnapshot.docs.forEach(doc => batch.delete(doc.ref));
-        
-        const commentsQuery = query(collection(db, 'comments'), where('deviceId', '==', deviceId));
-        const commentsSnapshot = await getDocs(commentsQuery);
-        commentsSnapshot.docs.forEach(doc => batch.delete(doc.ref));
-        
-        const likesQuery = query(collection(db, 'likes'), where('deviceId', '==', deviceId));
-        const likesSnapshot = await getDocs(likesQuery);
-        likesSnapshot.docs.forEach(doc => batch.delete(doc.ref));
-        
-        const storiesQuery = query(collection(db, 'stories'), where('deviceId', '==', deviceId));
-        const storiesSnapshot = await getDocs(storiesQuery);
-        storiesSnapshot.docs.forEach(doc => batch.delete(doc.ref));
-      }
-
-      if (deletedCount > 0) {
-        console.log(`🗑️ Committing bulk deletion of ${deletedCount} users...`);
-        await batch.commit();
-        console.log(`✅ Successfully bulk deleted ${deletedCount} users`);
-        
-        // Check if current user was deleted
-        const currentUserName = localStorage.getItem('userName');
-        const currentDeviceId = localStorage.getItem('deviceId');
-        
-        for (const userKey of Array.from(selectedUsers)) {
-          const deviceId = userKey.slice(-36);
-          const userName = userKey.slice(0, -37);
-          
-          if (currentUserName === userName && currentDeviceId === deviceId) {
-            console.log(`🧹 Current user was bulk deleted - reloading`);
-            localStorage.setItem('userDeleted', 'true');
-            setTimeout(() => {
-              localStorage.clear();
-              window.location.href = window.location.href;
-            }, 200);
-            return;
-          }
-        }
+        profilesSnapshot.docs.forEach(doc => batch.delete(doc.ref));
       }
       
-      // Clear selection and reload data
+      await batch.commit();
       setSelectedUsers(new Set());
       await loadUserData();
       
     } catch (error) {
-      console.error('❌ Error in bulk delete:', error);
+      console.error('Error in bulk delete:', error);
       setError('Fehler beim Löschen der Benutzer');
     } finally {
       setBulkDeleting(false);
@@ -576,140 +263,44 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
   const deleteUser = async (userName: string, deviceId: string) => {
     const userKey = `${userName}-${deviceId}`;
     
-    if (deleteConfirm !== userKey) {
-      setDeleteConfirm(userKey);
-      return;
-    }
-
+    if (deleteConfirm !== userKey) return;
+    
     setDeletingUser(userKey);
-    setDeleteConfirm(null);
-
+    setDeleteConfirm('');
+    
     try {
-      console.log(`🗑️ Deleting user: ${userName} (${deviceId})`);
-      
       const batch = writeBatch(db);
       
-      // Delete ALL entries from live_users collection for this deviceId
+      // Delete from live_users collection
       const liveUsersQuery = query(
         collection(db, 'live_users'),
         where('deviceId', '==', deviceId)
       );
       const liveUsersSnapshot = await getDocs(liveUsersQuery);
-      console.log(`🗑️ Found ${liveUsersSnapshot.docs.length} live_users entries to delete`);
-      liveUsersSnapshot.docs.forEach(doc => {
-        console.log(`🗑️ Deleting live_users entry: ${doc.id}`);
-        batch.delete(doc.ref);
-      });
+      liveUsersSnapshot.docs.forEach(doc => batch.delete(doc.ref));
       
-      // Delete all media uploaded by this user
-      const mediaQuery = query(
-        collection(db, 'media'),
-        where('deviceId', '==', deviceId)
-      );
-      const mediaSnapshot = await getDocs(mediaQuery);
-      mediaSnapshot.docs.forEach(doc => {
-        batch.delete(doc.ref);
-      });
-      
-      // Delete all comments by this user
-      const commentsQuery = query(
-        collection(db, 'comments'),
-        where('deviceId', '==', deviceId)
-      );
-      const commentsSnapshot = await getDocs(commentsQuery);
-      commentsSnapshot.docs.forEach(doc => {
-        batch.delete(doc.ref);
-      });
-      
-      // Delete all likes by this user
-      const likesQuery = query(
-        collection(db, 'likes'),
-        where('deviceId', '==', deviceId)
-      );
-      const likesSnapshot = await getDocs(likesQuery);
-      likesSnapshot.docs.forEach(doc => {
-        batch.delete(doc.ref);
-      });
-      
-      // Delete all stories by this user
-      const storiesQuery = query(
-        collection(db, 'stories'),
-        where('deviceId', '==', deviceId)
-      );
-      const storiesSnapshot = await getDocs(storiesQuery);
-      storiesSnapshot.docs.forEach(doc => {
-        batch.delete(doc.ref);
-      });
-      
-      // Delete user profile from userProfiles collection
+      // Delete from userProfiles collection
       const profilesQuery = query(
         collection(db, 'userProfiles'),
-        where('userName', '==', userName),
         where('deviceId', '==', deviceId)
       );
       const profilesSnapshot = await getDocs(profilesQuery);
-      console.log(`🗑️ Found ${profilesSnapshot.docs.length} profile entries to delete for ${userName}`);
-      
-      profilesSnapshot.docs.forEach(doc => {
-        console.log(`🗑️ Deleting profile entry: ${doc.id}`);
-        batch.delete(doc.ref);
-      });
+      profilesSnapshot.docs.forEach(doc => batch.delete(doc.ref));
       
       await batch.commit();
-      
-      // Clear localStorage if the deleted user is the current user
-      const currentUserName = localStorage.getItem('userName');
-      const currentDeviceId = localStorage.getItem('deviceId');
-      
-      if (currentUserName === userName && currentDeviceId === deviceId) {
-        console.log(`🧹 Current user deleted themselves - stopping all processes and reloading`);
-        // Stop all presence updates immediately
-        localStorage.setItem('userDeleted', 'true');
-        // Clear user data completely and reload page
-        setTimeout(() => {
-          localStorage.clear();
-          // Force full page refresh to restart with clean state
-          window.location.href = window.location.href;
-        }, 200);
-        return; // Exit early
-      }
-      
-      console.log(`✅ Successfully deleted user: ${userName}`);
-      
-      // Reload user data
       await loadUserData();
       
     } catch (error) {
-      console.error('❌ Error deleting user:', error);
+      console.error('Error deleting user:', error);
       setError('Fehler beim Löschen des Benutzers');
     } finally {
-      setDeletingUser(null);
-    }
-  };
-
-  const formatTimeAgo = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      const now = new Date();
-      const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-      
-      if (diffInMinutes < 1) return 'gerade eben';
-      if (diffInMinutes < 60) return `vor ${diffInMinutes}m`;
-      
-      const diffInHours = Math.floor(diffInMinutes / 60);
-      if (diffInHours < 24) return `vor ${diffInHours}h`;
-      
-      const diffInDays = Math.floor(diffInHours / 24);
-      return `vor ${diffInDays}d`;
-    } catch (error) {
-      console.warn('Error formatting time:', error);
-      return 'unbekannt';
+      setDeletingUser('');
     }
   };
 
   const stats = {
-    totalUsers: users.length,
     onlineUsers: users.filter(u => u.isOnline).length,
+    totalUsers: users.length,
     totalContributions: users.reduce((sum, u) => sum + u.contributionCount, 0)
   };
 
@@ -720,37 +311,68 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
       <div className={`rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden transition-colors duration-300 ${
         isDarkMode ? 'bg-gray-800' : 'bg-white'
       }`}>
-        {/* Header */}
-        <div className={`flex items-center justify-between p-6 border-b transition-colors duration-300 ${
+        {/* Header - Mobile Optimized */}
+        <div className={`p-4 sm:p-6 border-b transition-colors duration-300 ${
           isDarkMode ? 'border-gray-700' : 'border-gray-200'
         }`}>
-          <div className="flex items-center gap-3">
-            <div className={`p-3 rounded-full transition-colors duration-300 ${
-              isDarkMode ? 'bg-cyan-600' : 'bg-cyan-500'
-            }`}>
-              <Users className="w-6 h-6 text-white" />
+          <div className="flex items-center justify-between mb-3 sm:mb-0">
+            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+              <div className={`p-2 sm:p-3 rounded-full transition-colors duration-300 ${
+                isDarkMode ? 'bg-cyan-600' : 'bg-cyan-500'
+              }`}>
+                <Users className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className={`text-lg sm:text-xl font-semibold transition-colors duration-300 truncate ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}>
+                  👥 User Management
+                </h3>
+                <p className={`text-xs sm:text-sm transition-colors duration-300 hidden sm:block ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Alle Benutzer und deren Status im Überblick
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className={`text-xl font-semibold transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>
-                👥 User Management
-              </h3>
-              <p className={`text-sm transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-400' : 'text-gray-600'
-              }`}>
-                Alle Benutzer und deren Status im Überblick
-              </p>
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              <button
+                onClick={loadUserData}
+                disabled={isLoading}
+                className={`p-2 rounded-lg transition-colors duration-200 ${
+                  isLoading 
+                    ? 'cursor-not-allowed opacity-50' 
+                    : isDarkMode 
+                      ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                }`}
+                title="Daten aktualisieren"
+              >
+                <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              </button>
+              <button
+                onClick={onClose}
+                className={`p-2 rounded-lg transition-colors duration-200 ${
+                  isDarkMode 
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                }`}
+                title="Schließen"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            {selectedUsers.size > 0 && (
+
+          {/* Bulk Actions Row - Mobile Optimized */}
+          {selectedUsers.size > 0 && (
+            <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
+              <span className={`text-sm font-medium transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                {selectedUsers.size} ausgewählt
+              </span>
               <div className="flex items-center gap-2">
-                <span className={`text-sm font-medium transition-colors duration-300 ${
-                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  {selectedUsers.size} ausgewählt
-                </span>
                 {bulkDeleting ? (
                   <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-red-500 text-white">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -764,7 +386,8 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
                       title="Löschen bestätigen"
                     >
                       <AlertTriangle className="w-4 h-4 inline mr-1" />
-                      Bestätigen
+                      <span className="hidden sm:inline">Bestätigen</span>
+                      <span className="sm:hidden">OK</span>
                     </button>
                     <button
                       onClick={() => setShowBulkConfirm(false)}
@@ -774,154 +397,71 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
                           : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
                       }`}
                     >
-                      Abbrechen
+                      <span className="hidden sm:inline">Abbrechen</span>
+                      <span className="sm:hidden">X</span>
                     </button>
                   </div>
                 ) : (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => {
-                        console.log('🧪 TESTING SELECTION:');
-                        console.log('Selected users:', Array.from(selectedUsers));
-                        selectedUsers.forEach(userKey => {
-                          const deviceId = userKey.slice(-36);
-                          const userName = userKey.slice(0, -37);
-                          console.log(`  "${userName}" -> "${deviceId}"`);
-                        });
-                      }}
-                      className="px-2 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white text-xs"
-                    >
-                      Test
-                    </button>
-                    <button
-                      onClick={bulkDeleteUsers}
-                      className="px-3 py-1 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm transition-colors duration-200"
-                      title="Ausgewählte Benutzer löschen"
-                    >
-                      <Trash2 className="w-4 h-4 inline mr-1" />
-                      Löschen
-                    </button>
-                  </div>
+                  <button
+                    onClick={bulkDeleteUsers}
+                    className="px-3 py-1 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm transition-colors duration-200"
+                    title="Ausgewählte Benutzer löschen"
+                  >
+                    <Trash2 className="w-4 h-4 inline mr-1" />
+                    Löschen
+                  </button>
                 )}
-              </div>
-            )}
-            <button
-              onClick={loadUserData}
-              disabled={isLoading}
-              className={`p-2 rounded-full transition-colors duration-300 ${
-                isLoading
-                  ? 'cursor-not-allowed opacity-50'
-                  : isDarkMode 
-                    ? 'hover:bg-gray-700 text-gray-400' 
-                    : 'hover:bg-gray-100 text-gray-600'
-              }`}
-              title="Daten aktualisieren"
-            >
-              <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
-            </button>
-            <button
-              onClick={onClose}
-              className={`p-2 rounded-full transition-colors duration-300 ${
-                isDarkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
-              }`}
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
-
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
-          {/* Error Display */}
-          {error && (
-            <div className={`mb-6 p-4 rounded-xl border transition-colors duration-300 ${
-              isDarkMode 
-                ? 'bg-red-900/20 border-red-700/30 text-red-300' 
-                : 'bg-red-50 border-red-200 text-red-700'
-            }`}>
-              <div className="flex items-center gap-2">
-                <XCircle className="w-5 h-5" />
-                <div>
-                  <div className="font-semibold">Fehler beim Laden der Daten</div>
-                  <div className="text-sm mt-1">{error}</div>
-                </div>
               </div>
             </div>
           )}
+        </div>
 
-          {/* Statistics Cards */}
+        {/* Content */}
+        <div className={`p-4 sm:p-6 max-h-[70vh] overflow-auto transition-colors duration-300 ${
+          isDarkMode ? 'bg-gray-800' : 'bg-white'
+        }`}>
+          {/* Quick Stats */}
           <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className={`p-4 rounded-xl transition-colors duration-300 ${
-              isDarkMode ? 'bg-gray-700/50 border border-gray-600' : 'bg-gray-50 border border-gray-200'
+            <div className={`p-4 rounded-xl text-center transition-colors duration-300 ${
+              isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'
             }`}>
-              <div className="flex items-center gap-2 mb-2">
-                <Users className={`w-4 h-4 transition-colors duration-300 ${
-                  isDarkMode ? 'text-blue-400' : 'text-blue-600'
-                }`} />
-                <span className={`text-sm font-medium transition-colors duration-300 ${
-                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  Gesamt
-                </span>
-              </div>
               <div className={`text-2xl font-bold transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>
-                {stats.totalUsers}
-              </div>
-              <div className={`text-xs transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-500' : 'text-gray-500'
-              }`}>
-                Benutzer
-              </div>
-            </div>
-
-            <div className={`p-4 rounded-xl transition-colors duration-300 ${
-              isDarkMode ? 'bg-gray-700/50 border border-gray-600' : 'bg-gray-50 border border-gray-200'
-            }`}>
-              <div className="flex items-center gap-2 mb-2">
-                <Wifi className={`w-4 h-4 transition-colors duration-300 ${
-                  isDarkMode ? 'text-green-400' : 'text-green-600'
-                }`} />
-                <span className={`text-sm font-medium transition-colors duration-300 ${
-                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  Online
-                </span>
-              </div>
-              <div className={`text-2xl font-bold transition-colors duration-300 ${
-                isDarkMode ? 'text-green-400' : 'text-green-600'
+                isDarkMode ? 'text-cyan-400' : 'text-cyan-600'
               }`}>
                 {stats.onlineUsers}
               </div>
-              <div className={`text-xs transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-500' : 'text-gray-500'
+              <div className={`text-sm transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-600'
               }`}>
-                Aktiv (5min)
+                Online
               </div>
             </div>
-
-            <div className={`p-4 rounded-xl transition-colors duration-300 ${
-              isDarkMode ? 'bg-gray-700/50 border border-gray-600' : 'bg-gray-50 border border-gray-200'
+            <div className={`p-4 rounded-xl text-center transition-colors duration-300 ${
+              isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'
             }`}>
-              <div className="flex items-center gap-2 mb-2">
-                <Eye className={`w-4 h-4 transition-colors duration-300 ${
-                  isDarkMode ? 'text-pink-400' : 'text-pink-600'
-                }`} />
-                <span className={`text-sm font-medium transition-colors duration-300 ${
-                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  Beiträge
-                </span>
-              </div>
               <div className={`text-2xl font-bold transition-colors duration-300 ${
-                isDarkMode ? 'text-pink-400' : 'text-pink-600'
+                isDarkMode ? 'text-green-400' : 'text-green-600'
+              }`}>
+                {stats.totalUsers}
+              </div>
+              <div className={`text-sm transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+              }`}>
+                Gesamt
+              </div>
+            </div>
+            <div className={`p-4 rounded-xl text-center transition-colors duration-300 ${
+              isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'
+            }`}>
+              <div className={`text-2xl font-bold transition-colors duration-300 ${
+                isDarkMode ? 'text-purple-400' : 'text-purple-600'
               }`}>
                 {stats.totalContributions}
               </div>
-              <div className={`text-xs transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-500' : 'text-gray-500'
+              <div className={`text-sm transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-600'
               }`}>
-                Gesamt
+                Beiträge
               </div>
             </div>
           </div>
@@ -936,7 +476,7 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
             </div>
             <div className="flex items-center gap-2">
               <RefreshCw className="w-4 h-4" />
-              <span>Auto-Refresh: 30s</span>
+              <span>Auto-Refresh: deaktiviert</span>
             </div>
           </div>
 
@@ -1062,162 +602,148 @@ export const UserManagementModal: React.FC<UserManagementModalProps> = ({
                           {uploadingProfilePic === userKey ? (
                             <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
                           ) : (
-                            <Camera className="w-3 h-3" />
+                            <Camera className="w-4 h-4" />
                           )}
                         </button>
 
                         {/* User Details */}
                         <div className="flex-1 min-w-0">
-                          <div className={`font-medium text-sm truncate transition-colors duration-300 ${
-                            isDarkMode ? 'text-white' : 'text-gray-900'
-                          }`}>
-                            {getDisplayName(user.userName, user.deviceId)}
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className={`font-semibold text-sm truncate transition-colors duration-300 ${
+                              isDarkMode ? 'text-white' : 'text-gray-900'
+                            }`}>
+                              {getUserDisplayName?.(user.userName, user.deviceId) || user.userName}
+                            </h4>
+                            {user.isOnline && (
+                              <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                <span className={`text-xs transition-colors duration-300 ${
+                                  isDarkMode ? 'text-green-400' : 'text-green-600'
+                                }`}>
+                                  Online
+                                </span>
+                              </div>
+                            )}
                           </div>
-                          <div className={`text-xs font-mono transition-colors duration-300 ${
-                            isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                          }`}>
-                            {user.deviceId.substring(0, 8)}...
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <div className="flex items-center gap-2">
+                              <Smartphone className="w-3 h-3 flex-shrink-0" />
+                              <span className={`truncate transition-colors duration-300 ${
+                                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>
+                                {user.deviceId?.slice(-8) || 'N/A'}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Clock className="w-3 h-3 flex-shrink-0" />
+                              <span className={`truncate transition-colors duration-300 ${
+                                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                              }`}>
+                                {user.lastActivity}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
 
-                      {/* Delete Action */}
-                      <div className="flex-shrink-0">
-                        {deletingUser === userKey ? (
-                          <div className="flex items-center gap-2 px-2 py-1 rounded bg-red-500 text-white">
+                      {/* Action Buttons */}
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <div className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors duration-300 ${
+                          isDarkMode ? 'bg-purple-600/20 text-purple-400' : 'bg-purple-100 text-purple-700'
+                        }`}>
+                          {user.contributionCount} Beiträge
+                        </div>
+                        
+                        <button
+                          onClick={() => startDeleteUser(user.userName, user.deviceId)}
+                          disabled={deletingUser === userKey}
+                          className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs transition-all duration-200 ${
+                            deletingUser === userKey
+                              ? 'bg-gray-400 cursor-not-allowed'
+                              : 'bg-red-500 hover:bg-red-600 text-white shadow-lg hover:shadow-xl'
+                          }`}
+                          title="Benutzer löschen"
+                        >
+                          {deletingUser === userKey ? (
                             <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
-                            <span className="text-xs">Löschen...</span>
-                          </div>
-                        ) : deleteConfirm === userKey ? (
-                          <div className="flex items-center gap-1">
-                            <button
-                              onClick={() => deleteUser(user.userName, user.deviceId)}
-                              className="p-1.5 rounded bg-red-500 hover:bg-red-600 text-white transition-colors duration-200"
-                              title="Bestätigen"
-                            >
-                              <AlertTriangle className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => setDeleteConfirm(null)}
-                              className={`p-1.5 rounded transition-colors duration-200 ${
-                                isDarkMode 
-                                  ? 'bg-gray-600 hover:bg-gray-500 text-gray-300' 
-                                  : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
-                              }`}
-                              title="Abbrechen"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        ) : (
+                          ) : (
+                            <Trash2 className="w-3 h-3" />
+                          )}
+                          <span className="hidden sm:inline">Löschen</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Delete Confirmation */}
+                    {deleteConfirm === userKey && (
+                      <div className={`mt-3 p-3 rounded-lg border-l-4 transition-colors duration-300 ${
+                        isDarkMode 
+                          ? 'bg-red-900/20 border-red-500 text-red-400' 
+                          : 'bg-red-50 border-red-500 text-red-700'
+                      }`}>
+                        <p className="text-sm mb-3">
+                          Möchten Sie "{getUserDisplayName?.(user.userName, user.deviceId) || user.userName}" wirklich löschen?
+                        </p>
+                        <div className="flex gap-2">
                           <button
                             onClick={() => deleteUser(user.userName, user.deviceId)}
-                            className={`p-2 rounded-full transition-colors duration-200 ${
-                              isDarkMode 
-                                ? 'hover:bg-red-900/30 text-red-400 hover:text-red-300' 
-                                : 'hover:bg-red-50 text-red-500 hover:text-red-600'
-                            }`}
-                            title="Löschen"
+                            className="px-3 py-1 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm transition-colors duration-200"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <AlertTriangle className="w-4 h-4 inline mr-1" />
+                            Bestätigen
                           </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Mobile Info Grid */}
-                    <div className="grid grid-cols-3 gap-3 text-center">
-                      {/* Status */}
-                      <div>
-                        <div className="flex items-center justify-center gap-1 mb-1">
-                          {user.isOnline ? (
-                            <Wifi className="w-3 h-3 text-green-500" />
-                          ) : (
-                            <WifiOff className="w-3 h-3 text-gray-500" />
-                          )}
-                          <span className={`text-xs font-medium ${
-                            user.isOnline 
-                              ? isDarkMode ? 'text-green-400' : 'text-green-600'
-                              : isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                          }`}>
-                            {user.isOnline ? 'Online' : 'Offline'}
-                          </span>
-                        </div>
-                        <div className={`text-xs ${
-                          isDarkMode ? 'text-gray-500' : 'text-gray-500'
-                        }`}>
-                          {formatTimeAgo(user.lastSeen)}
+                          <button
+                            onClick={() => setDeleteConfirm('')}
+                            className={`px-3 py-1 rounded-lg text-sm transition-colors duration-200 ${
+                              isDarkMode 
+                                ? 'bg-gray-600 hover:bg-gray-500 text-gray-300' 
+                                : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
+                            }`}
+                          >
+                            Abbrechen
+                          </button>
                         </div>
                       </div>
-
-                      {/* Last Activity */}
-                      <div>
-                        <div className={`text-xs font-medium mb-1 ${
-                          isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
-                          Aktivität
-                        </div>
-                        <div className={`text-xs ${
-                          isDarkMode ? 'text-gray-500' : 'text-gray-500'
-                        }`}>
-                          {formatTimeAgo(user.lastActivity)}
-                        </div>
-                      </div>
-
-                      {/* Contributions */}
-                      <div>
-                        <div className={`text-sm font-bold mb-1 ${
-                          isDarkMode ? 'text-white' : 'text-gray-900'
-                        }`}>
-                          {user.contributionCount}
-                        </div>
-                        <div className={`text-xs ${
-                          isDarkMode ? 'text-gray-500' : 'text-gray-500'
-                        }`}>
-                          Beiträge
-                        </div>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 );
               })}
             </div>
           )}
 
-          {/* Empty State */}
+          {/* No Users State */}
           {!isLoading && users.length === 0 && !error && (
             <div className="text-center py-12">
               <Users className={`w-16 h-16 mx-auto mb-4 transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-600' : 'text-gray-400'
               }`} />
-              <h3 className={`text-lg font-medium mb-2 transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
+              <h3 className={`text-lg font-semibold mb-2 transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-700'
               }`}>
                 Keine Benutzer gefunden
               </h3>
               <p className={`text-sm transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                isDarkMode ? 'text-gray-500' : 'text-gray-600'
               }`}>
-                Es wurden noch keine Benutzeraktivitäten aufgezeichnet.
+                Es wurden noch keine Benutzer registriert.
               </p>
             </div>
           )}
-        </div>
 
-        {/* Footer */}
-        <div className={`p-4 border-t text-center transition-colors duration-300 ${
-          isDarkMode ? 'border-gray-700' : 'border-gray-200'
-        }`}>
-          <button
-            onClick={onClose}
-            className={`py-2 px-6 rounded-xl transition-colors duration-300 ${
+          {/* Error State */}
+          {error && (
+            <div className={`p-4 rounded-lg border-l-4 transition-colors duration-300 ${
               isDarkMode 
-                ? 'bg-gray-600 hover:bg-gray-500 text-gray-200' 
-                : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
-            }`}
-          >
-            Schließen
-          </button>
+                ? 'bg-red-900/20 border-red-500 text-red-400' 
+                : 'bg-red-50 border-red-500 text-red-700'
+            }`}>
+              <div className="flex items-center gap-2">
+                <XCircle className="w-5 h-5 flex-shrink-0" />
+                <span className="text-sm">{error}</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
