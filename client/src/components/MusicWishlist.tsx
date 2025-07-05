@@ -281,30 +281,30 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
 
   if (!isSpotifyAvailable) {
     return (
-      <div className="mx-4 my-6 p-8 rounded-2xl glass-card relative overflow-hidden bg-green-500/10 border-green-400/20" style={{
+      <div className="mx-4 my-6 p-8 rounded-2xl glass-card relative overflow-hidden bg-pink-500/10 border-pink-400/20" style={{
         background: isDarkMode 
-          ? 'linear-gradient(135deg, rgba(29, 185, 84, 0.1) 0%, rgba(30, 215, 96, 0.05) 100%)' 
-          : 'linear-gradient(135deg, rgba(29, 185, 84, 0.05) 0%, rgba(30, 215, 96, 0.02) 100%)'
+          ? 'linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(219, 39, 119, 0.05) 100%)' 
+          : 'linear-gradient(135deg, rgba(236, 72, 153, 0.05) 0%, rgba(219, 39, 119, 0.02) 100%)'
       }}>
         <div className="absolute inset-0 opacity-25">
           <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl ${
-            isDarkMode ? 'bg-gradient-to-br from-green-500 to-emerald-500' : 'bg-gradient-to-br from-green-300 to-emerald-300'
+            isDarkMode ? 'bg-gradient-to-br from-pink-500 to-purple-500' : 'bg-gradient-to-br from-pink-300 to-purple-300'
           }`} style={{ transform: 'translate(50%, -50%)' }}></div>
           <div className={`absolute bottom-0 left-0 w-24 h-24 rounded-full blur-2xl ${
-            isDarkMode ? 'bg-gradient-to-br from-teal-500 to-cyan-500' : 'bg-gradient-to-br from-teal-300 to-cyan-300'
+            isDarkMode ? 'bg-gradient-to-br from-rose-500 to-purple-500' : 'bg-gradient-to-br from-rose-300 to-purple-300'
           }`} style={{ transform: 'translate(-50%, 50%)' }}></div>
         </div>
         
         <div className="relative z-10 text-center py-8">
           <div className={`w-20 h-20 mx-auto mb-6 p-4 rounded-2xl transition-all duration-300 ${
-            isDarkMode ? 'bg-green-500/20' : 'bg-green-500/10'
+            isDarkMode ? 'bg-pink-500/20' : 'bg-pink-500/10'
           }`}>
             <Music className={`w-full h-full ${
-              isDarkMode ? 'text-green-400' : 'text-green-600'
+              isDarkMode ? 'text-pink-400' : 'text-pink-600'
             }`} />
           </div>
           
-          <h3 className={`text-2xl font-bold mb-4 bg-gradient-to-br from-green-500 to-emerald-600 bg-clip-text text-transparent`}>
+          <h3 className={`text-2xl font-bold mb-4 bg-gradient-to-br from-pink-500 to-emerald-600 bg-clip-text text-transparent`}>
             Spotify nicht verbunden
           </h3>
           
@@ -322,28 +322,28 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
     return (
       <div className={`mx-4 my-6 p-8 rounded-3xl transition-all duration-500 relative overflow-hidden ${
         isDarkMode 
-          ? 'bg-gradient-to-br from-green-900/40 via-emerald-900/30 to-teal-900/30 border border-green-500/20 backdrop-blur-xl shadow-2xl shadow-green-500/20' 
-          : 'bg-gradient-to-br from-green-50/90 via-emerald-50/80 to-teal-50/80 border border-green-200/60 backdrop-blur-xl shadow-2xl shadow-green-500/15'
+          ? 'bg-gradient-to-br from-pink-900/40 via-purple-900/30 to-rose-900/30 border border-pink-500/20 backdrop-blur-xl shadow-2xl shadow-pink-500/20' 
+          : 'bg-gradient-to-br from-pink-50/90 via-purple-50/80 to-rose-50/80 border border-pink-200/60 backdrop-blur-xl shadow-2xl shadow-pink-500/15'
       }`}>
         <div className="absolute inset-0 opacity-25">
           <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl ${
-            isDarkMode ? 'bg-gradient-to-br from-green-500 to-emerald-500' : 'bg-gradient-to-br from-green-300 to-emerald-300'
+            isDarkMode ? 'bg-gradient-to-br from-pink-500 to-purple-500' : 'bg-gradient-to-br from-pink-300 to-purple-300'
           }`} style={{ transform: 'translate(50%, -50%)' }}></div>
           <div className={`absolute bottom-0 left-0 w-24 h-24 rounded-full blur-2xl ${
-            isDarkMode ? 'bg-gradient-to-br from-teal-500 to-cyan-500' : 'bg-gradient-to-br from-teal-300 to-cyan-300'
+            isDarkMode ? 'bg-gradient-to-br from-rose-500 to-purple-500' : 'bg-gradient-to-br from-rose-300 to-purple-300'
           }`} style={{ transform: 'translate(-50%, 50%)' }}></div>
         </div>
         
         <div className="relative z-10 text-center py-8">
           <div className={`w-20 h-20 mx-auto mb-6 p-4 rounded-2xl transition-all duration-300 ${
-            isDarkMode ? 'bg-green-500/20' : 'bg-green-500/10'
+            isDarkMode ? 'bg-pink-500/20' : 'bg-pink-500/10'
           }`}>
             <Music className={`w-full h-full ${
-              isDarkMode ? 'text-green-400' : 'text-green-600'
+              isDarkMode ? 'text-pink-400' : 'text-pink-600'
             }`} />
           </div>
           
-          <h3 className={`text-2xl font-bold mb-4 bg-gradient-to-br from-green-500 to-emerald-600 bg-clip-text text-transparent`}>
+          <h3 className={`text-2xl font-bold mb-4 bg-gradient-to-br from-pink-500 to-emerald-600 bg-clip-text text-transparent`}>
             Keine Playlist ausgewählt
           </h3>
           
@@ -362,14 +362,14 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       {/* Compact Header */}
       <div className={`p-4 rounded-2xl transition-all duration-500 ${
         isDarkMode 
-          ? 'bg-green-900/20 border border-green-500/30 backdrop-blur-md shadow-xl shadow-green-500/10' 
-          : 'bg-green-50/80 border border-green-200 backdrop-blur-md shadow-lg shadow-green-100'
+          ? 'bg-green-900/20 border border-green-500/30 backdrop-blur-md shadow-xl shadow-pink-500/10' 
+          : 'bg-green-50/80 border border-pink-200 backdrop-blur-md shadow-lg shadow-pink-100'
       }`}>
 
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 p-2 rounded-full ${
-              isDarkMode ? 'bg-green-500/20' : 'bg-green-100'
+              isDarkMode ? 'bg-pink-500/20' : 'bg-pink-100'
             }`}>
               <svg
                 viewBox="0 0 24 24"
@@ -391,7 +391,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                   {playlistTracks.length} Songs
                 </span>
                 <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
-                  syncStatus === 'live' ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'
+                  syncStatus === 'live' ? 'bg-pink-500/20 text-pink-400' : 'bg-gray-500/20 text-gray-400'
                 }`}>
                   <div className={`w-1.5 h-1.5 rounded-full ${
                     syncStatus === 'live' ? 'bg-green-400' : 'bg-gray-400'
@@ -407,8 +407,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
             rel="noopener noreferrer"
             className={`p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
               isDarkMode 
-                ? 'bg-green-600/20 hover:bg-green-600/30 text-green-300' 
-                : 'bg-green-100 hover:bg-green-200 text-green-600'
+                ? 'bg-green-600/20 hover:bg-pink-600/30 text-pink-300' 
+                : 'bg-pink-100 hover:bg-pink-200 text-pink-600'
             }`}
             title="In Spotify öffnen"
           >
@@ -419,7 +419,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
         {/* Compact Search */}
         <div className="relative">
           <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
-            isDarkMode ? 'text-green-400' : 'text-green-600'
+            isDarkMode ? 'text-pink-400' : 'text-pink-600'
           }`} />
           <input
             type="text"
@@ -428,8 +428,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
             placeholder="Suche nach einem Song..."
             className={`w-full pl-10 pr-10 py-3 rounded-full transition-all duration-300 focus:ring-2 focus:ring-green-500 outline-none text-sm ${
               isDarkMode 
-                ? 'bg-gray-800 text-white placeholder-gray-400 border border-green-500/30 focus:bg-gray-750 focus:border-green-500' 
-                : 'bg-white text-gray-900 placeholder-gray-500 border border-green-300 focus:bg-green-50 focus:border-green-500'
+                ? 'bg-gray-800 text-white placeholder-gray-400 border border-green-500/30 focus:bg-gray-750 focus:border-pink-500' 
+                : 'bg-white text-gray-900 placeholder-gray-500 border border-pink-300 focus:bg-pink-50 focus:border-pink-500'
             }`}
           />
           {searchQuery && (
@@ -449,12 +449,12 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       {showAddSuccess && (
         <div className={`p-4 rounded-2xl backdrop-blur-sm transition-all duration-500 ${
           isDarkMode 
-            ? 'bg-green-500/20 border border-green-400/30 text-green-300' 
-            : 'bg-green-100/80 border border-green-300/50 text-green-700'
+            ? 'bg-pink-500/20 border border-green-400/30 text-pink-300' 
+            : 'bg-pink-100/80 border border-pink-300/50 text-pink-700'
         }`}>
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-full ${
-              isDarkMode ? 'bg-green-400/20' : 'bg-green-500/20'
+              isDarkMode ? 'bg-green-400/20' : 'bg-pink-500/20'
             }`}>
               <Check className="w-4 h-4" />
             </div>
@@ -487,8 +487,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           {searchResults.map((track) => (
             <div key={track.id} className={`p-3 rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
               isDarkMode 
-                ? 'bg-gray-900 border border-green-500/20 hover:bg-gray-800 hover:border-green-500/40 shadow-lg shadow-green-500/5' 
-                : 'bg-white border border-green-200 hover:bg-green-50 hover:border-green-300 shadow-md shadow-green-100'
+                ? 'bg-gray-900 border border-pink-500/20 hover:bg-gray-800 hover:border-pink-500/40 shadow-lg shadow-pink-500/5' 
+                : 'bg-white border border-pink-200 hover:bg-pink-50 hover:border-pink-300 shadow-md shadow-pink-100'
             }`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -515,8 +515,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                   disabled={isAddingTrack === track.id}
                   className={`p-2 rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 ${
                     isDarkMode 
-                      ? 'bg-green-500/20 hover:bg-green-500/30 text-green-400 shadow-lg shadow-green-500/20' 
-                      : 'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/30'
+                      ? 'bg-pink-500/20 hover:bg-pink-500/30 text-pink-400 shadow-lg shadow-pink-500/20' 
+                      : 'bg-pink-500 hover:bg-pink-600 text-white shadow-lg shadow-pink-500/30'
                   }`}
                 >
                   {isAddingTrack === track.id ? (
@@ -536,8 +536,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
         {playlistTracks.map((item) => (
           <div key={item.track.id} className={`p-3 rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
             isDarkMode 
-              ? 'bg-gray-900 border border-green-500/20 hover:bg-gray-800 hover:border-green-500/40 shadow-lg shadow-green-500/5' 
-              : 'bg-white border border-green-200 hover:bg-green-50 hover:border-green-300 shadow-md shadow-green-100'
+              ? 'bg-gray-900 border border-pink-500/20 hover:bg-gray-800 hover:border-pink-500/40 shadow-lg shadow-pink-500/5' 
+              : 'bg-white border border-pink-200 hover:bg-pink-50 hover:border-pink-300 shadow-md shadow-pink-100'
           }`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -566,8 +566,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                   rel="noopener noreferrer"
                   className={`p-2 rounded-full transition-all duration-300 hover:scale-110 ${
                     isDarkMode 
-                      ? 'bg-green-500/20 hover:bg-green-500/30 text-green-400 shadow-lg shadow-green-500/20' 
-                      : 'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/30'
+                      ? 'bg-pink-500/20 hover:bg-pink-500/30 text-pink-400 shadow-lg shadow-pink-500/20' 
+                      : 'bg-pink-500 hover:bg-pink-600 text-white shadow-lg shadow-pink-500/30'
                   }`}
                   title="In Spotify öffnen"
                 >
@@ -599,11 +599,11 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       {playlistTracks.length === 0 && !isLoading && (
         <div className={`text-center py-8 rounded-2xl ${
           isDarkMode 
-            ? 'bg-gray-900 border border-green-500/20 shadow-lg shadow-green-500/5' 
-            : 'bg-white border border-green-200 shadow-md shadow-green-100'
+            ? 'bg-gray-900 border border-green-500/20 shadow-lg shadow-pink-500/5' 
+            : 'bg-white border border-pink-200 shadow-md shadow-pink-100'
         }`}>
           <Music className={`w-16 h-16 mx-auto mb-4 ${
-            isDarkMode ? 'text-green-400' : 'text-green-500'
+            isDarkMode ? 'text-pink-400' : 'text-green-500'
           }`} />
           <p className={`text-lg font-medium ${
             isDarkMode ? 'text-white/80' : 'text-gray-700'

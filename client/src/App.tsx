@@ -975,22 +975,19 @@ function App() {
         />
 
         {/* Mobile Upload Button - Safe Area */}
-        <div className="fixed right-4 z-40" style={{ 
-          bottom: 'max(80px, calc(80px + env(safe-area-inset-bottom)))' 
+        <div className="fixed z-40" style={{ 
+          bottom: 'max(200px, calc(200px + env(safe-area-inset-bottom)))',
+          right: '16px'
         }}>
           <button
             onClick={() => setShowUploadOptions(true)}
             className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center cursor-pointer transition-all duration-300 active:scale-95 btn-touch ${
               isUploading ? 'animate-pulse' : ''
-            } ${
-              isDarkMode 
-                ? 'bg-green-500 hover:bg-green-600' 
-                : 'bg-green-500 hover:bg-green-600'
-            }`}
+            } bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700`}
             style={{
               boxShadow: isDarkMode 
-                ? '0 8px 25px rgba(34, 197, 94, 0.4)' 
-                : '0 8px 25px rgba(34, 197, 94, 0.3)'
+                ? '0 8px 25px rgba(236, 72, 153, 0.4)' 
+                : '0 8px 25px rgba(236, 72, 153, 0.3)'
             }}
             title="Foto teilen"
           >
@@ -1000,12 +997,12 @@ function App() {
 
         {/* Upload Options Modal */}
         {showUploadOptions && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end justify-center p-4">
-            <div className={`w-full max-w-sm rounded-2xl p-6 glass-card ${
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" style={{ alignItems: 'flex-start', paddingTop: '20vh' }}>
+            <div className={`w-full max-w-sm rounded-2xl p-6 ${
               isDarkMode 
-                ? 'bg-gray-900/90 border-white/10' 
-                : 'bg-white/90 border-black/10'
-            } border transform transition-all duration-300 animate-in slide-in-from-bottom-4`}>
+                ? 'bg-gray-800 border-gray-600' 
+                : 'bg-white border-gray-300'
+            } border shadow-2xl transform transition-all duration-300 animate-in zoom-in-95`}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className={`text-lg font-semibold ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
@@ -1044,11 +1041,11 @@ function App() {
                     htmlFor="media-upload"
                     className={`flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all duration-200 btn-touch ${
                       isDarkMode 
-                        ? 'bg-white/5 hover:bg-white/10 text-white' 
-                        : 'bg-black/5 hover:bg-black/10 text-gray-900'
+                        ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                     }`}
                   >
-                    <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 flex items-center justify-center">
                       <ImageIcon className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -1068,8 +1065,8 @@ function App() {
                   }}
                   className={`flex items-center gap-3 p-4 rounded-xl w-full transition-all duration-200 btn-touch ${
                     isDarkMode 
-                      ? 'bg-white/5 hover:bg-white/10 text-white' 
-                      : 'bg-black/5 hover:bg-black/10 text-gray-900'
+                      ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                   }`}
                 >
                   <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center">
@@ -1091,8 +1088,8 @@ function App() {
                   }}
                   className={`flex items-center gap-3 p-4 rounded-xl w-full transition-all duration-200 btn-touch ${
                     isDarkMode 
-                      ? 'bg-white/5 hover:bg-white/10 text-white' 
-                      : 'bg-black/5 hover:bg-black/10 text-gray-900'
+                      ? 'bg-gray-700 hover:bg-gray-600 text-white' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                   }`}
                 >
                   <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
@@ -1115,8 +1112,8 @@ function App() {
                     }}
                     className={`flex items-center gap-3 p-4 rounded-xl w-full transition-all duration-200 btn-touch ${
                       isDarkMode 
-                        ? 'bg-white/5 hover:bg-white/10 text-white' 
-                        : 'bg-black/5 hover:bg-black/10 text-gray-900'
+                        ? 'bg-gray-600/60 hover:bg-gray-500/70 text-white' 
+                        : 'bg-gray-50/90 hover:bg-gray-100/90 text-gray-900'
                     }`}
                   >
                     <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center">
@@ -1255,14 +1252,14 @@ function App() {
               <p className={`text-xs mb-3 transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-400' : 'text-gray-600'
               }`}>
-                Grüner Button → Foto hochladen
+                Pink Button → Foto hochladen
               </p>
               
               {/* Compact Stats */}
               <div className="flex justify-center gap-6 text-center">
                 <div className="flex items-center gap-1">
                   <span className={`text-lg font-bold transition-colors duration-300 ${
-                    isDarkMode ? 'text-green-400' : 'text-green-600'
+                    isDarkMode ? 'text-pink-400' : 'text-pink-600'
                   }`}>
                     {mediaItems.length}
                   </span>
@@ -1274,7 +1271,7 @@ function App() {
                 </div>
                 <div className="flex items-center gap-1">
                   <span className={`text-lg font-bold transition-colors duration-300 ${
-                    isDarkMode ? 'text-green-400' : 'text-green-600'
+                    isDarkMode ? 'text-pink-400' : 'text-pink-600'
                   }`}>
                     {likes.length}
                   </span>
@@ -1286,7 +1283,7 @@ function App() {
                 </div>
                 <div className="flex items-center gap-1">
                   <span className={`text-lg font-bold transition-colors duration-300 ${
-                    isDarkMode ? 'text-green-400' : 'text-green-600'
+                    isDarkMode ? 'text-pink-400' : 'text-pink-600'
                   }`}>
                     {comments.length}
                   </span>
@@ -1427,9 +1424,11 @@ function App() {
       {/* Back to Top Button */}
       <BackToTopButton isDarkMode={isDarkMode} />
 
-      {/* Mobile Admin Burger Menu - Bottom Left Corner */}
+      {/* Mobile Admin Burger Menu - Above Bottom Navigation */}
       {userName && (
-        <div className="fixed bottom-4 left-4 z-50">
+        <div className="fixed left-4 z-50" style={{ 
+          bottom: 'max(80px, calc(80px + env(safe-area-inset-bottom)))' 
+        }}>
           {/* Admin Burger Menu Button */}
           <button
             onClick={() => setShowAdminMenu(!showAdminMenu)}

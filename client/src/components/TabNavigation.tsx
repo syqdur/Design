@@ -113,10 +113,10 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
                       ? 'bg-gray-700/50 text-gray-500'
                       : 'bg-gray-200/50 text-gray-400'
                     : isActive
-                      ? 'bg-green-500 text-white shadow-lg shadow-green-500/30'
+                      ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/30'
                       : isDarkMode
-                        ? 'text-gray-400 hover:text-white hover:bg-white/10'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-black/10'
+                        ? 'text-gray-400 hover:text-white hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-600/20'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-pink-500/10 hover:to-purple-500/10'
                 }`}>
                   {tab.locked ? (
                     <Lock className="w-4 h-4" />
@@ -126,7 +126,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
                   
                   {/* Active indicator dot */}
                   {isActive && !tab.locked && (
-                    <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                    <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-pink-400 rounded-full animate-pulse" />
                   )}
                 </div>
                 
@@ -136,7 +136,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
                       ? 'text-gray-500'
                       : 'text-gray-400'
                     : isActive
-                      ? 'text-green-500 font-semibold'
+                      ? 'text-pink-500 font-semibold'
                       : isDarkMode
                         ? 'text-gray-400'
                         : 'text-gray-600'

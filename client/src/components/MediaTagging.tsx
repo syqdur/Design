@@ -516,7 +516,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
                     isLoadingLocation || !customLocationName.trim() || locationSuggestions.length > 0
                       ? 'opacity-50 cursor-not-allowed' 
                       : ''
-                  } bg-white/40 dark:bg-gray-800/60 hover:bg-white/60 dark:hover:bg-gray-700/80 backdrop-blur-sm text-gray-700 dark:text-gray-100 border border-white/20 dark:border-gray-700/40 hover:border-green-300 dark:hover:border-green-500 shadow-sm hover:shadow-md`}
+                  } bg-white/40 dark:bg-gray-800/60 hover:bg-white/60 dark:hover:bg-gray-700/80 backdrop-blur-sm text-gray-700 dark:text-gray-100 border border-white/20 dark:border-gray-700/40 hover:border-pink-300 dark:hover:border-pink-500 shadow-sm hover:shadow-md`}
                 >
                   {isLoadingLocation ? 'Wird hinzugefügt...' : 'Standort hinzufügen'}
                 </button>

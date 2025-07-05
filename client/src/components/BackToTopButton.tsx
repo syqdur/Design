@@ -38,11 +38,15 @@ export const BackToTopButton: React.FC<BackToTopButtonProps> = ({ isDarkMode }) 
   return (
     <button
       onClick={scrollToTop}
-      className={`fixed bottom-6 right-6 z-50 p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg ${
+      className={`fixed z-50 p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg ${
         isDarkMode 
           ? 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 shadow-pink-500/25' 
           : 'bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600 shadow-pink-400/25'
       } backdrop-blur-sm border border-white/20`}
+      style={{ 
+        bottom: 'max(260px, calc(260px + env(safe-area-inset-bottom)))',
+        right: '16px' // Position to the right
+      }}
       title="Zum Anfang scrollen"
       aria-label="Back to top"
     >
