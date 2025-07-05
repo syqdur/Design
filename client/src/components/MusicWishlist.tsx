@@ -181,10 +181,12 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
     // Clear previous timeout
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
+      searchTimeoutRef.current = null;
     }
 
     if (!searchQuery.trim() || !isSpotifyAvailable) {
       setSearchResults([]);
+      setIsSearching(false);
       return;
     }
 
@@ -213,9 +215,11 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       }
     }, 500);
 
+    // Cleanup function
     return () => {
       if (searchTimeoutRef.current) {
         clearTimeout(searchTimeoutRef.current);
+        searchTimeoutRef.current = null;
       }
     };
   }, [searchQuery, isSpotifyAvailable]);
@@ -575,7 +579,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           </a>
         </div>
 
-        {/* 🔧 FIX: Enhanced Search with loading state */}
+        {/* 🔧 FIX: Stable Search Input */}
         <div className="relative">
           <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
             isDarkMode ? 'text-pink-400' : 'text-pink-600'
@@ -599,7 +603,10 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           )}
           {searchQuery && !isSearching && (
             <button
-              onClick={() => setSearchQuery('')}
+              onClick={() => {
+                setSearchQuery('');
+                setSearchResults([]);
+              }}
               className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full transition-all duration-300 hover:scale-110 ${
                 isDarkMode ? 'hover:bg-gray-600 text-gray-300' : 'hover:bg-gray-200 text-gray-600'
               }`}
