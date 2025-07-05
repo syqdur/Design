@@ -546,31 +546,52 @@ export const disconnectSpotify = async (): Promise<void> => {
   try {
     console.log('🔌 Disconnecting Spotify...');
     
-    // Get credentials
-    const credentials = await getValidCredentials();
-    
-    if (credentials) {
-      console.log('🗑️ Removing credentials from Firebase...');
-      // Delete credentials from Firestore
-      await deleteDoc(doc(db, 'spotifyCredentials', credentials.id));
+    // Delete ALL credentials from Firestore (not just the first one)
+    try {
+      const credentialsQuery = query(collection(db, 'spotifyCredentials'));
+      const credentialsSnapshot = await getDocs(credentialsQuery);
+      
+      console.log(`🗑️ Found ${credentialsSnapshot.docs.length} credential documents to delete`);
+      
+      for (const credentialDoc of credentialsSnapshot.docs) {
+        console.log(`🗑️ Deleting credential: ${credentialDoc.id}`);
+        await deleteDoc(credentialDoc.ref);
+      }
+      
+      if (credentialsSnapshot.docs.length > 0) {
+        console.log('✅ All Spotify credentials removed from Firebase');
+      } else {
+        console.log('ℹ️ No Spotify credentials found in Firebase');
+      }
+    } catch (credentialError) {
+      console.error('Error removing credentials:', credentialError);
+      throw credentialError;
     }
     
     // Clear any cached tokens
     localStorage.removeItem(PKCE_CODE_VERIFIER_KEY);
     localStorage.removeItem(PKCE_STATE_KEY);
+    console.log('🧹 Cleared localStorage tokens');
     
     // Cleanup optimistic manager
     SnapshotOptimisticManager.getInstance().cleanup();
+    console.log('🧹 Cleaned up optimistic manager');
     
     // Clear any selected playlist data
     try {
       const playlistQuery = query(collection(db, 'selectedPlaylists'));
       const playlistDocs = await getDocs(playlistQuery);
       
+      console.log(`🗑️ Found ${playlistDocs.docs.length} playlist documents to delete`);
+      
       for (const playlistDoc of playlistDocs.docs) {
+        console.log(`🗑️ Deleting playlist: ${playlistDoc.id}`);
         await deleteDoc(playlistDoc.ref);
       }
-      console.log('🗑️ Removed selected playlist data');
+      
+      if (playlistDocs.docs.length > 0) {
+        console.log('✅ All selected playlist data removed');
+      }
     } catch (playlistError) {
       console.warn('Warning: Could not clear playlist data:', playlistError);
     }
