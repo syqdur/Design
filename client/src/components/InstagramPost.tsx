@@ -3,7 +3,7 @@ import { Heart, MessageCircle, MoreHorizontal, Trash2, Edit3, AlertTriangle, Map
 import { MediaItem, Comment, Like, MediaTag, LocationTag } from '../types';
 import { MediaTagging } from './MediaTagging';
 import { VideoThumbnail } from './VideoThumbnail';
-import { getMediaTags, getLocationTags } from '../services/firebaseService';
+import { getMediaTags, getLocationTags, removeLocationTag } from '../services/firebaseService';
 
 interface InstagramPostProps {
   item: MediaItem;
@@ -164,6 +164,29 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
   };
 
   const displayComments = showAllComments ? comments : comments.slice(0, 2);
+
+  // Handle location tag removal for admins
+  const handleRemoveLocationTag = async (locationTag: LocationTag, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent triggering the media click
+    
+    // Permission check: Only admins or media uploader can remove location tags
+    const canRemove = isAdmin || item.uploadedBy === userName;
+    
+    if (!canRemove) {
+      alert('Sie können nur Ihre eigenen Standort-Tags entfernen.');
+      return;
+    }
+    
+    if (confirm(`Standort-Tag "${locationTag.name}" entfernen?`)) {
+      try {
+        await removeLocationTag(locationTag.id);
+        await loadLocationTags(); // Reload location tags
+      } catch (error) {
+        console.error('Error removing location tag:', error);
+        alert('Fehler beim Entfernen des Standort-Tags. Bitte versuchen Sie es erneut.');
+      }
+    }
+  };
 
   // Generate beautiful wedding-themed avatar based on username
   const getAvatarUrl = (username: string, targetDeviceId?: string) => {
@@ -381,15 +404,22 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
           {/* Location Tags Overlay - positioned bottom-left */}
           {locationTags.length > 0 && (
             <div className="absolute bottom-4 left-4 flex flex-wrap gap-1 max-w-[60%] opacity-90 group-hover:opacity-100 transition-opacity duration-300">
-              {locationTags.map((locationTag) => (
-                <div
-                  key={locationTag.id}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-black/50 backdrop-blur-sm text-white border border-white/20"
-                >
-                  <MapPin className="w-3 h-3" />
-                  <span className="truncate max-w-24">{locationTag.name}</span>
-                </div>
-              ))}
+              {locationTags.map((locationTag) => {
+                const canRemove = isAdmin || item.uploadedBy === userName;
+                return (
+                  <div
+                    key={locationTag.id}
+                    onClick={canRemove ? (e) => handleRemoveLocationTag(locationTag, e) : undefined}
+                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-black/50 backdrop-blur-sm text-white border border-white/20 ${
+                      canRemove ? 'cursor-pointer hover:bg-red-500/50 hover:border-red-400/50 transition-colors duration-200' : ''
+                    }`}
+                    title={canRemove ? 'Klicken zum Entfernen' : locationTag.name}
+                  >
+                    <MapPin className="w-3 h-3" />
+                    <span className="truncate max-w-24">{locationTag.name}</span>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

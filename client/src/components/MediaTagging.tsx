@@ -300,14 +300,39 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
 
   return (
     <div className="py-2">
+      {/* Add Tag and Location Buttons - Only show for media uploader or admin */}
+      {(mediaUploader === currentUser || isAdmin) && (
+        <>
+          {!showTagInput && !showLocationInput && (
+            <div className="flex items-center gap-1 mb-3">
+              <button
+                onClick={() => setShowTagInput(true)}
+                className="flex items-center justify-center w-8 h-8 rounded-full text-xs bg-pink-500/20 hover:bg-pink-500/30 text-pink-500 dark:text-pink-500 border border-pink-500/30 dark:border-pink-500/30"
+                style={{ minHeight: '32px', minWidth: '32px' }}
+              >
+                <UserPlus className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setShowLocationInput(true)}
+                className="flex items-center justify-center w-8 h-8 rounded-full text-xs bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400 border border-green-300/30 dark:border-green-500/30 relative"
+                style={{ minHeight: '32px', minWidth: '32px' }}
+              >
+                <MapPin className="w-4 h-4" />
+                <span className="absolute -top-1 -right-1 text-[10px] font-bold">+</span>
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
       {/* Existing User Tags */}
       {tags.length > 0 && (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1 mt-2">
           {tags.map((tag) => (
             <div
               key={tag.id}
-              className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-xs font-medium bg-pink-500/20 text-pink-500 dark:text-pink-500 border border-pink-500/30 dark:border-pink-500/30"
-              style={{ minHeight: '22px', minWidth: '22px' }}
+              className="inline-flex items-center gap-0.5 px-2 py-1 rounded-full text-xs font-medium bg-pink-500/20 text-pink-500 dark:text-pink-500 border border-pink-500/30 dark:border-pink-500/30"
+              style={{ minHeight: '32px', minWidth: '32px' }}
             >
               <span className="truncate max-w-12 text-xs leading-none">{getUserDisplayName(tag.userName, tag.deviceId)}</span>
               {(tag.taggedBy === currentUser || isAdmin || (mediaUploader && mediaUploader === currentUser)) && (
@@ -326,29 +351,9 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
         </div>
       )}
 
-
-
-      {/* Add Tag and Location Buttons - Only show for media uploader or admin */}
+      {/* Input forms - Only show for media uploader or admin */}
       {(mediaUploader === currentUser || isAdmin) && (
         <>
-          {!showTagInput && !showLocationInput && (
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setShowTagInput(true)}
-                className="flex items-center justify-center w-5 h-5 rounded text-xs bg-pink-500/20 hover:bg-pink-500/30 text-pink-500 dark:text-pink-500 border border-pink-500/30 dark:border-pink-500/30"
-                style={{ minHeight: '22px', minWidth: '22px' }}
-              >
-                <UserPlus className="w-2.5 h-2.5" />
-              </button>
-              <button
-                onClick={() => setShowLocationInput(true)}
-                className="flex items-center justify-center w-5 h-5 rounded text-xs bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400 border border-green-300/30 dark:border-green-500/30"
-                style={{ minHeight: '22px', minWidth: '22px' }}
-              >
-                <MapPin className="w-2.5 h-2.5" />
-              </button>
-            </div>
-          )}
 
           {showTagInput && (
             <div className="p-3 rounded-xl bg-white/80 dark:bg-gray-900/95 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 shadow-xl">

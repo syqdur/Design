@@ -282,6 +282,13 @@ This is a comprehensive wedding gallery application with the following architect
 - **Mobile Header Redesign**: Condensed header layout with responsive text sizes (text-lg vs text-2xl), compact Bestenliste button showing "Liste" on mobile, and optimized spacing for small screens
 - **Touch-Optimized Interface**: Added touch-manipulation CSS classes and proper mobile button sizing throughout the challenges interface for better mobile user experience
 
+### January 5, 2025 (Geotag Admin Removal Feature)
+- **Clickable Location Tag Removal**: Implemented admin/owner geotag removal functionality - location tags displayed as overlays are now clickable for admins and media uploaders
+- **Permission-Based Click Handling**: Added proper permission checking so only admins or media uploaders can click location tags to remove them, with visual feedback through hover effects
+- **Consistent Cross-Component Implementation**: Applied clickable removal functionality to both InstagramPost and NotePost components for uniform behavior across all media types
+- **Enhanced User Experience**: Location tags now show red hover effects and "Klicken zum Entfernen" tooltip for authorized users, with confirmation dialogs before removal
+- **Event Propagation Prevention**: Added proper event handling to prevent location tag clicks from triggering media modal opening or other unintended interactions
+
 ### January 5, 2025 (Migration Complete & UI Updates)
 - **Replit Agent to Replit Migration**: Successfully completed migration from Replit Agent to Replit environment with all functionality preserved including Firebase integration, live user tracking, media uploads, comments, likes, stories, and music wishlist
 - **Purple to Pink Color Scheme**: Converted all purple UI elements throughout the application to slight pink colors for softer, more elegant appearance including buttons, gradients, shadows, borders, and text elements
