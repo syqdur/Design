@@ -353,9 +353,8 @@ export const NotePost: React.FC<NotePostProps> = ({
           <div className="space-y-2">
           {displayComments.map((comment) => {
             const canDeleteThisComment = isAdmin || comment.userName === userName;
-            const commentAvatarUrl = getUserAvatar 
-              ? getUserAvatar(comment.userName, comment.deviceId) 
-              : `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(comment.userName)}&backgroundColor=transparent`;
+            const customAvatar = getUserAvatar?.(comment.userName, comment.deviceId);
+            const commentAvatarUrl = customAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(comment.userName)}&backgroundColor=transparent`;
             
             return (
               <div key={comment.id} className="text-sm flex items-start gap-3 group">
@@ -422,7 +421,7 @@ export const NotePost: React.FC<NotePostProps> = ({
             <div className="flex items-center gap-3">
               <div className="w-6 h-6 rounded-full overflow-hidden">
                 <img 
-                  src={getAvatarUrl(userName, undefined)}
+                  src={getUserAvatar?.(userName) ?? getAvatarUrl(userName)}
                   alt={userName}
                   className="w-full h-full object-cover"
                 />

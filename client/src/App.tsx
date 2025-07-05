@@ -964,6 +964,7 @@ function App() {
         <TabNavigation 
           activeTab={activeTab}
           onTabChange={handleTabChange}
+          onUploadClick={() => setShowUploadOptions(true)}
           isDarkMode={isDarkMode}
           galleryEnabled={siteStatus?.galleryEnabled ?? true}
           musicWishlistEnabled={siteStatus?.musicWishlistEnabled ?? true}
@@ -974,35 +975,14 @@ function App() {
           isAdmin={isAdmin}
         />
 
-        {/* Mobile Upload Button - Safe Area */}
-        <div className="fixed z-40" style={{ 
-          bottom: 'max(200px, calc(200px + env(safe-area-inset-bottom)))',
-          right: '16px'
-        }}>
-          <button
-            onClick={() => setShowUploadOptions(true)}
-            className={`w-14 h-14 rounded-full shadow-xl flex items-center justify-center cursor-pointer transition-all duration-300 active:scale-95 btn-touch ${
-              isUploading ? 'animate-pulse' : ''
-            } bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700`}
-            style={{
-              boxShadow: isDarkMode 
-                ? '0 8px 25px rgba(236, 72, 153, 0.4)' 
-                : '0 8px 25px rgba(236, 72, 153, 0.3)'
-            }}
-            title="Foto teilen"
-          >
-            <Plus className="w-7 h-7 text-white" />
-          </button>
-        </div>
-
         {/* Upload Options Modal */}
         {showUploadOptions && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" style={{ alignItems: 'flex-start', paddingTop: '20vh' }}>
-            <div className={`w-full max-w-sm rounded-2xl p-6 ${
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className={`w-full max-w-md rounded-2xl p-6 ${
               isDarkMode 
-                ? 'bg-gray-800 border-gray-600' 
-                : 'bg-white border-gray-300'
-            } border shadow-2xl transform transition-all duration-300 animate-in zoom-in-95`}>
+                ? 'bg-gray-900 border-gray-700' 
+                : 'bg-white border-gray-200'
+            } border shadow-2xl transform transition-all duration-300 animate-in slide-in-from-bottom-4`}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className={`text-lg font-semibold ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
@@ -1144,11 +1124,11 @@ function App() {
         {/* Note Input Modal */}
         {showNoteInput && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className={`w-full max-w-md rounded-2xl p-6 glass-card ${
+            <div className={`w-full max-w-md rounded-2xl p-6 ${
               isDarkMode 
-                ? 'bg-gray-900/90 border-white/10' 
-                : 'bg-white/90 border-black/10'
-            } border transform transition-all duration-300 animate-in slide-in-from-bottom-4`}>
+                ? 'bg-gray-900 border-gray-700' 
+                : 'bg-white border-gray-200'
+            } border shadow-2xl transform transition-all duration-300 animate-in slide-in-from-bottom-4`}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className={`text-lg font-semibold ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
@@ -1222,14 +1202,14 @@ function App() {
         {/* Upload Progress Indicator */}
         {isUploading && (
           <div className="fixed top-20 left-4 right-4 z-50 max-w-sm mx-auto">
-            <div className="glass-card p-4 bg-green-500/20 border-green-500/30">
+            <div className="glass-card p-4 bg-pink-500/20 border-pink-500/30">
               <div className="flex items-center gap-3">
-                <div className="w-6 h-6 rounded-full border-2 border-green-500 border-t-transparent animate-spin"></div>
+                <div className="w-6 h-6 rounded-full border-2 border-pink-500 border-t-transparent animate-spin"></div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-green-500">Foto wird hochgeladen...</p>
+                  <p className="text-sm font-medium text-pink-500">Foto wird hochgeladen...</p>
                   <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
                     <div 
-                      className="bg-green-500 h-2 rounded-full transition-all duration-300"
+                      className="bg-pink-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${uploadProgress}%` }}
                     ></div>
                   </div>
@@ -1242,60 +1222,6 @@ function App() {
         {/* Tab Content */}
         {activeTab === 'gallery' && siteStatus?.galleryEnabled ? (
           <>
-            {/* Compact Welcome */}
-            <div className="px-3 py-3 text-center">
-              <h2 className={`text-sm font-medium mb-1 transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>
-                Teile deine Hochzeitsfotos! 🎉
-              </h2>
-              <p className={`text-xs mb-3 transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-400' : 'text-gray-600'
-              }`}>
-                Pink Button → Foto hochladen
-              </p>
-              
-              {/* Compact Stats */}
-              <div className="flex justify-center gap-6 text-center">
-                <div className="flex items-center gap-1">
-                  <span className={`text-lg font-bold transition-colors duration-300 ${
-                    isDarkMode ? 'text-pink-400' : 'text-pink-600'
-                  }`}>
-                    {mediaItems.length}
-                  </span>
-                  <span className={`text-xs transition-colors duration-300 ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}>
-                    Fotos
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className={`text-lg font-bold transition-colors duration-300 ${
-                    isDarkMode ? 'text-pink-400' : 'text-pink-600'
-                  }`}>
-                    {likes.length}
-                  </span>
-                  <span className={`text-xs transition-colors duration-300 ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}>
-                    Likes
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className={`text-lg font-bold transition-colors duration-300 ${
-                    isDarkMode ? 'text-pink-400' : 'text-pink-600'
-                  }`}>
-                    {comments.length}
-                  </span>
-                  <span className={`text-xs transition-colors duration-300 ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`}>
-                    Kommentare
-                  </span>
-                </div>
-              </div>
-            </div>
-
             {status && (
               <div className="px-4 py-2">
                 <p className={`text-sm text-center transition-colors duration-300 ${
@@ -1432,14 +1358,14 @@ function App() {
           {/* Admin Burger Menu Button */}
           <button
             onClick={() => setShowAdminMenu(!showAdminMenu)}
-            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center shadow-lg ring-2 ${
+            className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center shadow-lg ring-2 ${
               isDarkMode 
                 ? 'bg-gray-800/90 hover:bg-gray-700/90 backdrop-blur-sm ring-gray-600/40 hover:ring-gray-500/60' 
                 : 'bg-white/90 hover:bg-gray-50/90 backdrop-blur-sm ring-gray-300/40 hover:ring-gray-400/60'
             } ${showAdminMenu ? 'rotate-90' : ''}`}
             title="Admin-Menü"
           >
-            <Menu className={`w-4 h-4 sm:w-5 sm:h-5 transition-all duration-300 ${
+            <Menu className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-all duration-300 ${
               isDarkMode ? 'text-gray-300' : 'text-gray-600'
             }`} />
           </button>

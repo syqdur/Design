@@ -362,8 +362,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       {/* Compact Header */}
       <div className={`p-4 rounded-2xl transition-all duration-500 ${
         isDarkMode 
-          ? 'bg-green-900/20 border border-green-500/30 backdrop-blur-md shadow-xl shadow-pink-500/10' 
-          : 'bg-green-50/80 border border-pink-200 backdrop-blur-md shadow-lg shadow-pink-100'
+          ? 'bg-gray-900 border border-gray-700 shadow-2xl' 
+          : 'bg-white border border-gray-200 shadow-2xl'
       }`}>
 
         <div className="flex items-center justify-between mb-4">
@@ -371,13 +371,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
             <div className={`w-10 h-10 p-2 rounded-full ${
               isDarkMode ? 'bg-pink-500/20' : 'bg-pink-100'
             }`}>
-              <svg
-                viewBox="0 0 24 24"
-                className={`w-full h-full ${
-                  isDarkMode ? 'fill-green-300' : 'fill-green-600'
-                }`}
-              >
-                <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.5 14.424c-.2.32-.623.42-.943.223-2.587-1.581-5.845-1.94-9.68-1.063-.414.094-.83-.156-.924-.57-.094-.414.156-.83.57-.924 4.195-.96 7.744-.546 10.633 1.223.32.2.42.623.223.943zm1.35-3.005c-.25.4-.781.525-1.181.275-2.96-1.82-7.473-2.349-10.98-1.285-.518.157-1.066-.132-1.223-.65-.157-.518.132-1.066.65-1.223 4.009-1.22 9.068-.643 12.459 1.477.4.25.525.781.275 1.181zm.116-3.129c-3.547-2.106-9.395-2.301-12.78-1.273-.622.189-1.278-.164-1.467-.786-.189-.622.164-1.278.786-1.467 3.876-1.178 10.44-.964 14.564 1.473.513.304.681 1.026.377 1.539-.304.513-1.026.681-1.539.377z"/>
+              <svg viewBox="0 0 24 24" width="24" height="24">
+                <path fill="#ff69b4" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.5 14.424c-.2.32-.623.42-.943.223-2.587-1.581-5.845-1.94-9.68-1.063-.414.094-.83-.156-.924-.57-.094-.414.156-.83.57-.924 4.195-.96 7.744-.546 10.633 1.223.32.2.42.623.223.943zm1.35-3.005c-.25.4-.781.525-1.181.275-2.96-1.82-7.473-2.349-10.98-1.285-.518.157-1.066-.132-1.223-.65-.157-.518.132-1.066.65-1.223 4.009-1.22 9.068-.643 12.459 1.477.4.25.525.781.275 1.181zm.116-3.129c-3.547-2.106-9.395-2.301-12.78-1.273-.622.189-1.278-.164-1.467-.786-.189-.622.164-1.278.786-1.467 3.876-1.178 10.44-.964 14.564 1.473.513.304.681 1.026.377 1.539-.304.513-1.026.681-1.539.377z"/>
               </svg>
             </div>
             <div>
@@ -405,14 +400,14 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
             href={`https://open.spotify.com/playlist/${selectedPlaylist.playlistId}`}
             target="_blank"
             rel="noopener noreferrer"
-            className={`p-2 rounded-lg transition-all duration-300 hover:scale-105 ${
+            className={`p-px rounded-lg transition-all duration-300 hover:scale-105 flex items-center justify-center ${
               isDarkMode 
-                ? 'bg-green-600/20 hover:bg-pink-600/30 text-pink-300' 
+                ? 'bg-pink-600/20 hover:bg-pink-600/30 text-pink-300' 
                 : 'bg-pink-100 hover:bg-pink-200 text-pink-600'
             }`}
             title="In Spotify öffnen"
           >
-            <ExternalLink className="w-4 h-4" />
+            <ExternalLink className="w-2.5 h-2.5" />
           </a>
         </div>
 
@@ -426,7 +421,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Suche nach einem Song..."
-            className={`w-full pl-10 pr-10 py-3 rounded-full transition-all duration-300 focus:ring-2 focus:ring-green-500 outline-none text-sm ${
+            className={`w-full pl-10 pr-10 py-3 rounded-full transition-all duration-300 focus:ring-2 focus:ring-pink-500 outline-none text-sm ${
               isDarkMode 
                 ? 'bg-gray-800 text-white placeholder-gray-400 border border-green-500/30 focus:bg-gray-750 focus:border-pink-500' 
                 : 'bg-white text-gray-900 placeholder-gray-500 border border-pink-300 focus:bg-pink-50 focus:border-pink-500'
@@ -435,11 +430,11 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full transition-all duration-300 hover:scale-110 ${
+              className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-px rounded-full transition-all duration-300 hover:scale-110 ${
                 isDarkMode ? 'hover:bg-gray-600 text-gray-300' : 'hover:bg-gray-200 text-gray-600'
               }`}
             >
-              <X className="w-3 h-3" />
+              <X className="w-2.5 h-2.5" />
             </button>
           )}
         </div>
@@ -513,16 +508,16 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                 <button
                   onClick={() => handleAddTrack(track)}
                   disabled={isAddingTrack === track.id}
-                  className={`p-2 rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 ${
+                  className={`p-px rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 flex items-center justify-center ${
                     isDarkMode 
-                      ? 'bg-pink-500/20 hover:bg-pink-500/30 text-pink-400 shadow-lg shadow-pink-500/20' 
-                      : 'bg-pink-500 hover:bg-pink-600 text-white shadow-lg shadow-pink-500/30'
+                      ? 'bg-pink-500/20 hover:bg-pink-500/30 text-pink-400' 
+                      : 'bg-pink-500 hover:bg-pink-600 text-white'
                   }`}
                 >
                   {isAddingTrack === track.id ? (
-                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <RefreshCw className="w-2 h-2 animate-spin" />
                   ) : (
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-2 h-2" />
                   )}
                 </button>
               </div>
@@ -564,29 +559,29 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                   href={item.track.external_urls.spotify}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`p-2 rounded-full transition-all duration-300 hover:scale-110 ${
+                  className={`p-px rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center ${
                     isDarkMode 
-                      ? 'bg-pink-500/20 hover:bg-pink-500/30 text-pink-400 shadow-lg shadow-pink-500/20' 
-                      : 'bg-pink-500 hover:bg-pink-600 text-white shadow-lg shadow-pink-500/30'
+                      ? 'bg-pink-500/20 hover:bg-pink-500/30 text-pink-400' 
+                      : 'bg-pink-500 hover:bg-pink-600 text-white'
                   }`}
                   title="In Spotify öffnen"
                 >
-                  <ExternalLink className="w-3 h-3" />
+                  <ExternalLink className="w-2 h-2" />
                 </a>
                 {canDeleteTrack(item) && (
                   <button
                     onClick={() => handleRemoveTrack(item)}
                     disabled={isRemovingTrack === item.track.id}
-                    className={`p-2 rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 ${
+                    className={`p-px rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 flex items-center justify-center ${
                       isDarkMode 
-                        ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400 shadow-lg shadow-red-500/20' 
-                        : 'bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/30'
+                        ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400' 
+                        : 'bg-red-500 hover:bg-red-600 text-white'
                     }`}
                   >
                     {isRemovingTrack === item.track.id ? (
-                      <RefreshCw className="w-3 h-3 animate-spin" />
+                      <RefreshCw className="w-2 h-2 animate-spin" />
                     ) : (
-                      <Trash2 className="w-3 h-3" />
+                      <Trash2 className="w-2 h-2" />
                     )}
                   </button>
                 )}
