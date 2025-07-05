@@ -7,7 +7,8 @@ import {
   getUserPlaylists,
   saveSelectedPlaylist,
   getSelectedPlaylist,
-  getCurrentUser
+  getCurrentUser,
+  resetSpotifyCircuitBreaker
 } from '../services/spotifyService';
 
 interface SpotifyAdminProps {
@@ -75,11 +76,31 @@ export const SpotifyAdmin: React.FC<SpotifyAdminProps> = ({ isDarkMode }) => {
   // Connect to Spotify
   const handleConnect = async () => {
     try {
+      setError(null);
+      // Reset circuit breaker before attempting connection
+      await resetSpotifyCircuitBreaker();
       const authUrl = await getAuthorizationUrl();
       window.location.href = authUrl;
     } catch (error) {
       console.error('Failed to get authorization URL:', error);
       setError('Failed to initiate Spotify connection');
+    }
+  };
+
+  // Reset Spotify connection
+  const handleReset = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      console.log('🔄 Resetting Spotify connection...');
+      await resetSpotifyCircuitBreaker();
+      await checkConnectionStatus();
+    } catch (error) {
+      console.error('Failed to reset Spotify connection:', error);
+      setError('Failed to reset connection');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -181,17 +202,32 @@ export const SpotifyAdmin: React.FC<SpotifyAdminProps> = ({ isDarkMode }) => {
             </div>
           )}
 
-          <button
-            onClick={handleConnect}
-            className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 ${
-              isDarkMode 
-                ? 'bg-green-600 hover:bg-green-700 text-white' 
-                : 'bg-green-500 hover:bg-green-600 text-white'
-            }`}
-          >
-            <Music className="w-5 h-5" />
-            Connect to Spotify
-          </button>
+          <div className="space-y-3">
+            <button
+              onClick={handleConnect}
+              className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 ${
+                isDarkMode 
+                  ? 'bg-green-600 hover:bg-green-700 text-white' 
+                  : 'bg-green-500 hover:bg-green-600 text-white'
+              }`}
+            >
+              <Music className="w-5 h-5" />
+              Connect to Spotify
+            </button>
+            
+            <button
+              onClick={handleReset}
+              disabled={isLoading}
+              className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
+                isDarkMode 
+                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              } disabled:opacity-50`}
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              Reset Connection
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -391,27 +427,46 @@ export const SpotifyAdmin: React.FC<SpotifyAdminProps> = ({ isDarkMode }) => {
         )}
       </div>
 
-      {/* Disconnect Button */}
-      <button
-        onClick={handleDisconnect}
-        disabled={isDisconnecting}
-        className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-colors duration-300 ${
-          isDisconnecting
-            ? 'cursor-not-allowed opacity-50'
-            : ''
-        } ${
-          isDarkMode 
-            ? 'bg-red-600 hover:bg-red-700 text-white' 
-            : 'bg-red-500 hover:bg-red-600 text-white'
-        }`}
-      >
-        {isDisconnecting ? (
-          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-        ) : (
-          <LogOut className="w-5 h-5" />
-        )}
-        Disconnect Spotify
-      </button>
+      {/* Control Buttons */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <button
+          onClick={handleReset}
+          disabled={isLoading}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-colors duration-300 ${
+            isLoading
+              ? 'cursor-not-allowed opacity-50'
+              : ''
+          } ${
+            isDarkMode 
+              ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+              : 'bg-blue-500 hover:bg-blue-600 text-white'
+          }`}
+        >
+          <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
+          {isLoading ? 'Resetting...' : 'Reset Connection'}
+        </button>
+        
+        <button
+          onClick={handleDisconnect}
+          disabled={isDisconnecting}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-colors duration-300 ${
+            isDisconnecting
+              ? 'cursor-not-allowed opacity-50'
+              : ''
+          } ${
+            isDarkMode 
+              ? 'bg-red-600 hover:bg-red-700 text-white' 
+              : 'bg-red-500 hover:bg-red-600 text-white'
+          }`}
+        >
+          {isDisconnecting ? (
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          ) : (
+            <LogOut className="w-5 h-5" />
+          )}
+          Disconnect
+        </button>
+      </div>
     </div>
   );
 };
