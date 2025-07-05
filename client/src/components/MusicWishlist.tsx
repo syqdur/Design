@@ -1,68 +1,5 @@
-// 🔧 FIX: Enhanced duration formatting
-  const formatDuration = useCallback((ms: number) => {
-    const minutes = Math.floor(ms / 60000);
-    const seconds = Math.floor((ms % 60000) / 1000);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  }, []);
-
-  // 🎵 NEW: Preview button component
-  const PreviewButton: React.FC<{ 
-    track: any; 
-    size?: 'sm' | 'md';
-    variant?: 'search' | 'playlist';
-  }> = ({ track, size = 'md', variant = 'search' }) => {
-    const trackId = track.id;
-    const previewUrl = track.preview_url;
-    const isPlaying = currentPlayingTrack === trackId;
-    const isLoading = isLoadingAudio === trackId;
-    
-    if (!previewUrl) {
-      return (
-        <div className={`${size === 'sm' ? 'w-6 h-6' : 'w-8 h-8'} rounded-full flex items-center justify-center ${
-          isDarkMode ? 'bg-gray-600/20' : 'bg-gray-200/50'
-        }`} title="Keine Vorschau verfügbar">
-          <VolumeX className={`${size === 'sm' ? 'w-3 h-3' : 'w-4 h-4'} ${
-            isDarkMode ? 'text-gray-500' : 'text-gray-400'
-          }`} />
-        </div>
-      );
-    }
-    
-    return (
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          if (isPlaying) {
-            stopPreview();
-          } else {
-            playPreview(trackId, previewUrl);
-          }
-        }}
-        disabled={isLoading}
-        className={`${size === 'sm' ? 'w-6 h-6' : 'w-8 h-8'} rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center ${
-          variant === 'search' ? (
-            isDarkMode 
-              ? 'bg-blue-500/20 hover:bg-blue-500/30 text-blue-400' 
-              : 'bg-blue-500 hover:bg-blue-600 text-white'
-          ) : (
-            isDarkMode 
-              ? 'bg-green-500/20 hover:bg-green-500/30 text-green-400' 
-              : 'bg-green-500 hover:bg-green-600 text-white'
-          )
-        }`}
-        title={isPlaying ? 'Vorschau stoppen' : 'Vorschau abspielen'}
-      >
-        {isLoading ? (
-          <RefreshCw className={`${size === 'sm' ? 'w-3 h-3' : 'w-4 h-4'} animate-spin`} />
-        ) : isPlaying ? (
-          <Pause className={`${size === 'sm' ? 'w-3 h-3' : 'w-4 h-4'}`} />
-        ) : (
-          <Play className={`${size === 'sm' ? 'w-3 h-3' : 'w-4 h-4'}`} />
-        )}
-      </button>
-    );
-  };import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Music, Search, X, Plus, Trash2, ExternalLink, AlertCircle, RefreshCw, Check, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Music, Search, X, Plus, Trash2, ExternalLink, AlertCircle, RefreshCw, Check } from 'lucide-react';
 import { 
   searchTracks, 
   addTrackToPlaylist, 
@@ -121,11 +58,6 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
   // 🔧 FIX: Enhanced state management
   const [lastSnapshotId, setLastSnapshotId] = useState<string | null>(null);
   const [pendingOperations, setPendingOperations] = useState<number>(0);
-
-  // 🎵 NEW: Audio preview states
-  const [currentPlayingTrack, setCurrentPlayingTrack] = useState<string | null>(null);
-  const [audioRef, setAudioRef] = useState<HTMLAudioElement | null>(null);
-  const [isLoadingAudio, setIsLoadingAudio] = useState<string | null>(null);
 
   useEffect(() => {
     setIsAdmin(adminProp);
@@ -484,87 +416,12 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
     return ownership.addedByUser === currentUserName && ownership.addedByDeviceId === currentDeviceId;
   }, [isAdmin, songOwnerships]);
 
-  // 🎵 NEW: Audio preview functions
-  const playPreview = useCallback(async (trackId: string, previewUrl: string) => {
-    if (!previewUrl) return;
-    
-    try {
-      // Stop current audio if playing
-      if (audioRef) {
-        audioRef.pause();
-        audioRef.currentTime = 0;
-      }
-      
-      // If clicking the same track, just toggle
-      if (currentPlayingTrack === trackId) {
-        setCurrentPlayingTrack(null);
-        return;
-      }
-      
-      setIsLoadingAudio(trackId);
-      
-      // Create new audio element
-      const audio = new Audio(previewUrl);
-      audio.volume = 0.7;
-      
-      // Set up event listeners
-      audio.addEventListener('loadstart', () => {
-        setIsLoadingAudio(trackId);
-      });
-      
-      audio.addEventListener('canplay', () => {
-        setIsLoadingAudio(null);
-        setCurrentPlayingTrack(trackId);
-      });
-      
-      audio.addEventListener('ended', () => {
-        setCurrentPlayingTrack(null);
-        setAudioRef(null);
-      });
-      
-      audio.addEventListener('error', (e) => {
-        console.error('Audio error:', e);
-        setIsLoadingAudio(null);
-        setCurrentPlayingTrack(null);
-        setAudioRef(null);
-      });
-      
-      // Store reference and play
-      setAudioRef(audio);
-      await audio.play();
-      
-    } catch (error) {
-      console.error('Failed to play preview:', error);
-      setIsLoadingAudio(null);
-      setCurrentPlayingTrack(null);
-    }
-  }, [audioRef, currentPlayingTrack]);
-
-  const stopPreview = useCallback(() => {
-    if (audioRef) {
-      audioRef.pause();
-      audioRef.currentTime = 0;
-    }
-    setCurrentPlayingTrack(null);
-    setAudioRef(null);
-  }, [audioRef]);
-
   // 🔧 FIX: Enhanced duration formatting
   const formatDuration = useCallback((ms: number) => {
     const minutes = Math.floor(ms / 60000);
     const seconds = Math.floor((ms % 60000) / 1000);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }, []);
-
-  // 🎵 NEW: Cleanup audio on unmount
-  useEffect(() => {
-    return () => {
-      if (audioRef) {
-        audioRef.pause();
-        audioRef.currentTime = 0;
-      }
-    };
-  }, [audioRef]);
 
   // 🔧 FIX: Enhanced cleanup on unmount
   useEffect(() => {
@@ -586,14 +443,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       if (unsubscribeSnapshotRef.current) {
         unsubscribeSnapshotRef.current();
       }
-      
-      // 🎵 NEW: Stop audio on unmount
-      if (audioRef) {
-        audioRef.pause();
-        audioRef.currentTime = 0;
-      }
     };
-  }, [audioRef]);
+  }, []);
 
   if (!isSpotifyAvailable) {
     return (
@@ -820,7 +671,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
         </div>
       )}
 
-      {/* 🔧 FIX: Enhanced Search Results with Preview */}
+      {/* 🔧 FIX: Enhanced Search Results */}
       {searchResults.length > 0 && (
         <div className="space-y-2">
           {searchResults.map((track) => (
@@ -849,32 +700,28 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  {/* 🎵 NEW: Preview Button */}
-                  <PreviewButton track={track} variant="search" />
-                  <button
-                    onClick={() => handleAddTrack(track)}
-                    disabled={isAddingTrack === track.id}
-                    className={`w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center ${
-                      isDarkMode 
-                        ? 'bg-pink-500/20 hover:bg-pink-500/30 text-pink-400' 
-                        : 'bg-pink-500 hover:bg-pink-600 text-white'
-                    }`}
-                  >
-                    {isAddingTrack === track.id ? (
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Plus className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
+                <button
+                  onClick={() => handleAddTrack(track)}
+                  disabled={isAddingTrack === track.id}
+                  className={`w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center ${
+                    isDarkMode 
+                      ? 'bg-pink-500/20 hover:bg-pink-500/30 text-pink-400' 
+                      : 'bg-pink-500 hover:bg-pink-600 text-white'
+                  }`}
+                >
+                  {isAddingTrack === track.id ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Plus className="w-4 h-4" />
+                  )}
+                </button>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* 🔧 FIX: Enhanced Playlist Tracks with Preview */}
+      {/* 🔧 FIX: Enhanced Playlist Tracks */}
       <div className="space-y-2">
         {playlistTracks.map((item) => (
           <div key={`${item.track.id}-${item.added_at}`} className={`p-3 rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
@@ -903,8 +750,6 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {/* 🎵 NEW: Preview Button */}
-                <PreviewButton track={item.track} variant="playlist" size="sm" />
                 <a
                   href={item.track.external_urls.spotify}
                   target="_blank"
