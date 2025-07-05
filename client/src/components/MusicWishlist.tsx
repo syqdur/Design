@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Music, Search, X, Plus, Trash2, ExternalLink, AlertCircle, RefreshCw, Check } from 'lucide-react';
 import { 
   searchTracks, 
@@ -47,88 +47,25 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
   const [songOwnerships, setSongOwnerships] = useState<SongOwnership[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [syncStatus, setSyncStatus] = useState<'connecting' | 'live' | 'syncing' | 'error'>('connecting');
-  const [unsubscribeSnapshot, setUnsubscribeSnapshot] = useState<(() => void) | null>(null);
+  
+  // 🔧 FIX: Enhanced refs for cleanup
+  const unsubscribeSnapshotRef = useRef<(() => void) | null>(null);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const mountedRef = useRef(true);
+  
+  // 🔧 FIX: Enhanced state management
+  const [lastSnapshotId, setLastSnapshotId] = useState<string | null>(null);
+  const [pendingOperations, setPendingOperations] = useState<number>(0);
 
   useEffect(() => {
     setIsAdmin(adminProp);
   }, [adminProp]);
 
-  // Reload ownership data when playlist tracks change
-  useEffect(() => {
-    if (playlistTracks.length > 0 && selectedPlaylist) {
-      loadSongOwnerships();
-    }
-  }, [playlistTracks, selectedPlaylist]);
-
-  useEffect(() => {
-    const checkSpotify = async () => {
-      try {
-        setIsLoading(true);
-        setSyncStatus('connecting');
-
-        const connected = await isSpotifyConnected();
-        setIsSpotifyAvailable(connected);
-
-        if (connected) {
-          const playlist = await getSelectedPlaylist();
-          if (playlist) {
-            setSelectedPlaylist(playlist);
-            
-            const cleanup = subscribeToPlaylistUpdates(playlist.playlistId, async (tracks) => {
-              setPlaylistTracks(tracks);
-              setSyncStatus('live');
-              // Reload ownership data when tracks change
-              await loadSongOwnerships();
-            });
-
-            setUnsubscribeSnapshot(() => cleanup);
-            await loadSongOwnerships();
-          }
-        }
-      } catch (error) {
-        console.error('Failed to check Spotify:', error);
-        setError('Failed to load Spotify data');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkSpotify();
-
-    return () => {
-      if (unsubscribeSnapshot) {
-        unsubscribeSnapshot();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!searchQuery.trim() || !isSpotifyAvailable) {
-      setSearchResults([]);
-      return;
-    }
-
-    const timeoutId = setTimeout(async () => {
-      setIsSearching(true);
-      setError(null);
-
-      try {
-        const results = await searchTracks(searchQuery);
-        setSearchResults(results);
-      } catch (error) {
-        console.error('Search error:', error);
-        setError('Failed to search tracks');
-        setSearchResults([]);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery, isSpotifyAvailable]);
-
-  const loadSongOwnerships = async () => {
-    if (!selectedPlaylist) return;
+  // 🔧 FIX: Enhanced ownership data loading with debounce
+  const loadSongOwnerships = useCallback(async () => {
+    if (!selectedPlaylist || !mountedRef.current) return;
 
     try {
       const q = query(
@@ -142,13 +79,148 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
         ownerships.push({ id: doc.id, ...doc.data() } as SongOwnership);
       });
 
-      console.log(`🎵 Refreshed ${ownerships.length} song ownerships after tab switch`);
-      setSongOwnerships(ownerships);
+      if (mountedRef.current) {
+        console.log(`🎵 Refreshed ${ownerships.length} song ownerships`);
+        setSongOwnerships(ownerships);
+      }
     } catch (error) {
       console.error('Failed to load song ownerships:', error);
+      if (mountedRef.current) {
+        setError('Failed to load song data');
+      }
     }
-  };
+  }, [selectedPlaylist]);
 
+  // 🔧 FIX: Enhanced useEffect with proper dependencies
+  useEffect(() => {
+    if (playlistTracks.length > 0 && selectedPlaylist) {
+      // Debounce ownership loading
+      const timeoutId = setTimeout(() => {
+        loadSongOwnerships();
+      }, 300);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [playlistTracks, selectedPlaylist, loadSongOwnerships]);
+
+  // 🔧 FIX: Enhanced Spotify initialization
+  useEffect(() => {
+    const initializeSpotify = async () => {
+      if (!mountedRef.current) return;
+
+      try {
+        setIsLoading(true);
+        setSyncStatus('connecting');
+        setError(null);
+
+        const connected = await isSpotifyConnected();
+        
+        if (!mountedRef.current) return;
+        
+        setIsSpotifyAvailable(connected);
+
+        if (connected) {
+          const playlist = await getSelectedPlaylist();
+          
+          if (!mountedRef.current) return;
+          
+          if (playlist) {
+            setSelectedPlaylist(playlist);
+            
+            // 🔧 FIX: Enhanced subscription with error handling
+            const cleanup = subscribeToPlaylistUpdates(playlist.playlistId, (tracks) => {
+              if (!mountedRef.current) return;
+              
+              console.log('📋 Received tracks update:', tracks.length);
+              setPlaylistTracks(tracks);
+              setSyncStatus('live');
+              
+              // Update snapshot tracking
+              const currentSnapshot = getCurrentSnapshotId();
+              if (currentSnapshot !== lastSnapshotId) {
+                setLastSnapshotId(currentSnapshot);
+              }
+              
+              // Update pending operations count
+              const pendingCount = getPendingOperationsCount();
+              setPendingOperations(pendingCount);
+            });
+
+            unsubscribeSnapshotRef.current = cleanup;
+            
+            // Load initial ownership data
+            await loadSongOwnerships();
+          }
+        }
+      } catch (error) {
+        console.error('Failed to initialize Spotify:', error);
+        if (mountedRef.current) {
+          setError('Failed to load Spotify data');
+          setSyncStatus('error');
+        }
+      } finally {
+        if (mountedRef.current) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    initializeSpotify();
+
+    // 🔧 FIX: Enhanced cleanup
+    return () => {
+      if (unsubscribeSnapshotRef.current) {
+        unsubscribeSnapshotRef.current();
+        unsubscribeSnapshotRef.current = null;
+      }
+    };
+  }, [lastSnapshotId, loadSongOwnerships]);
+
+  // 🔧 FIX: Enhanced search with debounce and cleanup
+  useEffect(() => {
+    // Clear previous timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (!searchQuery.trim() || !isSpotifyAvailable) {
+      setSearchResults([]);
+      return;
+    }
+
+    searchTimeoutRef.current = setTimeout(async () => {
+      if (!mountedRef.current) return;
+      
+      setIsSearching(true);
+      setError(null);
+
+      try {
+        const results = await searchTracks(searchQuery);
+        
+        if (mountedRef.current) {
+          setSearchResults(results);
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+        if (mountedRef.current) {
+          setError('Failed to search tracks');
+          setSearchResults([]);
+        }
+      } finally {
+        if (mountedRef.current) {
+          setIsSearching(false);
+        }
+      }
+    }, 500);
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery, isSpotifyAvailable]);
+
+  // 🔧 FIX: Enhanced track song ownership
   const trackSongOwnership = async (trackId: string, spotifyTrackUri: string) => {
     if (!selectedPlaylist) return;
 
@@ -167,36 +239,53 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
         playlistId: selectedPlaylist.playlistId
       };
 
-      await addDoc(collection(db, 'songOwnerships'), ownership);
-      setSongOwnerships(prev => [...prev, { ...ownership, id: Date.now().toString() }]);
+      const docRef = await addDoc(collection(db, 'songOwnerships'), ownership);
+      
+      if (mountedRef.current) {
+        setSongOwnerships(prev => [...prev, { ...ownership, id: docRef.id }]);
+      }
     } catch (error) {
       console.error('Failed to track song ownership:', error);
     }
   };
 
+  // 🔧 FIX: Enhanced remove song ownership
   const removeSongOwnership = async (trackId: string) => {
     try {
       const ownership = songOwnerships.find(o => o.trackId === trackId);
       if (ownership) {
         await deleteDoc(doc(db, 'songOwnerships', ownership.id));
-        setSongOwnerships(prev => prev.filter(o => o.id !== ownership.id));
+        
+        if (mountedRef.current) {
+          setSongOwnerships(prev => prev.filter(o => o.id !== ownership.id));
+        }
       }
     } catch (error) {
       console.error('Failed to remove song ownership:', error);
     }
   };
 
+  // 🔧 FIX: Enhanced add track with better error handling
   const handleAddTrack = async (track: SpotifyTrack) => {
     if (isAddingTrack) return;
 
-    // Check if track is already in the playlist
+    // 🔧 FIX: Enhanced duplicate check
     const isTrackAlreadyInPlaylist = playlistTracks.some(playlistTrack => 
       playlistTrack.track?.id === track.id
     );
 
     if (isTrackAlreadyInPlaylist) {
-      setError('Dieser Song ist bereits in der Playlist vorhanden.');
-      setTimeout(() => setError(null), 3000);
+      const errorMessage = 'Dieser Song ist bereits in der Playlist vorhanden.';
+      setError(errorMessage);
+      
+      if (errorTimeoutRef.current) {
+        clearTimeout(errorTimeoutRef.current);
+      }
+      errorTimeoutRef.current = setTimeout(() => {
+        if (mountedRef.current) {
+          setError(null);
+        }
+      }, 3000);
       return;
     }
 
@@ -205,30 +294,52 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
     setSyncStatus('syncing');
 
     try {
+      // 🔧 FIX: Enhanced add operation
       await addTrackToPlaylist(track.uri);
       await trackSongOwnership(track.id, track.uri);
 
-      setShowAddSuccess(true);
-      setTimeout(() => setShowAddSuccess(false), 2000);
-
-      setSearchQuery('');
-      setSearchResults([]);
+      if (mountedRef.current) {
+        setShowAddSuccess(true);
+        setSearchQuery('');
+        setSearchResults([]);
+        
+        // Clear success message after delay
+        if (successTimeoutRef.current) {
+          clearTimeout(successTimeoutRef.current);
+        }
+        successTimeoutRef.current = setTimeout(() => {
+          if (mountedRef.current) {
+            setShowAddSuccess(false);
+          }
+        }, 2000);
+      }
     } catch (error: any) {
       console.error('Failed to add track:', error);
 
-      if (error.requiresReauth || (error.status === 403 && error.message?.includes('Insufficient'))) {
-        setError('Spotify permissions insufficient. Please disconnect and reconnect to grant full access.');
-      } else {
-        setError('Failed to add track to playlist: ' + (error.message || 'Unknown error'));
-      }
+      if (mountedRef.current) {
+        if (error.requiresReauth || (error.status === 403 && error.message?.includes('Insufficient'))) {
+          setError('Spotify permissions insufficient. Please disconnect and reconnect to grant full access.');
+        } else {
+          setError('Failed to add track to playlist: ' + (error.message || 'Unknown error'));
+        }
 
-      setSyncStatus('error');
-      setTimeout(() => setSyncStatus('live'), 3000);
+        setSyncStatus('error');
+        
+        // Reset sync status after delay
+        setTimeout(() => {
+          if (mountedRef.current) {
+            setSyncStatus('live');
+          }
+        }, 3000);
+      }
     } finally {
-      setIsAddingTrack(null);
+      if (mountedRef.current) {
+        setIsAddingTrack(null);
+      }
     }
   };
 
+  // 🔧 FIX: Enhanced remove track with better error handling
   const handleRemoveTrack = async (track: any) => {
     if (isRemovingTrack) return;
 
@@ -245,15 +356,26 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       await removeSongOwnership(track.track.id);
     } catch (error: any) {
       console.error('Failed to remove track:', error);
-      setError('Failed to remove track from playlist: ' + (error.message || 'Unknown error'));
-      setSyncStatus('error');
-      setTimeout(() => setSyncStatus('live'), 3000);
+      
+      if (mountedRef.current) {
+        setError('Failed to remove track from playlist: ' + (error.message || 'Unknown error'));
+        setSyncStatus('error');
+        
+        setTimeout(() => {
+          if (mountedRef.current) {
+            setSyncStatus('live');
+          }
+        }, 3000);
+      }
     } finally {
-      setIsRemovingTrack(null);
+      if (mountedRef.current) {
+        setIsRemovingTrack(null);
+      }
     }
   };
 
-  const canDeleteTrack = (track: any) => {
+  // 🔧 FIX: Enhanced permission check
+  const canDeleteTrack = useCallback((track: any) => {
     if (isAdmin) {
       return true;
     }
@@ -271,13 +393,37 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
     }
 
     return ownership.addedByUser === currentUserName && ownership.addedByDeviceId === currentDeviceId;
-  };
+  }, [isAdmin, songOwnerships]);
 
-  const formatDuration = (ms: number) => {
+  // 🔧 FIX: Enhanced duration formatting
+  const formatDuration = useCallback((ms: number) => {
     const minutes = Math.floor(ms / 60000);
     const seconds = Math.floor((ms % 60000) / 1000);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
+  }, []);
+
+  // 🔧 FIX: Enhanced cleanup on unmount
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      
+      // Clear all timeouts
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current);
+      }
+      if (errorTimeoutRef.current) {
+        clearTimeout(errorTimeoutRef.current);
+      }
+      
+      // Clear subscription
+      if (unsubscribeSnapshotRef.current) {
+        unsubscribeSnapshotRef.current();
+      }
+    };
+  }, []);
 
   if (!isSpotifyAvailable) {
     return (
@@ -359,13 +505,12 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
 
   return (
     <div className="mx-4 my-6 space-y-4">
-      {/* Compact Header */}
+      {/* 🔧 FIX: Enhanced Header with Sync Status */}
       <div className={`p-4 rounded-2xl transition-all duration-500 ${
         isDarkMode 
           ? 'bg-gray-900 border border-gray-700 shadow-2xl' 
           : 'bg-white border border-gray-200 shadow-2xl'
       }`}>
-
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 p-2 rounded-full ${
@@ -385,14 +530,33 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                 <span className={isDarkMode ? 'text-white/70' : 'text-gray-600'}>
                   {playlistTracks.length} Songs
                 </span>
+                {/* 🔧 FIX: Enhanced sync status indicator */}
                 <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
-                  syncStatus === 'live' ? 'bg-pink-500/20 text-pink-400' : 'bg-gray-500/20 text-gray-400'
+                  syncStatus === 'live' ? 'bg-green-500/20 text-green-400' : 
+                  syncStatus === 'syncing' ? 'bg-yellow-500/20 text-yellow-400' :
+                  syncStatus === 'error' ? 'bg-red-500/20 text-red-400' :
+                  'bg-gray-500/20 text-gray-400'
                 }`}>
                   <div className={`w-1.5 h-1.5 rounded-full ${
-                    syncStatus === 'live' ? 'bg-green-400' : 'bg-gray-400'
+                    syncStatus === 'live' ? 'bg-green-400' : 
+                    syncStatus === 'syncing' ? 'bg-yellow-400 animate-pulse' :
+                    syncStatus === 'error' ? 'bg-red-400' :
+                    'bg-gray-400'
                   }`}></div>
-                  <span>{syncStatus === 'live' ? 'Live' : 'Offline'}</span>
+                  <span>
+                    {syncStatus === 'live' ? 'Live' : 
+                     syncStatus === 'syncing' ? 'Syncing...' :
+                     syncStatus === 'error' ? 'Error' :
+                     'Offline'}
+                  </span>
                 </div>
+                {/* 🔧 FIX: Pending operations indicator */}
+                {pendingOperations > 0 && (
+                  <div className="flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400">
+                    <RefreshCw className="w-3 h-3 animate-spin" />
+                    <span>{pendingOperations} pending</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -400,18 +564,18 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
             href={`https://open.spotify.com/playlist/${selectedPlaylist.playlistId}`}
             target="_blank"
             rel="noopener noreferrer"
-            className={`p-px rounded-lg transition-all duration-300 hover:scale-105 flex items-center justify-center ${
+            className={`p-2 rounded-lg transition-all duration-300 hover:scale-105 flex items-center justify-center ${
               isDarkMode 
                 ? 'bg-pink-600/20 hover:bg-pink-600/30 text-pink-300' 
                 : 'bg-pink-100 hover:bg-pink-200 text-pink-600'
             }`}
             title="In Spotify öffnen"
           >
-            <ExternalLink className="w-2.5 h-2.5" />
+            <ExternalLink className="w-4 h-4" />
           </a>
         </div>
 
-        {/* Compact Search */}
+        {/* 🔧 FIX: Enhanced Search with loading state */}
         <div className="relative">
           <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
             isDarkMode ? 'text-pink-400' : 'text-pink-600'
@@ -421,34 +585,41 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Suche nach einem Song..."
-            className={`w-full pl-10 pr-10 py-3 rounded-full transition-all duration-300 focus:ring-2 focus:ring-pink-500 outline-none text-sm ${
+            disabled={isLoading}
+            className={`w-full pl-10 pr-10 py-3 rounded-full transition-all duration-300 focus:ring-2 focus:ring-pink-500 outline-none text-sm disabled:opacity-50 ${
               isDarkMode 
-                ? 'bg-gray-800 text-white placeholder-gray-400 border border-green-500/30 focus:bg-gray-750 focus:border-pink-500' 
+                ? 'bg-gray-800 text-white placeholder-gray-400 border border-gray-600/30 focus:bg-gray-750 focus:border-pink-500' 
                 : 'bg-white text-gray-900 placeholder-gray-500 border border-pink-300 focus:bg-pink-50 focus:border-pink-500'
             }`}
           />
-          {searchQuery && (
+          {isSearching && (
+            <div className="absolute right-10 top-1/2 transform -translate-y-1/2">
+              <RefreshCw className="w-4 h-4 animate-spin text-pink-500" />
+            </div>
+          )}
+          {searchQuery && !isSearching && (
             <button
               onClick={() => setSearchQuery('')}
-              className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-px rounded-full transition-all duration-300 hover:scale-110 ${
+              className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full transition-all duration-300 hover:scale-110 ${
                 isDarkMode ? 'hover:bg-gray-600 text-gray-300' : 'hover:bg-gray-200 text-gray-600'
               }`}
             >
-              <X className="w-2.5 h-2.5" />
+              <X className="w-3 h-3" />
             </button>
           )}
         </div>
       </div>
-      {/* Success Message with Instagram 2.0 Style */}
+
+      {/* 🔧 FIX: Enhanced Success Message */}
       {showAddSuccess && (
         <div className={`p-4 rounded-2xl backdrop-blur-sm transition-all duration-500 ${
           isDarkMode 
-            ? 'bg-pink-500/20 border border-green-400/30 text-pink-300' 
-            : 'bg-pink-100/80 border border-pink-300/50 text-pink-700'
+            ? 'bg-green-500/20 border border-green-400/30 text-green-300' 
+            : 'bg-green-100/80 border border-green-300/50 text-green-700'
         }`}>
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-full ${
-              isDarkMode ? 'bg-green-400/20' : 'bg-pink-500/20'
+              isDarkMode ? 'bg-green-400/20' : 'bg-green-500/20'
             }`}>
               <Check className="w-4 h-4" />
             </div>
@@ -456,7 +627,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           </div>
         </div>
       )}
-      {/* Error Message with Instagram 2.0 Style */}
+
+      {/* 🔧 FIX: Enhanced Error Message */}
       {error && (
         <div className={`p-4 rounded-2xl backdrop-blur-sm transition-all duration-500 ${
           isDarkMode 
@@ -473,7 +645,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           </div>
         </div>
       )}
-      {/* Compact Search Results */}
+
+      {/* 🔧 FIX: Enhanced Search Results */}
       {searchResults.length > 0 && (
         <div className="space-y-2">
           {searchResults.map((track) => (
@@ -505,7 +678,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                 <button
                   onClick={() => handleAddTrack(track)}
                   disabled={isAddingTrack === track.id}
-                  className={`w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 flex items-center justify-center ${
+                  className={`w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center ${
                     isDarkMode 
                       ? 'bg-pink-500/20 hover:bg-pink-500/30 text-pink-400' 
                       : 'bg-pink-500 hover:bg-pink-600 text-white'
@@ -522,10 +695,11 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           ))}
         </div>
       )}
-      {/* Compact Playlist Tracks */}
+
+      {/* 🔧 FIX: Enhanced Playlist Tracks */}
       <div className="space-y-2">
         {playlistTracks.map((item) => (
-          <div key={item.track.id} className={`p-3 rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
+          <div key={`${item.track.id}-${item.added_at}`} className={`p-3 rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
             isDarkMode 
               ? 'bg-gray-900 border border-pink-500/20 hover:bg-gray-800 hover:border-pink-500/40 shadow-lg shadow-pink-500/5' 
               : 'bg-white border border-pink-200 hover:bg-pink-50 hover:border-pink-300 shadow-md shadow-pink-100'
@@ -555,7 +729,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                   href={item.track.external_urls.spotify}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center hover:bg-pink-600 text-white bg-[#e34b8cab]"
+                  className="w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center hover:bg-pink-600 text-white bg-pink-500/80"
                   title="In Spotify öffnen"
                 >
                   <ExternalLink className="w-4 h-4" />
@@ -564,7 +738,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                   <button
                     onClick={() => handleRemoveTrack(item)}
                     disabled={isRemovingTrack === item.track.id}
-                    className={`w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 flex items-center justify-center ${
+                    className={`w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center ${
                       isDarkMode 
                         ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400' 
                         : 'bg-red-500 hover:bg-red-600 text-white'
@@ -582,14 +756,16 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           </div>
         ))}
       </div>
+
+      {/* 🔧 FIX: Enhanced Empty State */}
       {playlistTracks.length === 0 && !isLoading && (
         <div className={`text-center py-8 rounded-2xl ${
           isDarkMode 
-            ? 'bg-gray-900 border border-green-500/20 shadow-lg shadow-pink-500/5' 
+            ? 'bg-gray-900 border border-pink-500/20 shadow-lg shadow-pink-500/5' 
             : 'bg-white border border-pink-200 shadow-md shadow-pink-100'
         }`}>
           <Music className={`w-16 h-16 mx-auto mb-4 ${
-            isDarkMode ? 'text-pink-400' : 'text-green-500'
+            isDarkMode ? 'text-pink-400' : 'text-pink-500'
           }`} />
           <p className={`text-lg font-medium ${
             isDarkMode ? 'text-white/80' : 'text-gray-700'
