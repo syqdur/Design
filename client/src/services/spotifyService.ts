@@ -39,6 +39,14 @@ class SpotifyCircuitBreaker {
     this.circuitOpen = false;
   }
   
+  resetCircuitBreaker(): void {
+    console.log('🔄 Manual circuit breaker reset - clearing all failures');
+    this.consecutiveFailures = 0;
+    this.circuitOpen = false;
+    this.lastFailureTime = 0;
+    this.requestTimes = [];
+  }
+  
   recordFailure(): void {
     this.consecutiveFailures++;
     this.lastFailureTime = Date.now();
@@ -1215,4 +1223,9 @@ export const getCurrentSnapshotId = (): string | null => {
 
 export const getPendingOperationsCount = (): number => {
   return SnapshotOptimisticManager.getInstance().getPendingOperationsCount();
+};
+
+// Export circuit breaker reset function
+export const resetSpotifyCircuitBreaker = (): void => {
+  SpotifyCircuitBreaker.getInstance().resetCircuitBreaker();
 };

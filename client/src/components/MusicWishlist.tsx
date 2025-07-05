@@ -11,7 +11,8 @@ import {
   subscribeToPlaylistUpdates,
   bulkRemoveTracksFromPlaylist,
   getCurrentSnapshotId,
-  getPendingOperationsCount
+  getPendingOperationsCount,
+  resetSpotifyCircuitBreaker
 } from '../services/spotifyService';
 import { SpotifyTrack } from '../types';
 import { getUserName, getDeviceId } from '../utils/deviceId';
@@ -68,6 +69,9 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       try {
         setIsLoading(true);
         setSyncStatus('connecting');
+
+        // Reset circuit breaker on component mount to clear any stuck state
+        resetSpotifyCircuitBreaker();
 
         const connected = await isSpotifyConnected();
         setIsSpotifyAvailable(connected);
