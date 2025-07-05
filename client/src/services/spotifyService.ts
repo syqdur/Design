@@ -369,9 +369,8 @@ class SnapshotOptimisticManager {
       console.log('Current Snapshot:', this.lastSnapshotId);
       console.log('Pending Operations:', this.pendingOperations.size);
       
-      // 🎵 NEW: Include preview_url in sync requests
       const response = await makeSpotifyApiCall(
-        `https://api.spotify.com/v1/playlists/${this.playlistId}?fields=snapshot_id,tracks.items(track(id,name,artists,album,duration_ms,external_urls,uri,preview_url),added_at,added_by)`
+        `https://api.spotify.com/v1/playlists/${this.playlistId}?fields=snapshot_id,tracks.items(track(id,name,artists,album,duration_ms,external_urls,uri),added_at,added_by)`
       );
       
       const data = await response.json();
@@ -841,7 +840,6 @@ export const searchTracks = async (query: string): Promise<SpotifyTrack[]> => {
       return [];
     }
     
-    // 🎵 NEW: Include preview_url in track data
     return data.tracks.items.map((track: any) => ({
       id: track.id,
       name: track.name,
@@ -850,8 +848,7 @@ export const searchTracks = async (query: string): Promise<SpotifyTrack[]> => {
         name: track.album.name,
         images: track.album.images
       },
-      uri: track.uri,
-      preview_url: track.preview_url // Add preview URL for audio playback
+      uri: track.uri
     })).filter((track: SpotifyTrack) => track.id && track.name); // Filter out invalid tracks
   } catch (error) {
     console.error('Failed to search tracks:', error);
