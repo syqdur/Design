@@ -176,7 +176,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
     };
   }, [lastSnapshotId, loadSongOwnerships]);
 
-  // 🔧 FIX: Enhanced search with debounce and cleanup
+  // 🔧 FIX: Simplified search with stable dependencies
   useEffect(() => {
     // Clear previous timeout
     if (searchTimeoutRef.current) {
@@ -184,14 +184,23 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       searchTimeoutRef.current = null;
     }
 
-    if (!searchQuery.trim() || !isSpotifyAvailable) {
+    // Handle empty search
+    if (!searchQuery.trim()) {
       setSearchResults([]);
       setIsSearching(false);
       return;
     }
 
+    // Handle Spotify not available
+    if (!isSpotifyAvailable) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    // Start search with debounce
     searchTimeoutRef.current = setTimeout(async () => {
-      if (!mountedRef.current) return;
+      if (!mountedRef.current || !searchQuery.trim()) return;
       
       setIsSearching(true);
       setError(null);
@@ -213,7 +222,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           setIsSearching(false);
         }
       }
-    }, 500);
+    }, 300); // Reduced debounce time
 
     // Cleanup function
     return () => {
@@ -222,7 +231,15 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
         searchTimeoutRef.current = null;
       }
     };
-  }, [searchQuery, isSpotifyAvailable]);
+  }, [searchQuery]); // Only depend on searchQuery
+
+  // Separate effect for Spotify availability
+  useEffect(() => {
+    if (!isSpotifyAvailable && searchResults.length > 0) {
+      setSearchResults([]);
+      setIsSearching(false);
+    }
+  }, [isSpotifyAvailable, searchResults.length]);
 
   // 🔧 FIX: Enhanced track song ownership
   const trackSongOwnership = async (trackId: string, spotifyTrackUri: string) => {
@@ -579,9 +596,9 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           </a>
         </div>
 
-        {/* 🔧 FIX: Stable Search Input */}
+        {/* 🔧 FIX: Completely Stable Search Input */}
         <div className="relative">
-          <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
+          <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-200 ${
             isDarkMode ? 'text-pink-400' : 'text-pink-600'
           }`} />
           <input
@@ -589,12 +606,12 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Suche nach einem Song..."
-            disabled={isLoading}
-            className={`w-full pl-10 pr-10 py-3 rounded-full transition-all duration-300 focus:ring-2 focus:ring-pink-500 outline-none text-sm disabled:opacity-50 ${
+            disabled={!isSpotifyAvailable}
+            className={`w-full pl-10 pr-10 py-3 rounded-full outline-none text-sm transition-colors duration-200 ${
               isDarkMode 
-                ? 'bg-gray-800 text-white placeholder-gray-400 border border-gray-600/30 focus:bg-gray-750 focus:border-pink-500' 
-                : 'bg-white text-gray-900 placeholder-gray-500 border border-pink-300 focus:bg-pink-50 focus:border-pink-500'
-            }`}
+                ? 'bg-gray-800 text-white placeholder-gray-400 border border-gray-600/30 focus:border-pink-500' 
+                : 'bg-white text-gray-900 placeholder-gray-500 border border-pink-300 focus:border-pink-500'
+            } ${!isSpotifyAvailable ? 'opacity-50 cursor-not-allowed' : ''}`}
           />
           {isSearching && (
             <div className="absolute right-10 top-1/2 transform -translate-y-1/2">
@@ -603,11 +620,12 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           )}
           {searchQuery && !isSearching && (
             <button
+              type="button"
               onClick={() => {
                 setSearchQuery('');
                 setSearchResults([]);
               }}
-              className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full transition-all duration-300 hover:scale-110 ${
+              className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full transition-all duration-200 hover:scale-110 ${
                 isDarkMode ? 'hover:bg-gray-600 text-gray-300' : 'hover:bg-gray-200 text-gray-600'
               }`}
             >
