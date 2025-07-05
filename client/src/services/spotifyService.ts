@@ -2,6 +2,86 @@ import { collection, addDoc, getDocs, query, where, deleteDoc, doc, updateDoc } 
 import { db } from '../config/firebase';
 import { SpotifyCredentials, SelectedPlaylist, SpotifyTrack } from '../types';
 import { generateCodeVerifier, generateCodeChallenge } from '../utils/pkce';
+import { spotifyCache } from './spotifyCache';
+
+// 🔧 CIRCUIT BREAKER: Spotify rate limit protection with exponential backoff
+class SpotifyCircuitBreaker {
+  private static instance: SpotifyCircuitBreaker;
+  private requestTimes: number[] = [];
+  private readonly maxRequestsPer30Seconds = 50; // Very conservative limit
+  private consecutiveFailures = 0;
+  private lastFailureTime = 0;
+  private circuitOpen = false;
+  private readonly failureThreshold = 3;
+  private readonly openCircuitDuration = 300000; // 5 minutes
+  
+  static getInstance(): SpotifyCircuitBreaker {
+    if (!SpotifyCircuitBreaker.instance) {
+      SpotifyCircuitBreaker.instance = new SpotifyCircuitBreaker();
+    }
+    return SpotifyCircuitBreaker.instance;
+  }
+  
+  isCircuitOpen(): boolean {
+    if (this.circuitOpen) {
+      const now = Date.now();
+      if (now - this.lastFailureTime > this.openCircuitDuration) {
+        console.log('🔄 Circuit breaker: Attempting to close circuit after cooldown');
+        this.circuitOpen = false;
+        this.consecutiveFailures = 0;
+      }
+    }
+    return this.circuitOpen;
+  }
+  
+  recordSuccess(): void {
+    this.consecutiveFailures = 0;
+    this.circuitOpen = false;
+  }
+  
+  recordFailure(): void {
+    this.consecutiveFailures++;
+    this.lastFailureTime = Date.now();
+    
+    if (this.consecutiveFailures >= this.failureThreshold) {
+      this.circuitOpen = true;
+      console.log(`🚫 Circuit breaker OPEN: Too many failures (${this.consecutiveFailures}). Waiting 5 minutes.`);
+    }
+  }
+  
+  async waitIfNeeded(): Promise<void> {
+    if (this.isCircuitOpen()) {
+      const waitTime = this.openCircuitDuration - (Date.now() - this.lastFailureTime);
+      throw new Error(`Circuit breaker open. Spotify API temporarily disabled. Wait ${Math.ceil(waitTime/60000)} minutes.`);
+    }
+    
+    const now = Date.now();
+    const thirtySecondsAgo = now - 30000;
+    
+    // Remove requests older than 30 seconds
+    this.requestTimes = this.requestTimes.filter(time => time > thirtySecondsAgo);
+    
+    // If we're at the limit, wait until we can make another request
+    if (this.requestTimes.length >= this.maxRequestsPer30Seconds) {
+      const oldestRequest = this.requestTimes[0];
+      const waitTime = (oldestRequest + 30000) - now + 5000; // Add 5 second buffer
+      
+      if (waitTime > 0) {
+        console.log(`⏳ Conservative rate limiting: waiting ${waitTime}ms before next Spotify API call`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
+    }
+    
+    // Record this request
+    this.requestTimes.push(Date.now());
+  }
+  
+  getRequestsInLast30Seconds(): number {
+    const thirtySecondsAgo = Date.now() - 30000;
+    this.requestTimes = this.requestTimes.filter(time => time > thirtySecondsAgo);
+    return this.requestTimes.length;
+  }
+}
 
 // Spotify API Configuration
 const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || '4dbf85a8ca7c43d3b2ddc540194e9387';
@@ -287,56 +367,16 @@ class SnapshotOptimisticManager {
     console.log('✅ Operation reverted with state validation');
   }
 
-  // 🔧 FIX: Race condition safe polling
+  // 🔧 DISABLED: Polling disabled to prevent rate limiting
   private startSmartPolling(): void {
+    console.log('⚠️ Smart polling disabled to prevent Spotify rate limiting');
+    
     if (this.syncInterval) {
       clearInterval(this.syncInterval);
+      this.syncInterval = null;
     }
-
-    let pollInterval = 2000;
-    let consecutiveNoChanges = 0;
-
-    const poll = async () => {
-      try {
-        // Skip polling if sync is locked
-        if (this.syncLock) {
-          console.log('⏸️ Skipping poll - sync locked');
-          this.syncInterval = setTimeout(poll, pollInterval);
-          return;
-        }
-
-        const hasChanges = await this.checkForUpdates();
-        
-        if (hasChanges) {
-          pollInterval = 2000;
-          consecutiveNoChanges = 0;
-        } else {
-          consecutiveNoChanges++;
-          
-          if (consecutiveNoChanges >= 3) {
-            // 🔧 FIX: Better backoff calculation
-            pollInterval = Math.min(pollInterval * 1.2, 30000);
-          }
-        }
-        
-        // 🔧 FIX: Adjust interval based on error rate
-        if (this.consecutiveErrors > 0) {
-          pollInterval = Math.min(pollInterval * (1 + this.consecutiveErrors * 0.5), 60000);
-        }
-        
-        this.syncInterval = setTimeout(poll, pollInterval);
-        
-      } catch (error) {
-        console.warn('Smart polling error:', error);
-        this.consecutiveErrors++;
-        
-        // 🔧 FIX: Exponential backoff on errors
-        const errorDelay = Math.min(this.baseDelay * Math.pow(2, this.consecutiveErrors), 30000);
-        this.syncInterval = setTimeout(poll, errorDelay);
-      }
-    };
-
-    poll();
+    
+    // Only sync manually when needed to avoid 429 errors
   }
 
   // 🔧 FIX: Enhanced sync with race condition prevention
@@ -494,7 +534,7 @@ class SnapshotOptimisticManager {
 // 🔧 FIX: Enhanced retry mechanism
 class RetryManager {
   private maxRetries = 3;
-  private baseDelay = 1000;
+  private baseDelay = 5000; // Increased to 5 seconds as per Spotify guidelines
 
   async executeWithRetry<T>(
     operation: () => Promise<T>,
@@ -720,14 +760,22 @@ export const isSpotifyConnected = async (): Promise<boolean> => {
   }
 };
 
-// 🔧 FIX: Enhanced API call with retry
+// 🔧 FIX: Enhanced API call with circuit breaker and retry
 const makeSpotifyApiCall = async (url: string, options: RequestInit = {}): Promise<Response> => {
+  const circuitBreaker = SpotifyCircuitBreaker.getInstance();
+  
+  // Check circuit breaker and wait for rate limiting
+  await circuitBreaker.waitIfNeeded();
+  
   return await retryManager.executeWithRetry(async () => {
     const credentials = await getValidCredentials();
     
     if (!credentials) {
       throw new Error('Not connected to Spotify');
     }
+    
+    const requestsInWindow = circuitBreaker.getRequestsInLast30Seconds();
+    console.log(`🔄 Executing Spotify API Call: ${url} (${requestsInWindow}/50 requests in 30s window)`);
     
     const headers: Record<string, string> = {
       'Authorization': `Bearer ${credentials.accessToken}`,
@@ -741,6 +789,11 @@ const makeSpotifyApiCall = async (url: string, options: RequestInit = {}): Promi
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      
+      // Record failure in circuit breaker for rate limiting
+      if (response.status === 429) {
+        circuitBreaker.recordFailure();
+      }
       
       if (response.status === 403 && errorData.error?.message?.includes('Insufficient client scope')) {
         console.log('🔒 === INSUFFICIENT SCOPE DETECTED ===');
@@ -761,6 +814,8 @@ const makeSpotifyApiCall = async (url: string, options: RequestInit = {}): Promi
       throw error;
     }
     
+    // Record success in circuit breaker
+    circuitBreaker.recordSuccess();
     return response;
   }, 0, `Spotify API Call: ${url}`);
 };
@@ -994,10 +1049,19 @@ export const getCurrentUser = async (): Promise<SpotifyApi.CurrentUsersProfileRe
   }
 };
 
-// 🔧 FIX: Enhanced playlist tracks fetch
-export const getPlaylistTracks = async (playlistId: string): Promise<SpotifyApi.PlaylistTrackObject[]> => {
+// 🔧 FIX: Enhanced playlist tracks fetch with caching
+export const getPlaylistTracks = async (playlistId: string): Promise<any[]> => {
   try {
-    console.log('📋 === ENHANCED PLAYLIST FETCH ===');
+    const cacheKey = `playlist_${playlistId}`;
+    
+    // Check cache first
+    const cachedTracks = spotifyCache.get(cacheKey);
+    if (cachedTracks) {
+      console.log(`📋 Using cached playlist data for ${playlistId} (${cachedTracks.length} tracks)`);
+      return cachedTracks;
+    }
+    
+    console.log('📋 === FETCHING PLAYLIST FROM SPOTIFY ===');
     console.log('Playlist ID:', playlistId);
     
     const response = await makeSpotifyApiCall(
@@ -1011,42 +1075,67 @@ export const getPlaylistTracks = async (playlistId: string): Promise<SpotifyApi.
     // 🔧 FIX: Validate tracks
     const validTracks = tracks.filter((item: any) => item && item.track && item.track.id);
     
-    console.log(`✅ Fetched ${validTracks.length} valid tracks from playlist (newest first)`);
+    console.log(`✅ Fetched ${validTracks.length} valid tracks from playlist`);
     console.log('Snapshot ID:', snapshotId);
+    
+    // Cache for 2 minutes to reduce API calls
+    spotifyCache.set(cacheKey, validTracks, 120000);
     
     const updateManager = SnapshotOptimisticManager.getInstance();
     updateManager.setTracks(validTracks, playlistId, snapshotId);
     
     return validTracks;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to get playlist tracks:', error);
+    
+    // If rate limited, return cached data if available
+    if (error.status === 429) {
+      const cacheKey = `playlist_${playlistId}`;
+      const staleCache = spotifyCache.get(cacheKey);
+      if (staleCache) {
+        console.log('⚡ Rate limited - returning stale cache data');
+        return staleCache;
+      }
+    }
+    
     throw error;
   }
 };
 
-// 🔧 FIX: Enhanced subscription
+// 🔧 FIX: Simplified subscription to prevent rate limiting
 export const subscribeToPlaylistUpdates = (
   playlistId: string,
-  callback: (tracks: SpotifyApi.PlaylistTrackObject[]) => void
+  callback: (tracks: any[]) => void
 ): (() => void) => {
-  console.log('🚀 === ENHANCED SUBSCRIPTION ===');
+  console.log('🚀 === SIMPLIFIED SUBSCRIPTION ===');
   console.log('Playlist ID:', playlistId);
   
   const updateManager = SnapshotOptimisticManager.getInstance();
   
-  // Load initial tracks
-  getPlaylistTracks(playlistId).then(tracks => {
-    console.log('✅ Initial tracks loaded with enhanced validation');
-  }).catch(error => {
-    console.error('Failed to load initial tracks:', error);
-  });
+  // Only load tracks if not already cached
+  const cacheKey = `playlist_${playlistId}`;
+  const cachedTracks = spotifyCache.get(cacheKey);
+  if (cachedTracks) {
+    console.log('✅ Using existing cached tracks, no API call needed');
+    callback(cachedTracks);
+  } else {
+    // Load initial tracks with rate limiting protection
+    getPlaylistTracks(playlistId).then(tracks => {
+      console.log('✅ Initial tracks loaded');
+      callback(tracks);
+    }).catch(error => {
+      console.error('Failed to load initial tracks:', error);
+      // Return empty array on error to prevent infinite loading
+      callback([]);
+    });
+  }
   
   const unsubscribe = updateManager.subscribe(callback);
   
-  console.log('✅ Enhanced subscription active');
+  console.log('✅ Simplified subscription active');
   
   return () => {
-    console.log('🧹 Cleaning up enhanced subscription');
+    console.log('🧹 Cleaning up subscription');
     unsubscribe();
   };
 };
