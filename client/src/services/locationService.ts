@@ -80,7 +80,7 @@ export const searchLocations = async (query: string): Promise<LocationSuggestion
           lat: userLocation.latitude, 
           lng: userLocation.longitude 
         },
-        radius: 5000 // 5km radius
+        radius: 500000 // 5km radius
       },
       maxResultCount: 20
     };
