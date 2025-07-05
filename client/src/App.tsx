@@ -838,7 +838,6 @@ function App() {
                 <p className={`text-xs transition-colors duration-300 ${
                   isDarkMode ? 'text-gray-400' : 'text-gray-600'
                 }`}>
-                  Foto-Sharing
                 </p>
               </div>
             </div>
@@ -866,8 +865,8 @@ function App() {
                   }}
                   className={`p-2 rounded-full text-xs transition-all duration-300 ${
                     isDarkMode 
-                      ? 'bg-purple-600 hover:bg-purple-700 text-white' 
-                      : 'bg-purple-500 hover:bg-purple-600 text-white'
+                      ? 'bg-pink-500 hover:bg-pink-600 text-white' 
+                      : 'bg-pink-400 hover:bg-pink-500 text-white'
                   }`}
                   title="Create Test Notification"
                 >
@@ -1025,7 +1024,7 @@ function App() {
                         : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                     }`}
                   >
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-pink-600 flex items-center justify-center">
                       <ImageIcon className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -1096,7 +1095,7 @@ function App() {
                         : 'bg-gray-50/90 hover:bg-gray-100/90 text-gray-900'
                     }`}
                   >
-                    <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center">
                       <Zap className="w-5 h-5 text-white" />
                     </div>
                     <div className="text-left">

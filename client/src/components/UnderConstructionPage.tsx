@@ -171,7 +171,7 @@ export const UnderConstructionPage: React.FC<UnderConstructionPageProps> = ({
         <div className="mb-16">
           <div className={`mx-auto max-w-4xl p-8 rounded-3xl transition-all duration-500 relative overflow-hidden ${
             isDarkMode 
-              ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-purple-500/10' 
+              ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-pink-500/10' 
               : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl shadow-2xl shadow-pink-500/10'
           }`}>
             {/* Decorative Background Elements */}
@@ -180,7 +180,7 @@ export const UnderConstructionPage: React.FC<UnderConstructionPageProps> = ({
                 isDarkMode ? 'bg-pink-500' : 'bg-pink-300'
               }`} style={{ transform: 'translate(30%, -30%)' }}></div>
               <div className={`absolute bottom-0 left-0 w-32 h-32 rounded-full blur-3xl ${
-                isDarkMode ? 'bg-purple-500' : 'bg-purple-300'
+                isDarkMode ? 'bg-pink-500' : 'bg-pink-500'
               }`} style={{ transform: 'translate(-30%, 30%)' }}></div>
             </div>
 
@@ -190,8 +190,8 @@ export const UnderConstructionPage: React.FC<UnderConstructionPageProps> = ({
                 <div className="flex items-center justify-center gap-4 mb-4">
                   <div className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                     isDarkMode 
-                      ? 'bg-gradient-to-br from-pink-600/20 to-purple-600/20 border border-pink-500/30' 
-                      : 'bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-200/50'
+                      ? 'bg-gradient-to-br from-pink-600/20 to-pink-500/20 border border-pink-500/30' 
+                      : 'bg-gradient-to-br from-pink-500/10 to-pink-500/10 border border-pink-200/50'
                   }`}>
                     <span className="text-4xl">💒</span>
                   </div>
@@ -237,8 +237,8 @@ export const UnderConstructionPage: React.FC<UnderConstructionPageProps> = ({
                       {/* Value */}
                       <div className={`text-2xl font-bold mb-2 transition-all duration-500 ${
                         isDarkMode 
-                          ? 'text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400' 
-                          : 'text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600'
+                          ? 'text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-pink-500' 
+                          : 'text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-pink-500'
                       }`}>
                         {item.value.toString().padStart(2, '0')}
                       </div>
@@ -259,7 +259,7 @@ export const UnderConstructionPage: React.FC<UnderConstructionPageProps> = ({
                 <div className={`inline-flex items-center gap-3 px-6 py-3 rounded-full transition-all duration-300 ${
                   isDarkMode 
                     ? 'bg-pink-600/20 border border-pink-500/30' 
-                    : 'bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-200/50'
+                    : 'bg-gradient-to-r from-pink-500/10 to-pink-500/10 border border-pink-200/50'
                 }`}>
                   <span className="text-2xl">💕</span>
                   <span className={`text-lg font-medium transition-colors duration-300 ${

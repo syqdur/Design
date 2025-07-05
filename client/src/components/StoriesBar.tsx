@@ -127,42 +127,21 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
 
   // 🔧 FIX: Always show Stories Bar, even if no stories exist
   return (
-    <div className={`mx-4 my-4 p-4 rounded-2xl transition-all duration-500 ${
+    <div className={`mx-4 my-2 p-2 rounded-2xl transition-all duration-500 ${
       isDarkMode 
         ? 'bg-gray-800/30 border border-gray-700/20 backdrop-blur-xl' 
         : 'bg-white/50 border border-gray-200/30 backdrop-blur-xl'
     }`}>
-      <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory scroll-smooth">
-        {/* Add Story Button - Always visible */}
-        <div className="flex flex-col items-center gap-2 flex-shrink-0 snap-start">
-          <button
-            onClick={onAddStory}
-            className={`w-16 h-16 rounded-full border-2 border-dashed flex items-center justify-center transition-all duration-300 ${
-              isDarkMode 
-                ? 'border-gray-600 hover:border-gray-500 hover:bg-gray-700/30' 
-                : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-            }`}
-          >
-            <Plus className={`w-6 h-6 transition-colors duration-300 ${
-              isDarkMode ? 'text-gray-500' : 'text-gray-400'
-            }`} />
-          </button>
-          <span className={`text-xs text-center transition-colors duration-300 ${
-            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}>
-            Deine Story
-          </span>
-        </div>
-
+      <div className="flex gap-4 overflow-x-auto pb-1 scrollbar-hide snap-x snap-mandatory scroll-smooth">
         {/* User Stories - Only show if stories exist */}
         {userStories.map((userStory) => (
-          <div key={userStory.userName} className="flex flex-col items-center gap-2 flex-shrink-0 snap-start">
+          <div key={userStory.userName} className="flex flex-col items-center gap-1 flex-shrink-0 snap-start">
             <button
               onClick={() => handleStoryClick(userStory.userName)}
               className="relative"
             >
               {/* 🎯 NEW: Story Ring - Only glows if there are unviewed stories */}
-              <div className={`w-16 h-16 rounded-full p-0.5 transition-all duration-300 ${
+              <div className={`w-14 h-14 rounded-full p-0.5 transition-all duration-300 ${
                 userStory.hasUnviewed
                   ? 'bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-500'
                   : isDarkMode
@@ -204,7 +183,7 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
             </button>
             
             {/* 🎯 NEW: Show username clearly */}
-            <span className={`text-xs text-center max-w-[64px] truncate transition-colors duration-300 ${
+            <span className={`text-xs text-center max-w-[56px] truncate transition-colors duration-300 ${
               isDarkMode ? 'text-gray-300' : 'text-gray-700'
             }`}>
               {userStory.userName === currentUser ? 'Du' : userStory.userName}

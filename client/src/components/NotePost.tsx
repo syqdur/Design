@@ -146,13 +146,13 @@ export const NotePost: React.FC<NotePostProps> = ({
   return (
     <div className={`mb-6 mx-4 rounded-3xl border transition-all duration-500 relative overflow-hidden backdrop-blur-xl ${
       isDarkMode 
-        ? 'bg-gray-800/40 border-gray-700/30 shadow-2xl shadow-purple-500/10' 
+        ? 'bg-gray-800/40 border-gray-700/30 shadow-2xl shadow-pink-500/10' 
         : 'bg-white/80 border-gray-200/40 shadow-2xl shadow-pink-500/10'
     }`}>
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-5">
         <div className={`absolute top-0 right-0 w-20 h-20 rounded-full blur-xl ${
-          isDarkMode ? 'bg-purple-500' : 'bg-purple-300'
+          isDarkMode ? 'bg-pink-500' : 'bg-pink-500'
         }`} style={{ transform: 'translate(30%, -30%)' }}></div>
         <div className={`absolute bottom-0 left-0 w-16 h-16 rounded-full blur-xl ${
           isDarkMode ? 'bg-pink-500' : 'bg-pink-300'
@@ -165,8 +165,8 @@ export const NotePost: React.FC<NotePostProps> = ({
           <div className="flex items-center gap-4">
             <div className={`w-12 h-12 rounded-full p-0.5 bg-gradient-to-r ${
               isDarkMode 
-                ? 'from-purple-500 via-pink-500 to-rose-500' 
-                : 'from-purple-400 via-pink-400 to-rose-400'
+                ? 'from-pink-500 via-pink-500 to-rose-500' 
+                : 'from-pink-500 via-pink-400 to-rose-400'
             }`}>
               <div className="w-full h-full rounded-full overflow-hidden">
                 <img 
@@ -285,15 +285,15 @@ export const NotePost: React.FC<NotePostProps> = ({
         ) : (
           <div className={`mx-6 mb-4 p-6 rounded-2xl transition-colors duration-300 backdrop-blur-sm ${
             isDarkMode 
-              ? 'bg-gradient-to-br from-purple-900/30 to-pink-900/30 border border-purple-700/30' 
-              : 'bg-gradient-to-br from-purple-50/80 to-pink-50/80 border border-purple-200/50'
+              ? 'bg-gradient-to-br from-pink-500/30 to-pink-900/30 border border-pink-500/30' 
+              : 'bg-gradient-to-br from-purple-50/80 to-pink-50/80 border border-pink-500/50'
           }`}>
             <div className="flex items-center gap-3 mb-4">
             <div className={`p-3 rounded-full transition-colors duration-300 ${
-              isDarkMode ? 'bg-purple-800/50' : 'bg-white/80'
+              isDarkMode ? 'bg-pink-500/50' : 'bg-white/80'
             }`}>
               <MessageSquare className={`w-6 h-6 transition-colors duration-300 ${
-                isDarkMode ? 'text-purple-300' : 'text-purple-600'
+                isDarkMode ? 'text-pink-500' : 'text-pink-500'
               }`} />
             </div>
             <div>

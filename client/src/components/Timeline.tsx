@@ -477,7 +477,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
   return (
     <div className={`min-h-screen transition-all duration-500 ${
       isDarkMode 
-        ? 'bg-gradient-to-br from-gray-900 via-purple-900/10 to-pink-900/10' 
+        ? 'bg-gradient-to-br from-gray-900 via-pink-500/10 to-pink-900/10' 
         : 'bg-gradient-to-br from-gray-50 via-pink-50/30 to-purple-50/20'
     }`}>
       {/* Modal für Medienanzeige */}
@@ -489,7 +489,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
           <div
             className={`relative max-w-3xl w-full max-h-[90vh] rounded-3xl backdrop-blur-xl border flex flex-col items-center justify-center p-6 transition-all duration-300 ${
               isDarkMode 
-                ? 'bg-gray-900/90 border-gray-700/30 shadow-2xl shadow-purple-500/10' 
+                ? 'bg-gray-900/90 border-gray-700/30 shadow-2xl shadow-pink-500/10' 
                 : 'bg-white/90 border-gray-200/30 shadow-2xl shadow-pink-500/10'
             }`}
             onClick={e => e.stopPropagation()}
@@ -539,8 +539,8 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
           <div className="flex items-center gap-3 sm:gap-4">
             <div className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all duration-300 ${
               isDarkMode 
-                ? 'bg-gradient-to-br from-pink-500 to-purple-600 shadow-lg shadow-pink-500/25' 
-                : 'bg-gradient-to-br from-pink-400 to-purple-500 shadow-lg shadow-pink-400/25'
+                ? 'bg-gradient-to-br from-pink-500 to-pink-500 shadow-lg shadow-pink-500/25' 
+                : 'bg-gradient-to-br from-pink-400 to-pink-500 shadow-lg shadow-pink-400/25'
             }`}>
               <Heart className="w-6 h-6 sm:w-7 sm:h-7 text-white animate-pulse" style={{
                 animation: 'heartbeat 3s ease-in-out infinite'
@@ -566,8 +566,8 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
               onClick={() => setShowAddForm(true)}
               className={`flex items-center justify-center sm:justify-start gap-2 sm:gap-3 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 ${
                 isDarkMode 
-                  ? 'bg-gradient-to-r from-pink-500/80 to-purple-600/80 hover:from-pink-500 hover:to-purple-600 text-white border border-white/20 shadow-lg shadow-pink-500/25' 
-                  : 'bg-gradient-to-r from-pink-400/80 to-purple-500/80 hover:from-pink-400 hover:to-purple-500 text-white border border-white/30 shadow-lg shadow-pink-400/25'
+                  ? 'bg-gradient-to-r from-pink-500/80 to-pink-500/80 hover:from-pink-500 hover:to-pink-500 text-white border border-white/20 shadow-lg shadow-pink-500/25' 
+                  : 'bg-gradient-to-r from-pink-400/80 to-pink-500/80 hover:from-pink-400 hover:to-pink-500 text-white border border-white/30 shadow-lg shadow-pink-400/25'
               }`}
             >
               <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -582,7 +582,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-40">
           <div className={`rounded-3xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto backdrop-blur-xl border transition-all duration-300 ${
             isDarkMode 
-              ? 'bg-gray-900/90 border-gray-700/30 shadow-2xl shadow-purple-500/10' 
+              ? 'bg-gray-900/90 border-gray-700/30 shadow-2xl shadow-pink-500/10' 
               : 'bg-white/90 border-gray-200/30 shadow-2xl shadow-pink-500/10'
           }`}>
             <div className="flex items-center justify-between mb-6">
@@ -861,7 +861,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                       isDarkMode ? 'bg-white/10' : 'bg-gray-300/60'
                     }`}>
                       <div 
-                        className="h-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-300"
+                        className="h-full bg-gradient-to-r from-pink-500 to-pink-500 transition-all duration-300"
                         style={{ width: `${uploadProgress}%` }}
                       />
                     </div>
@@ -891,7 +891,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                   className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl backdrop-blur-sm transition-all duration-300 ${
                     isUploading
                       ? 'cursor-not-allowed opacity-50 bg-gray-400'
-                      : 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg shadow-pink-500/25'
+                      : 'bg-gradient-to-r from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-500 shadow-lg shadow-pink-500/25'
                   } text-white border border-white/20`}
                 >
                   {isUploading ? (
@@ -913,7 +913,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
           <div className="text-center py-12">
             <div className={`w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center backdrop-blur-xl border transition-all duration-300 ${
               isDarkMode 
-                ? 'bg-white/5 border-white/20 shadow-xl shadow-purple-500/10' 
+                ? 'bg-white/5 border-white/20 shadow-xl shadow-pink-500/10' 
                 : 'bg-white/60 border-gray-200/40 shadow-xl shadow-pink-500/10'
             }`}>
               <Heart className={`w-8 h-8 transition-colors duration-300 ${
@@ -935,8 +935,8 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                 onClick={() => setShowAddForm(true)}
                 className={`px-8 py-4 rounded-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 ${
                   isDarkMode 
-                    ? 'bg-gradient-to-r from-pink-500/80 to-purple-600/80 hover:from-pink-500 hover:to-purple-600 text-white border border-white/20 shadow-lg shadow-pink-500/25' 
-                    : 'bg-gradient-to-r from-pink-400/80 to-purple-500/80 hover:from-pink-400 hover:to-purple-500 text-white border border-white/30 shadow-lg shadow-pink-400/25'
+                    ? 'bg-gradient-to-r from-pink-500/80 to-pink-500/80 hover:from-pink-500 hover:to-pink-500 text-white border border-white/20 shadow-lg shadow-pink-500/25' 
+                    : 'bg-gradient-to-r from-pink-400/80 to-pink-500/80 hover:from-pink-400 hover:to-pink-500 text-white border border-white/30 shadow-lg shadow-pink-400/25'
                 }`}
               >
                 Erstes Event hinzufügen
@@ -948,8 +948,8 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
             {/* Timeline Line */}
             <div className={`absolute left-6 sm:left-8 lg:left-10 top-0 bottom-0 w-0.5 sm:w-1 transition-all duration-300 ${
               isDarkMode 
-                ? 'bg-gradient-to-b from-pink-500/30 via-purple-500/30 to-pink-500/30' 
-                : 'bg-gradient-to-b from-pink-400/40 via-purple-400/40 to-pink-400/40'
+                ? 'bg-gradient-to-b from-pink-500/30 via-pink-500/30 to-pink-500/30' 
+                : 'bg-gradient-to-b from-pink-400/40 via-pink-500/40 to-pink-400/40'
             }`}></div>
 
             {/* Timeline Events */}
@@ -967,7 +967,7 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                       eventType.color === 'blue' ? 'bg-gradient-to-br from-blue-400 to-blue-600 border-blue-200/30 shadow-lg shadow-blue-500/25' :
                       eventType.color === 'green' ? 'bg-gradient-to-br from-green-400 to-green-600 border-green-200/30 shadow-lg shadow-green-500/25' :
                       eventType.color === 'yellow' ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 border-yellow-200/30 shadow-lg shadow-yellow-500/25' :
-                      eventType.color === 'purple' ? 'bg-gradient-to-br from-purple-400 to-purple-600 border-purple-200/30 shadow-lg shadow-purple-500/25' :
+                      eventType.color === 'purple' ? 'bg-gradient-to-br from-pink-500 to-pink-500 border-pink-500/30 shadow-lg shadow-pink-500/25' :
                       eventType.color === 'indigo' ? 'bg-gradient-to-br from-indigo-400 to-indigo-600 border-indigo-200/30 shadow-lg shadow-indigo-500/25' :
                       isDarkMode ? 'bg-gradient-to-br from-gray-600 to-gray-800 border-gray-400/30 shadow-lg shadow-gray-500/25' : 'bg-gradient-to-br from-gray-400 to-gray-600 border-gray-300/30 shadow-lg shadow-gray-400/25'
                     }`}>

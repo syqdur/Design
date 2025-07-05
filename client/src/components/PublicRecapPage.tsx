@@ -268,7 +268,7 @@ export const PublicRecapPage: React.FC<PublicRecapPageProps> = ({ isDarkMode }) 
     switch (category) {
       case 'ceremony': return 'bg-pink-500';
       case 'reception': return 'bg-blue-500';
-      case 'party': return 'bg-purple-500';
+      case 'party': return 'bg-pink-500';
       case 'special': return 'bg-yellow-500';
       default: return 'bg-gray-500';
     }
@@ -417,7 +417,7 @@ export const PublicRecapPage: React.FC<PublicRecapPageProps> = ({ isDarkMode }) 
         {/* Progress Bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-black/30 z-10">
           <div 
-            className="h-full bg-gradient-to-r from-pink-500 to-purple-500 transition-all duration-700 ease-out"
+            className="h-full bg-gradient-to-r from-pink-500 to-pink-500 transition-all duration-700 ease-out"
             style={{ width: `${((currentSlide + 1) / allMediaItems.length) * 100}%` }}
           />
         </div>
@@ -476,15 +476,15 @@ export const PublicRecapPage: React.FC<PublicRecapPageProps> = ({ isDarkMode }) 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/20 rounded-lg" />
               </div>
             ) : currentMedia?.type === 'note' ? (
-              <div className="max-w-2xl w-full p-8 bg-gradient-to-br from-pink-900/40 to-purple-900/40 backdrop-blur-xl rounded-3xl text-white mx-4 shadow-2xl border border-white/10">
+              <div className="max-w-2xl w-full p-8 bg-gradient-to-br from-pink-900/40 to-pink-500/40 backdrop-blur-xl rounded-3xl text-white mx-4 shadow-2xl border border-white/10">
                 <div className="text-center mb-6">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-pink-400 to-purple-400 rounded-full flex items-center justify-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-pink-400 to-pink-500 rounded-full flex items-center justify-center">
                     <MessageSquare className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-2xl font-semibold mb-2 bg-gradient-to-r from-pink-300 to-purple-300 bg-clip-text text-transparent">
+                  <h3 className="text-2xl font-semibold mb-2 bg-gradient-to-r from-pink-300 to-pink-500 bg-clip-text text-transparent">
                     Nachricht von {currentMedia.uploadedBy}
                   </h3>
-                  <div className="w-24 h-0.5 bg-gradient-to-r from-pink-300 to-purple-300 mx-auto"></div>
+                  <div className="w-24 h-0.5 bg-gradient-to-r from-pink-300 to-pink-500 mx-auto"></div>
                 </div>
                 <p className="text-xl leading-relaxed text-center font-light mb-6 text-gray-100">
                   "{currentMedia.noteText}"
@@ -515,7 +515,7 @@ export const PublicRecapPage: React.FC<PublicRecapPageProps> = ({ isDarkMode }) 
           <div className={`bg-black/60 backdrop-blur-xl rounded-2xl p-6 text-white text-center border border-white/10 shadow-2xl transition-opacity duration-1000 ${
             isTransitioning ? 'opacity-0' : 'opacity-100'
           }`}>
-            <h3 className="text-3xl font-bold mb-3 bg-gradient-to-r from-pink-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">
+            <h3 className="text-3xl font-bold mb-3 bg-gradient-to-r from-pink-300 via-pink-500 to-pink-300 bg-clip-text text-transparent">
               💕 Kristin & Maurizio
             </h3>
             <p className="text-lg mb-2 text-gray-200">12. Juli 2025</p>
@@ -614,7 +614,7 @@ export const PublicRecapPage: React.FC<PublicRecapPageProps> = ({ isDarkMode }) 
         {showWelcome && (
           <div className={`text-center mb-12 p-8 rounded-2xl animate-slideUp transition-colors duration-300 ${
             isDarkMode 
-              ? 'bg-gradient-to-br from-pink-900/30 to-purple-900/30 border border-pink-700/30' 
+              ? 'bg-gradient-to-br from-pink-900/30 to-pink-500/30 border border-pink-700/30' 
               : 'bg-gradient-to-br from-pink-50 to-purple-50 border border-pink-200'
           }`}>
             <div className="mb-6">
@@ -644,7 +644,7 @@ export const PublicRecapPage: React.FC<PublicRecapPageProps> = ({ isDarkMode }) 
                 🎥 {mediaItems.filter(item => item.type === 'video').length} Videos
               </div>
               <div className={`px-6 py-3 rounded-full transition-colors duration-300 ${
-                isDarkMode ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800'
+                isDarkMode ? 'bg-pink-500 text-white' : 'bg-pink-500 text-pink-500'
               }`}>
                 💌 {mediaItems.filter(item => item.type === 'note').length} Nachrichten
               </div>
@@ -812,7 +812,7 @@ export const PublicRecapPage: React.FC<PublicRecapPageProps> = ({ isDarkMode }) 
         <div className="text-center mt-16 py-8">
           <div className={`max-w-2xl mx-auto p-8 rounded-2xl transition-colors duration-300 ${
             isDarkMode 
-              ? 'bg-gradient-to-br from-pink-900/20 to-purple-900/20 border border-pink-700/30' 
+              ? 'bg-gradient-to-br from-pink-900/20 to-pink-500/20 border border-pink-700/30' 
               : 'bg-gradient-to-br from-pink-50 to-purple-50 border border-pink-200'
           }`}>
             <h3 className={`text-2xl font-bold mb-4 transition-colors duration-300 ${

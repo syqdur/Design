@@ -212,11 +212,11 @@ export const MediaModal: React.FC<MediaModalProps> = ({
             ) : currentItem.type === 'note' ? (
               <div className={`w-full h-full flex flex-col items-center justify-center p-8 transition-colors duration-300 ${
                 isDarkMode 
-                  ? 'bg-gradient-to-br from-purple-900/50 to-pink-900/50' 
-                  : 'bg-gradient-to-br from-purple-100 to-pink-100'
+                  ? 'bg-gradient-to-br from-pink-500/50 to-pink-900/50' 
+                  : 'bg-gradient-to-br from-pink-500 to-pink-100'
               }`}>
                 <div className={`max-w-sm w-full p-6 rounded-2xl transition-colors duration-300 ${
-                  isDarkMode ? 'bg-gray-800/80 border border-purple-700/30' : 'bg-white/90 border border-purple-200/50'
+                  isDarkMode ? 'bg-gray-800/80 border border-pink-500/30' : 'bg-white/90 border border-pink-500/50'
                 }`}>
                   <div className="text-center mb-6">
                     <div className="text-4xl mb-2">💌</div>

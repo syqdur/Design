@@ -274,6 +274,9 @@ This is a comprehensive wedding gallery application with the following architect
 
 ### January 5, 2025 (Migration Complete & UI Updates)
 - **Replit Agent to Replit Migration**: Successfully completed migration from Replit Agent to Replit environment with all functionality preserved including Firebase integration, live user tracking, media uploads, comments, likes, stories, and music wishlist
+- **Purple to Pink Color Scheme**: Converted all purple UI elements throughout the application to slight pink colors for softer, more elegant appearance including buttons, gradients, shadows, borders, and text elements
+- **Green Border Hover Fix**: Fixed green ring/border issue when hovering over navigation bar or header by removing the green accent color from glass-card hover effects
+- **Stories Bar Simplification**: Removed "Add Story" button from StoriesBar component since stories are uploaded via the main + button, keeping only the stories display functionality
 - **Bottom Navigation Upload Button**: Added prominent plus button in center of bottom navigation bar between gallery and timeline tabs for easier photo/video upload access, replacing floating button design
 - **Upload Modal Color Scheme**: Updated Upload Options Modal to use solid colors instead of glass effects - dark mode uses gray-900 background with gray-700 border, light mode uses white background with gray-200 border for cleaner appearance
 - **tsx Package Installation**: Fixed missing tsx dependency that was preventing server startup during migration

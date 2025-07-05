@@ -318,12 +318,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             onClick={handleOpenPostWeddingRecap}
             className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
               isDarkMode
-                ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-purple-500/10'
-                : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-purple-500/10'
+                ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-pink-500/10'
+                : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-pink-500/10'
             }`}
             title="Post-Hochzeits-Zusammenfassung"
           >
-            <Sparkles className="w-5 h-5 text-purple-400" />
+            <Sparkles className="w-5 h-5 text-pink-400" />
           </button>
 
           {/* USER MANAGEMENT BUTTON */}
@@ -396,12 +396,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
                     : 'bg-white/40 border-gray-200/30 cursor-not-allowed opacity-50'
                   : isDarkMode
-                    ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-purple-500/10'
-                    : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-purple-500/10'
+                    ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-pink-500/10'
+                    : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-pink-500/10'
               }`}
               title={`Musikwünsche ${siteStatus.musicWishlistEnabled ? 'deaktivieren' : 'aktivieren'}`}
             >
-              <Music className={`w-5 h-5 ${siteStatus.musicWishlistEnabled ? 'text-purple-400' : 'text-gray-400'}`} />
+              <Music className={`w-5 h-5 ${siteStatus.musicWishlistEnabled ? 'text-pink-400' : 'text-gray-400'}`} />
             </button>
           )}
 
@@ -518,12 +518,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             onClick={() => setShowExternalServices(true)}
             className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
               isDarkMode
-                ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-purple-500/10'
-                : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-purple-500/10'
+                ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-pink-500/10'
+                : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-pink-500/10'
             }`}
             title="Deutsche Fotobuch-Services"
           >
-            <Heart className="w-5 h-5 text-purple-400" />
+            <Heart className="w-5 h-5 text-pink-400" />
           </button>
           
           {/* ZIP Download Button */}
@@ -617,7 +617,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className={`p-3 rounded-full transition-colors duration-300 ${
-                  isDarkMode ? 'bg-purple-600' : 'bg-purple-500'
+                  isDarkMode ? 'bg-pink-500' : 'bg-pink-500'
                 }`}>
                   <Heart className="w-6 h-6 text-white" />
                 </div>
@@ -775,7 +775,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     }`}>
                       {service.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-center gap-2">
-                          <div className="w-1 h-1 bg-purple-500 rounded-full"></div>
+                          <div className="w-1 h-1 bg-pink-500 rounded-full"></div>
                           {feature}
                         </li>
                       ))}
@@ -788,8 +788,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     rel="noopener noreferrer"
                     className={`w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm transition-all duration-300 ${
                       isDarkMode
-                        ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                        : 'bg-purple-500 hover:bg-purple-600 text-white'
+                        ? 'bg-pink-500 hover:bg-pink-500 text-white'
+                        : 'bg-pink-500 hover:bg-pink-500 text-white'
                     }`}
                   >
                     <ExternalLink className="w-3 h-3" />

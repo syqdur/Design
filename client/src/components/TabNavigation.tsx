@@ -121,10 +121,10 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
                         ? 'bg-gray-700/50 text-gray-500'
                         : 'bg-gray-200/50 text-gray-400'
                       : isActive
-                        ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/30'
+                        ? 'bg-gradient-to-r from-pink-500 to-pink-500 text-white shadow-lg shadow-pink-500/30'
                         : isDarkMode
-                          ? 'text-gray-400 hover:text-white hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-600/20'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-pink-500/10 hover:to-purple-500/10'
+                          ? 'text-gray-400 hover:text-white hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-pink-500/20'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-pink-500/10 hover:to-pink-500/10'
                   }`}>
                     {tab.locked ? (
                       <Lock className="w-4 h-4" />
@@ -160,7 +160,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
           {onUploadClick && (
             <button
               onClick={onUploadClick}
-              className={`absolute left-1/2 transform -translate-x-1/2 w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 active:scale-95 btn-touch bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white ${
+              className={`absolute left-1/2 transform -translate-x-1/2 w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 active:scale-95 btn-touch bg-gradient-to-r from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-500 text-white ${
                 isDarkMode 
                   ? 'shadow-pink-500/40' 
                   : 'shadow-pink-500/30'
@@ -200,10 +200,10 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
                         ? 'bg-gray-700/50 text-gray-500'
                         : 'bg-gray-200/50 text-gray-400'
                       : isActive
-                        ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/30'
+                        ? 'bg-gradient-to-r from-pink-500 to-pink-500 text-white shadow-lg shadow-pink-500/30'
                         : isDarkMode
-                          ? 'text-gray-400 hover:text-white hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-600/20'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-pink-500/10 hover:to-purple-500/10'
+                          ? 'text-gray-400 hover:text-white hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-pink-500/20'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gradient-to-r hover:from-pink-500/10 hover:to-pink-500/10'
                   }`}>
                     {tab.locked ? (
                       <Lock className="w-4 h-4" />

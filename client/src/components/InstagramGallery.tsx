@@ -4,6 +4,7 @@ import { MediaItem, Comment, Like } from '../types';
 import { InstagramPost } from './InstagramPost';
 import { NotePost } from './NotePost';
 import { VideoThumbnail } from './VideoThumbnail';
+import { MediaPopup } from './MediaPopup';
 
 interface InstagramGalleryProps {
   items: MediaItem[];
@@ -42,6 +43,8 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
 }) => {
   const [viewMode, setViewMode] = useState<'feed' | 'grid'>('feed');
   const [notesSliderIndex, setNotesSliderIndex] = useState(0);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
   const noteItems = items.filter(item => item.type === 'note');
   const mediaItems = items.filter(item => item.type !== 'note');
@@ -62,6 +65,23 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
     setNotesSliderIndex(index);
   };
 
+  const handleMediaClick = (index: number) => {
+    setSelectedItemIndex(index);
+    setIsPopupOpen(true);
+  };
+
+  const handlePopupClose = () => {
+    setIsPopupOpen(false);
+  };
+
+  const handlePopupNext = () => {
+    setSelectedItemIndex((prev) => (prev + 1) % mediaItems.length);
+  };
+
+  const handlePopupPrev = () => {
+    setSelectedItemIndex((prev) => (prev - 1 + mediaItems.length) % mediaItems.length);
+  };
+
   return (
     <div>
       {/* Modern View Toggle - Spotify Style */}
@@ -76,7 +96,7 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
             isDarkMode ? 'bg-pink-500' : 'bg-pink-300'
           }`} style={{ transform: 'translate(30%, -30%)' }}></div>
           <div className={`absolute bottom-0 left-0 w-12 h-12 rounded-full blur-xl ${
-            isDarkMode ? 'bg-purple-500' : 'bg-purple-300'
+            isDarkMode ? 'bg-pink-500' : 'bg-pink-500'
           }`} style={{ transform: 'translate(-30%, 30%)' }}></div>
         </div>
         <div className="flex items-center justify-center relative z-10">
@@ -154,7 +174,7 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                 showDeleteButton={isAdmin}
                 userName={userName}
                 isAdmin={isAdmin}
-                onClick={() => onItemClick(index)}
+                onClick={() => handleMediaClick(mediaItems.findIndex(mediaItem => mediaItem.id === item.id))}
                 isDarkMode={isDarkMode}
                 getUserAvatar={getUserAvatar}
                 getUserDisplayName={getUserDisplayName}
@@ -458,9 +478,9 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                       className="relative aspect-square cursor-pointer group"
                       onClick={(e) => {
                         e.preventDefault();
-                        // Always open the modal for both videos and images
-                        // Autoplay will happen in the modal, not in grid view
-                        onItemClick(originalIndex);
+                        // Use popup instead of modal
+                        const mediaIndex = mediaItems.findIndex(mediaItem => mediaItem.id === item.id);
+                        handleMediaClick(mediaIndex);
                       }}
                     >
                       {/* Media Content */}
@@ -522,6 +542,29 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
             </div>
           )}
         </div>
+      )}
+
+      {/* Media Popup */}
+      {isPopupOpen && mediaItems[selectedItemIndex] && (
+        <MediaPopup
+          isOpen={isPopupOpen}
+          item={mediaItems[selectedItemIndex]}
+          onClose={handlePopupClose}
+          onNext={selectedItemIndex < mediaItems.length - 1 ? handlePopupNext : undefined}
+          onPrev={selectedItemIndex > 0 ? handlePopupPrev : undefined}
+          hasNext={selectedItemIndex < mediaItems.length - 1}
+          hasPrev={selectedItemIndex > 0}
+          comments={comments}
+          likes={likes}
+          onAddComment={onAddComment}
+          onDeleteComment={onDeleteComment}
+          onToggleLike={onToggleLike}
+          userName={userName}
+          isAdmin={isAdmin}
+          isDarkMode={isDarkMode}
+          getUserAvatar={getUserAvatar}
+          getUserDisplayName={getUserDisplayName}
+        />
       )}
     </div>
   );

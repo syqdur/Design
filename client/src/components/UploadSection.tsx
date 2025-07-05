@@ -55,14 +55,14 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
     <>
       <div className={`mx-4 mb-4 p-6 rounded-3xl transition-all duration-500 ${
         isDarkMode 
-          ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-purple-500/10' 
+          ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-pink-500/10' 
           : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl shadow-2xl shadow-pink-500/10'
       }`}>
         <div className="flex items-center gap-6">
           {/* Modern Upload Button */}
           <div className={`w-16 h-16 border-2 border-dashed rounded-2xl flex items-center justify-center relative overflow-hidden transition-all duration-300 group hover:scale-105 ${
             isDarkMode 
-              ? 'border-purple-500/50 bg-gray-700/30 hover:bg-purple-600/20 hover:border-purple-400' 
+              ? 'border-pink-500/50 bg-gray-700/30 hover:bg-pink-500/20 hover:border-pink-500' 
               : 'border-pink-400/50 bg-pink-50/30 hover:bg-pink-100/50 hover:border-pink-500'
           }`}>
             <button
@@ -71,7 +71,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
             >
               <Plus className={`w-6 h-6 transition-all duration-300 ${
                 isDarkMode 
-                  ? 'text-purple-400 group-hover:text-purple-300' 
+                  ? 'text-pink-500 group-hover:text-pink-500' 
                   : 'text-pink-500 group-hover:text-pink-600'
               }`} />
             </button>
@@ -96,8 +96,8 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
                 <div 
                   className={`h-full transition-all duration-500 rounded-full ${
                     isDarkMode 
-                      ? 'bg-purple-500' 
-                      : 'bg-gradient-to-r from-pink-500 to-purple-500'
+                      ? 'bg-pink-500' 
+                      : 'bg-gradient-to-r from-pink-500 to-pink-500'
                   }`}
                   style={{ width: `${progress}%` }}
                 />
@@ -236,15 +236,15 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
                 }}
                 className={`group flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-200 hover:scale-[1.02] w-full ${
                   isDarkMode 
-                    ? 'bg-purple-600/10 hover:bg-purple-600/20 border border-purple-500/30' 
-                    : 'bg-purple-50 hover:bg-purple-100 border border-purple-200'
+                    ? 'bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/30' 
+                    : 'bg-purple-50 hover:bg-pink-500 border border-pink-500'
                 }`}
               >
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  isDarkMode ? 'bg-purple-500/20' : 'bg-purple-500/10'
+                  isDarkMode ? 'bg-pink-500/20' : 'bg-pink-500/10'
                 }`}>
                   <MessageSquare className={`w-6 h-6 ${
-                    isDarkMode ? 'text-purple-400' : 'text-purple-600'
+                    isDarkMode ? 'text-pink-500' : 'text-pink-500'
                   }`} />
                 </div>
                 <div className="flex-1 text-center">
@@ -403,8 +403,8 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
                       : 'hover:scale-[1.02]'
                   } ${
                     isDarkMode 
-                      ? 'bg-gradient-to-r from-pink-600 to-purple-600 text-white shadow-lg shadow-pink-500/25' 
-                      : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg shadow-pink-500/25'
+                      ? 'bg-gradient-to-r from-pink-600 to-pink-500 text-white shadow-lg shadow-pink-500/25' 
+                      : 'bg-gradient-to-r from-pink-500 to-pink-500 text-white shadow-lg shadow-pink-500/25'
                   }`}
                 >
                   Senden

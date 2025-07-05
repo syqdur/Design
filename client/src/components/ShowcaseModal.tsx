@@ -263,7 +263,7 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
               {/* Hero Section */}
               <div className={`text-center p-8 rounded-2xl transition-colors duration-300 ${
                 isDarkMode 
-                  ? 'bg-gradient-to-br from-pink-900/30 to-purple-900/30 border border-pink-700/30' 
+                  ? 'bg-gradient-to-br from-pink-900/30 to-pink-500/30 border border-pink-700/30' 
                   : 'bg-gradient-to-br from-pink-50 to-purple-50 border border-pink-200'
               }`}>
                 <h3 className={`text-3xl font-bold mb-4 transition-colors duration-300 ${
@@ -288,7 +288,7 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
                     🔒 Datenschutz-konform
                   </div>
                   <div className={`px-4 py-2 rounded-full transition-colors duration-300 ${
-                    isDarkMode ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-800'
+                    isDarkMode ? 'bg-pink-500 text-white' : 'bg-pink-500 text-pink-500'
                   }`}>
                     🚀 Production-Ready
                   </div>
@@ -386,7 +386,7 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
                   </div>
                   <div className="text-center">
                     <div className={`text-3xl font-bold transition-colors duration-300 ${
-                      isDarkMode ? 'text-purple-400' : 'text-purple-600'
+                      isDarkMode ? 'text-pink-500' : 'text-pink-500'
                     }`}>
                       DSGVO
                     </div>
@@ -421,7 +421,7 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
                           feature.category === 'Premium' ? 'bg-yellow-500' :
                           feature.category === 'E-Commerce' ? 'bg-green-500' :
                           feature.category === 'Social' ? 'bg-blue-500' :
-                          feature.category === 'Interaktiv' ? 'bg-purple-500' :
+                          feature.category === 'Interaktiv' ? 'bg-pink-500' :
                           'bg-pink-500'
                         }`}>
                           {feature.icon}
@@ -437,7 +437,7 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
                               feature.category === 'Premium' ? 'bg-yellow-100 text-yellow-800' :
                               feature.category === 'E-Commerce' ? 'bg-green-100 text-green-800' :
                               feature.category === 'Social' ? 'bg-blue-100 text-blue-800' :
-                              feature.category === 'Interaktiv' ? 'bg-purple-100 text-purple-800' :
+                              feature.category === 'Interaktiv' ? 'bg-pink-500 text-pink-500' :
                               'bg-pink-100 text-pink-800'
                             }`}>
                               {feature.category}
@@ -478,7 +478,7 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                    <div className="w-8 h-8 bg-pink-500 text-white rounded-full flex items-center justify-center font-bold">3</div>
                     <span className={`transition-colors duration-300 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
                       🎁 Geschenkeliste + 🌍 Live-Karte (Revenue Features)
                     </span>
@@ -582,7 +582,7 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
                         <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-white transition-colors duration-300 ${
                           index === 0 ? 'bg-green-500' :
                           index === 1 ? 'bg-blue-500' :
-                          index === 2 ? 'bg-purple-500' :
+                          index === 2 ? 'bg-pink-500' :
                           'bg-orange-500'
                         }`}>
                           {index + 1}
@@ -662,7 +662,7 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
                   </div>
                   <div className="text-center">
                     <div className={`text-3xl font-bold mb-2 transition-colors duration-300 ${
-                      isDarkMode ? 'text-purple-400' : 'text-purple-600'
+                      isDarkMode ? 'text-pink-500' : 'text-pink-500'
                     }`}>
                       85%
                     </div>

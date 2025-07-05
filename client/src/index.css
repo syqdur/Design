@@ -111,7 +111,6 @@ body {
 .glass-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-elevated);
-  border-color: var(--accent-primary);
 }
 
 /* Modern button styles */

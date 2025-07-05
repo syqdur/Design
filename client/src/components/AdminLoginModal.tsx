@@ -45,7 +45,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className={`rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-sm sm:max-w-md w-full max-h-[90vh] overflow-y-auto backdrop-blur-xl border transition-all duration-300 ${
         isDarkMode 
-          ? 'bg-gray-900/95 border-gray-700/30 shadow-2xl shadow-purple-500/10' 
+          ? 'bg-gray-900/95 border-gray-700/30 shadow-2xl shadow-pink-500/10' 
           : 'bg-white/95 border-gray-200/30 shadow-2xl shadow-pink-500/10'
       }`}>
         <div className="flex items-center justify-between mb-4 sm:mb-6">
@@ -149,7 +149,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
           <div className="pt-2 sm:pt-4">
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white py-3 sm:py-4 px-4 sm:px-6 rounded-xl backdrop-blur-sm transition-all duration-300 font-medium text-base sm:text-lg shadow-lg shadow-pink-500/25 touch-manipulation"
+              className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white py-3 sm:py-4 px-4 sm:px-6 rounded-xl backdrop-blur-sm transition-all duration-300 font-medium text-base sm:text-lg shadow-lg shadow-pink-500/25 touch-manipulation"
               style={{ minHeight: '48px' }}
             >
               Anmelden

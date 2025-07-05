@@ -115,7 +115,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
     <>
       <div className={`mx-2 sm:mx-4 my-4 sm:my-6 p-4 sm:p-6 rounded-3xl transition-all duration-500 ${
         isDarkMode 
-          ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-purple-500/10' 
+          ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-pink-500/10' 
           : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl shadow-2xl shadow-pink-500/10'
       }`}>
         <div className="flex items-center justify-between mb-4 sm:mb-6">
@@ -123,8 +123,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
             <div
               className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden relative ring-4 transition-all duration-300 animate-pulse ${
                 isDarkMode 
-                  ? 'ring-gradient-to-r from-purple-600 to-pink-600 ring-purple-500/30' 
-                  : 'ring-gradient-to-r from-pink-500 to-purple-500 ring-pink-500/30'
+                  ? 'ring-gradient-to-r from-pink-500 to-pink-600 ring-pink-500/30' 
+                  : 'ring-gradient-to-r from-pink-500 to-pink-500 ring-pink-500/30'
               }`} style={{
                 animation: 'pulse 2s ease-in-out infinite, ring-glow 3s ease-in-out infinite'
               }}
@@ -138,8 +138,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
               ) : (
                 <div className={`w-full h-full bg-gradient-to-br flex items-center justify-center text-3xl sm:text-4xl font-bold ${
                   isDarkMode 
-                    ? 'from-purple-600 to-pink-600 text-white' 
-                    : 'from-pink-500 to-purple-500 text-white'
+                    ? 'from-pink-500 to-pink-600 text-white' 
+                    : 'from-pink-500 to-pink-500 text-white'
                 }`}>
                   K&M
                 </div>
@@ -249,7 +249,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
           {countdown && (
             <div className={`mt-6 p-8 rounded-3xl transition-all duration-500 relative overflow-hidden ${
               isDarkMode 
-                ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-purple-500/10' 
+                ? 'bg-gray-800/40 border border-gray-700/30 backdrop-blur-xl shadow-2xl shadow-pink-500/10' 
                 : 'bg-white/60 border border-gray-200/40 backdrop-blur-xl shadow-2xl shadow-pink-500/10'
             }`}>
               {/* Decorative Background Elements */}
@@ -258,7 +258,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                   isDarkMode ? 'bg-pink-500' : 'bg-pink-300'
                 }`} style={{ transform: 'translate(50%, -50%)' }}></div>
                 <div className={`absolute bottom-0 left-0 w-24 h-24 rounded-full blur-3xl ${
-                  isDarkMode ? 'bg-purple-500' : 'bg-purple-300'
+                  isDarkMode ? 'bg-pink-500' : 'bg-pink-500'
                 }`} style={{ transform: 'translate(-50%, 50%)' }}></div>
               </div>
 
@@ -269,7 +269,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                     <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 animate-pulse ${
                       isDarkMode 
                         ? 'bg-pink-600/20 border border-pink-500/30' 
-                        : 'bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-200/50'
+                        : 'bg-gradient-to-br from-pink-500/10 to-pink-500/10 border border-pink-200/50'
                     }`}>
                       <Heart className={`w-8 h-8 transition-colors duration-300 animate-heartbeat ${
                        isDarkMode ? 'text-pink-400' : 'text-pink-600'
@@ -313,7 +313,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                     >
                       {/* Gradient Border Effect */}
                       <div className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-                        isDarkMode ? 'bg-gradient-to-r from-pink-500/20 to-purple-500/20' : 'bg-gradient-to-r from-pink-100/50 to-purple-100/50'
+                        isDarkMode ? 'bg-gradient-to-r from-pink-500/20 to-pink-500/20' : 'bg-gradient-to-r from-pink-100/50 to-pink-500/50'
                       }`}></div>
 
                       <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-2">
@@ -325,8 +325,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                         {/* Value */}
                         <div className={`text-lg font-bold mb-1 transition-all duration-300 ${
                           isDarkMode 
-                            ? 'text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400' 
-                            : 'text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-purple-600'
+                            ? 'text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-pink-500' 
+                            : 'text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-pink-500'
                         }`}>
                           {item.value.toString().padStart(2, '0')}
                         </div>
@@ -347,7 +347,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ isDarkMode, isAdmi
                   <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${
                     isDarkMode 
                       ? 'bg-pink-600/20 border border-pink-500/30' 
-                      : 'bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-200/50'
+                      : 'bg-gradient-to-r from-pink-500/10 to-pink-500/10 border border-pink-200/50'
                   }`}>
                     <span className="text-lg">💕</span>
                     <span className={`text-sm font-medium transition-colors duration-300 ${

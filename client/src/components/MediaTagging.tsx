@@ -302,7 +302,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
           {tags.map((tag) => (
             <div
               key={tag.id}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-700 dark:text-purple-300 backdrop-blur-sm border border-purple-200/30 dark:border-purple-600/30 shadow-lg hover:shadow-xl"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500/20 to-pink-500/20 text-pink-500 dark:text-pink-500 backdrop-blur-sm border border-pink-500/30 dark:border-pink-500/30 shadow-lg hover:shadow-xl"
             >
               <Tag className="w-3 h-3" />
               <span>{getUserDisplayName(tag.userName, tag.deviceId)}</span>
@@ -355,7 +355,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowTagInput(true)}
-                className="flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-110 active:scale-95 bg-purple-500/20 hover:bg-purple-500/30 text-purple-600 dark:text-purple-400 backdrop-blur-lg border border-purple-300/30 dark:border-purple-500/30 shadow-lg hover:shadow-xl"
+                className="flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-110 active:scale-95 bg-pink-500/20 hover:bg-pink-500/30 text-pink-500 dark:text-pink-500 backdrop-blur-lg border border-pink-500/30 dark:border-pink-500/30 shadow-lg hover:shadow-xl"
               >
                 <UserPlus className="w-5 h-5" />
               </button>
@@ -376,7 +376,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Nach Person suchen..."
-                className="w-full px-4 py-3 rounded-xl border-2 border-transparent bg-white/60 dark:bg-gray-800/80 backdrop-blur-lg focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 transition-all duration-300 mb-4"
+                className="w-full px-4 py-3 rounded-xl border-2 border-transparent bg-white/60 dark:bg-gray-800/80 backdrop-blur-lg focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 focus:outline-none placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 transition-all duration-300 mb-4"
                 autoFocus
               />
 
@@ -394,7 +394,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
                         disabled={isLoading}
                         className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${
                           isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                        } bg-white/60 dark:bg-gray-800/80 hover:bg-white/80 dark:hover:bg-gray-700/90 backdrop-blur-lg text-gray-900 dark:text-gray-100 border border-white/30 dark:border-gray-700/50 hover:border-purple-300 dark:hover:border-purple-500 shadow-md hover:shadow-lg`}
+                        } bg-white/60 dark:bg-gray-800/80 hover:bg-white/80 dark:hover:bg-gray-700/90 backdrop-blur-lg text-gray-900 dark:text-gray-100 border border-white/30 dark:border-gray-700/50 hover:border-pink-500 dark:hover:border-pink-500 shadow-md hover:shadow-lg`}
                       >
                         {/* Profile Picture */}
                         <div className="relative flex-shrink-0">
@@ -405,7 +405,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
                               className="w-10 h-10 rounded-full object-cover border-2 border-white/50 dark:border-gray-600/50 shadow-sm"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-medium text-sm border-2 border-white/50 dark:border-gray-600/50 shadow-sm">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-pink-400 flex items-center justify-center text-white font-medium text-sm border-2 border-white/50 dark:border-gray-600/50 shadow-sm">
                               {displayName.charAt(0).toUpperCase()}
                             </div>
                           )}
@@ -418,7 +418,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
                         
                         {/* Add Icon */}
                         <div className="flex-shrink-0">
-                          <UserPlus className="w-4 h-4 text-purple-500 dark:text-purple-400" />
+                          <UserPlus className="w-4 h-4 text-pink-500 dark:text-pink-500" />
                         </div>
                       </button>
                     );

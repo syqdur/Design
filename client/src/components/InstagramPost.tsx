@@ -176,7 +176,7 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
   return (
     <div className={`mb-6 mx-4 rounded-3xl border transition-all duration-500 relative overflow-hidden backdrop-blur-xl ${
       isDarkMode 
-        ? 'bg-gray-800/40 border-gray-700/30 shadow-2xl shadow-purple-500/10' 
+        ? 'bg-gray-800/40 border-gray-700/30 shadow-2xl shadow-pink-500/10' 
         : 'bg-white/80 border-gray-200/40 shadow-2xl shadow-pink-500/10'
     }`}>
       {/* Decorative background elements */}
@@ -185,7 +185,7 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
           isDarkMode ? 'bg-pink-500' : 'bg-pink-300'
         }`} style={{ transform: 'translate(30%, -30%)' }}></div>
         <div className={`absolute bottom-0 left-0 w-16 h-16 rounded-full blur-xl ${
-          isDarkMode ? 'bg-purple-500' : 'bg-purple-300'
+          isDarkMode ? 'bg-pink-500' : 'bg-pink-500'
         }`} style={{ transform: 'translate(-30%, 30%)' }}></div>
       </div>
       
@@ -195,8 +195,8 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
           <div className="flex items-center gap-4">
             <div className={`w-12 h-12 rounded-full p-0.5 bg-gradient-to-r ${
               isDarkMode 
-                ? 'from-pink-500 via-purple-500 to-indigo-500' 
-                : 'from-pink-400 via-purple-400 to-indigo-400'
+                ? 'from-pink-500 via-pink-500 to-indigo-500' 
+                : 'from-pink-400 via-pink-500 to-indigo-400'
             }`}>
               <div className="w-full h-full rounded-full overflow-hidden">
                 <img 

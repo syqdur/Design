@@ -110,7 +110,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className={`rounded-2xl sm:rounded-3xl p-4 sm:p-6 max-w-sm sm:max-w-md w-full max-h-[90vh] overflow-y-auto backdrop-blur-xl border transition-all duration-300 ${
         isDarkMode 
-          ? 'bg-gray-900/95 border-gray-700/30 shadow-2xl shadow-purple-500/10' 
+          ? 'bg-gray-900/95 border-gray-700/30 shadow-2xl shadow-pink-500/10' 
           : 'bg-white/95 border-gray-200/30 shadow-2xl shadow-pink-500/10'
       }`}>
         {/* Header */}

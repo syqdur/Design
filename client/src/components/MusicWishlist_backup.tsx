@@ -373,19 +373,19 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
       {/* Header with Instagram 2.0 Glassmorphism */}
       <div className={`p-6 rounded-3xl mb-6 transition-all duration-500 relative overflow-hidden ${
         isDarkMode 
-          ? 'bg-gradient-to-br from-purple-900/30 via-pink-900/20 to-orange-900/30 border border-white/10 backdrop-blur-xl shadow-2xl shadow-purple-500/20' 
-          : 'bg-gradient-to-br from-purple-50/80 via-pink-50/60 to-orange-50/80 border border-white/50 backdrop-blur-xl shadow-2xl shadow-purple-500/20'
+          ? 'bg-gradient-to-br from-pink-500/30 via-pink-900/20 to-orange-900/30 border border-white/10 backdrop-blur-xl shadow-2xl shadow-pink-500/20' 
+          : 'bg-gradient-to-br from-purple-50/80 via-pink-50/60 to-orange-50/80 border border-white/50 backdrop-blur-xl shadow-2xl shadow-pink-500/20'
       }`}>
         {/* Decorative background elements */}
         <div className="absolute inset-0 opacity-20">
           <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl ${
-            isDarkMode ? 'bg-gradient-to-br from-purple-500 to-pink-500' : 'bg-gradient-to-br from-purple-300 to-pink-300'
+            isDarkMode ? 'bg-gradient-to-br from-pink-500 to-pink-500' : 'bg-gradient-to-br from-pink-500 to-pink-300'
           }`} style={{ transform: 'translate(50%, -50%)' }}></div>
           <div className={`absolute bottom-0 left-0 w-24 h-24 rounded-full blur-2xl ${
             isDarkMode ? 'bg-gradient-to-br from-orange-500 to-red-500' : 'bg-gradient-to-br from-orange-300 to-red-300'
           }`} style={{ transform: 'translate(-50%, 50%)' }}></div>
           <div className={`absolute top-1/2 left-1/2 w-16 h-16 rounded-full blur-xl ${
-            isDarkMode ? 'bg-gradient-to-br from-blue-500 to-purple-500' : 'bg-gradient-to-br from-blue-300 to-purple-300'
+            isDarkMode ? 'bg-gradient-to-br from-blue-500 to-pink-500' : 'bg-gradient-to-br from-blue-300 to-pink-500'
           }`} style={{ transform: 'translate(-50%, -50%)' }}></div>
         </div>
 
@@ -393,12 +393,12 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <div className={`w-16 h-16 p-3 rounded-2xl transition-all duration-300 shadow-lg ${
-                isDarkMode ? 'bg-gradient-to-br from-purple-600/40 to-pink-600/40 backdrop-blur-sm' : 'bg-gradient-to-br from-purple-100/80 to-pink-100/80 backdrop-blur-sm'
+                isDarkMode ? 'bg-gradient-to-br from-pink-500/40 to-pink-600/40 backdrop-blur-sm' : 'bg-gradient-to-br from-pink-500/80 to-pink-100/80 backdrop-blur-sm'
               }`}>
                 <svg
                   viewBox="0 0 24 24"
                   className={`w-full h-full transition-colors duration-300 ${
-                    isDarkMode ? 'fill-purple-300' : 'fill-purple-600'
+                    isDarkMode ? 'fill-pink-500' : 'fill-pink-500'
                   }`}
                 >
                   <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.5 14.424c-.2.32-.623.42-.943.223-2.587-1.581-5.845-1.94-9.68-1.063-.414.094-.83-.156-.924-.57-.094-.414.156-.83.57-.924 4.195-.96 7.744-.546 10.633 1.223.32.2.42.623.223.943zm1.35-3.005c-.25.4-.781.525-1.181.275-2.96-1.82-7.473-2.349-10.98-1.285-.518.157-1.066-.132-1.223-.65-.157-.518.132-1.066.65-1.223 4.009-1.22 9.068-.643 12.459 1.477.4.25.525.781.275 1.181zm.116-3.129c-3.547-2.106-9.395-2.301-12.78-1.273-.622.189-1.278-.164-1.467-.786-.189-.622.164-1.278.786-1.467 3.876-1.178 10.44-.964 14.564 1.473.513.304.681 1.026.377 1.539-.304.513-1.026.681-1.539.377z"/>
@@ -406,9 +406,9 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
               </div>
               <div>
                 <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${
-                  isDarkMode ? 'text-purple-300' : 'text-purple-600'
+                  isDarkMode ? 'text-pink-500' : 'text-pink-500'
                 }`}>Wedding Playlist</p>
-                <h3 className={`text-2xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 bg-clip-text text-transparent`}>
+                <h3 className={`text-2xl font-bold bg-gradient-to-r from-pink-500 via-pink-500 to-orange-500 bg-clip-text text-transparent`}>
                   {selectedPlaylist.name}
                 </h3>
                 <div className="flex items-center gap-3 mt-2">
@@ -445,8 +445,8 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
               rel="noopener noreferrer"
               className={`p-3 rounded-2xl transition-all duration-300 hover:scale-110 shadow-lg ${
                 isDarkMode 
-                  ? 'bg-gradient-to-br from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white' 
-                  : 'bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white'
+                  ? 'bg-gradient-to-br from-pink-500 to-pink-600 hover:from-pink-500 hover:to-pink-700 text-white' 
+                  : 'bg-gradient-to-br from-pink-500 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white'
               }`}
               title="In Spotify öffnen"
             >
@@ -462,14 +462,14 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           }`}>
             <div className="relative">
               <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                isDarkMode ? 'text-purple-300/60' : 'text-purple-500/60'
+                isDarkMode ? 'text-pink-500/60' : 'text-pink-500/60'
               }`} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for your favorite songs..."
-                className={`w-full pl-12 pr-12 py-4 rounded-xl transition-all duration-300 focus:ring-2 focus:ring-purple-500/50 outline-none backdrop-blur-sm ${
+                className={`w-full pl-12 pr-12 py-4 rounded-xl transition-all duration-300 focus:ring-2 focus:ring-pink-500/50 outline-none backdrop-blur-sm ${
                   isDarkMode 
                     ? 'bg-white/10 text-white placeholder-white/50 border border-white/20 focus:bg-white/15' 
                     : 'bg-white/70 text-gray-900 placeholder-gray-500 border border-white/30 focus:bg-white/90'

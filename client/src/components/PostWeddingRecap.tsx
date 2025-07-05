@@ -700,7 +700,7 @@ export const PostWeddingRecap: React.FC<PostWeddingRecapProps> = ({ isDarkMode, 
       case "reception":
         return "bg-blue-500"
       case "party":
-        return "bg-purple-500"
+        return "bg-pink-500"
       case "special":
         return "bg-yellow-500"
       default:
@@ -1477,7 +1477,7 @@ export const PostWeddingRecap: React.FC<PostWeddingRecapProps> = ({ isDarkMode, 
                 }`}
               >
                 <div className="flex items-center gap-3 mb-2">
-                  <Calendar className="w-5 h-5 text-purple-500" />
+                  <Calendar className="w-5 h-5 text-pink-500" />
                   <span
                     className={`text-sm font-medium transition-colors duration-300 ${
                       isDarkMode ? "text-gray-300" : "text-gray-700"
