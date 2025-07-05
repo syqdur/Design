@@ -295,7 +295,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
   });
 
   return (
-    <div className="space-y-3">
+    <div className="py-2">
       {/* Existing User Tags */}
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2">
@@ -322,31 +322,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
         </div>
       )}
 
-      {/* Existing Location Tags */}
-      {locationTags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {locationTags.map((locationTag) => (
-            <div
-              key={locationTag.id}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-green-500/20 to-blue-500/20 text-green-700 dark:text-green-300 backdrop-blur-sm border border-green-200/30 dark:border-green-600/30 shadow-lg hover:shadow-xl"
-            >
-              <MapPin className="w-3 h-3" />
-              <span>{locationTag.name}</span>
-              {(locationTag.addedBy === currentUser || isAdmin || (mediaUploader && mediaUploader === currentUser)) && (
-                <button
-                  onClick={() => handleRemoveLocationTag(locationTag)}
-                  disabled={isLoadingLocation}
-                  className={`ml-1 hover:opacity-70 transition-all duration-300 transform hover:scale-110 ${
-                    isLoadingLocation ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+
 
       {/* Add Tag and Location Buttons - Only show for media uploader or admin */}
       {(mediaUploader === currentUser || isAdmin) && (

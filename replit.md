@@ -87,6 +87,14 @@ This is a comprehensive wedding gallery application with the following architect
 
 ## Recent Changes
 
+### January 5, 2025 (Overlay UI & Space Optimization)
+- **Like Button Overlay Implementation**: Moved like buttons from bottom sections to floating overlays positioned in bottom-right corner of media content with semi-transparent backgrounds and backdrop blur for optimal visibility
+- **Location Tags Overlay System**: Implemented location tags as compact bottom-left overlays on media content with map pin icons and truncated text, replacing separate display sections for space efficiency
+- **MediaTagging Component Cleanup**: Removed redundant location tags display section since location tags now appear as overlays directly on media content, streamlining the component's focus to user tagging and interface controls
+- **Consistent Overlay Styling**: Applied uniform glassmorphism styling with black/50 backgrounds, backdrop blur, and white borders for both like buttons and location tags across InstagramPost and NotePost components
+- **Space-Efficient Design**: Eliminated vertical space previously consumed by separate like and location sections, creating more compact posts while maintaining all functionality including heart overlay animations
+- **Mobile Touch Optimization**: Ensured overlay elements have appropriate touch targets and responsive sizing for mobile devices while keeping design clean and unobtrusive
+
 ### January 5, 2025 (Mobile Optimization & Practical Improvements)
 - **Complete Mobile Optimization**: Fixed all components being too large for mobile devices by reducing header padding (py-2), compacting welcome section, smaller floating action button (w-12 h-12), and reduced bottom navigation padding (p-2)
 - **Practical User Experience**: Simplified interface with clear messaging "Teile deine Hochzeitsfotos! 🎉" and direct instructions "Grüner Button → Foto hochladen" for wedding guests

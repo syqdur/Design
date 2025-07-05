@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Heart, MessageCircle, MoreHorizontal, Trash2, MessageSquare, Edit3 } from 'lucide-react';
-import { MediaItem, Comment, Like } from '../types';
+import React, { useState, useEffect } from 'react';
+import { Heart, MessageCircle, MoreHorizontal, Trash2, MessageSquare, Edit3, MapPin } from 'lucide-react';
+import { MediaItem, Comment, Like, LocationTag } from '../types';
+import { getLocationTags } from '../services/firebaseService';
 
 interface NotePostProps {
   item: MediaItem;
@@ -39,6 +40,20 @@ export const NotePost: React.FC<NotePostProps> = ({
   const [showAllComments, setShowAllComments] = useState(false);
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [editNoteText, setEditNoteText] = useState(item.noteText || '');
+  const [showHeartOverlay, setShowHeartOverlay] = useState(false);
+  const [locationTags, setLocationTags] = useState<LocationTag[]>([]);
+
+  useEffect(() => {
+    const loadLocationTags = async () => {
+      try {
+        const locationTagsData = await getLocationTags(item.id);
+        setLocationTags(locationTagsData);
+      } catch (error) {
+        console.error('Error loading location tags:', error);
+      }
+    };
+    loadLocationTags();
+  }, [item.id]);
 
   const isLiked = likes.some(like => like.userName === userName);
   const likeCount = likes.length;
@@ -54,6 +69,15 @@ export const NotePost: React.FC<NotePostProps> = ({
     if (commentText.trim()) {
       onAddComment(item.id, commentText.trim());
       setCommentText('');
+    }
+  };
+
+  const handleLikeClick = () => {
+    onToggleLike(item.id);
+    if (!isLiked) {
+      // Show heart overlay animation when liking
+      setShowHeartOverlay(true);
+      setTimeout(() => setShowHeartOverlay(false), 1000);
     }
   };
 
@@ -283,7 +307,7 @@ export const NotePost: React.FC<NotePostProps> = ({
             </div>
           </div>
         ) : (
-          <div className={`mx-6 mb-4 p-6 rounded-2xl transition-colors duration-300 backdrop-blur-sm ${
+          <div className={`mx-6 mb-4 p-6 rounded-2xl transition-colors duration-300 backdrop-blur-sm relative group ${
             isDarkMode 
               ? 'bg-gradient-to-br from-pink-500/30 to-pink-900/30 border border-pink-500/30' 
               : 'bg-gradient-to-br from-purple-50/80 to-pink-50/80 border border-pink-500/50'
@@ -319,36 +343,55 @@ export const NotePost: React.FC<NotePostProps> = ({
               "{item.noteText}"
             </p>
           </div>
+          
+          {/* Location Tags Overlay - positioned bottom-left */}
+          {locationTags.length > 0 && (
+            <div className="absolute bottom-4 left-4 flex flex-wrap gap-1 max-w-[60%] opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+              {locationTags.map((locationTag) => (
+                <div
+                  key={locationTag.id}
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-black/50 backdrop-blur-sm text-white border border-white/20"
+                >
+                  <MapPin className="w-3 h-3" />
+                  <span className="truncate max-w-24">{locationTag.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Like Button Overlay - positioned over note content */}
+          <div className="absolute bottom-4 right-4 flex flex-col items-center opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+            <button 
+              onClick={handleLikeClick}
+              className={`transition-all duration-300 transform hover:scale-110 mb-1 relative bg-black/50 backdrop-blur-sm rounded-full p-2 ${
+                isLiked ? 'text-red-500' : 'text-white hover:text-red-400'
+              }`}
+            >
+              <Heart className={`w-6 h-6 ${isLiked ? 'fill-current' : ''}`} />
+              
+              {/* Heart Overlay Animation */}
+              {showHeartOverlay && (
+                <div 
+                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                  style={{
+                    animation: 'heart-float 1s ease-out forwards'
+                  }}
+                >
+                  <div className="text-red-500 text-xl">❤️</div>
+                </div>
+              )}
+            </button>
+            {likeCount > 0 && (
+              <span className="text-white text-xs font-semibold bg-black/50 backdrop-blur-sm rounded-full px-2 py-1">
+                {likeCount}
+              </span>
+            )}
+          </div>
           </div>
         )}
 
-        {/* Action Buttons */}
+        {/* Content Section */}
         <div className="px-6 pb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-6">
-              <button 
-                onClick={() => onToggleLike(item.id)}
-                className={`transition-all duration-300 transform hover:scale-110 ${
-                  isLiked ? 'text-red-500' : isDarkMode ? 'text-gray-300 hover:text-red-400' : 'text-gray-700 hover:text-red-500'
-                }`}
-              >
-                <Heart className={`w-7 h-7 ${isLiked ? 'fill-current' : ''}`} />
-              </button>
-              <MessageCircle className={`w-7 h-7 transition-colors duration-300 cursor-pointer ${
-                isDarkMode ? 'text-gray-300 hover:text-gray-100' : 'text-gray-700 hover:text-gray-900'
-              }`} />
-            </div>
-          </div>
-
-          {/* Likes */}
-          <div className="mb-3">
-            <span className={`font-semibold text-base transition-colors duration-300 ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}>
-              {likeCount > 0 ? `${likeCount} „Gefällt mir"-Angabe${likeCount > 1 ? 'n' : ''}` : 'Gefällt dir das?'}
-            </span>
-          </div>
-
           {/* Comments */}
           <div className="space-y-2">
           {displayComments.map((comment) => {
@@ -415,9 +458,7 @@ export const NotePost: React.FC<NotePostProps> = ({
           </div>
 
           {/* Add Comment */}
-          <form onSubmit={handleSubmitComment} className={`mt-4 pt-4 border-t transition-colors duration-300 ${
-            isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'
-          }`}>
+          <form onSubmit={handleSubmitComment} className="mt-4">
             <div className="flex items-center gap-3">
               <div className="w-6 h-6 rounded-full overflow-hidden">
                 <img 
@@ -445,6 +486,8 @@ export const NotePost: React.FC<NotePostProps> = ({
               )}
             </div>
           </form>
+
+
         </div>
       </div>
     </div>
