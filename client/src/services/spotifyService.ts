@@ -1227,5 +1227,22 @@ export const getPendingOperationsCount = (): number => {
 
 // Export circuit breaker reset function
 export const resetSpotifyCircuitBreaker = (): void => {
+  console.log('🔄 Complete Spotify Reset - Clearing ALL state');
   SpotifyCircuitBreaker.getInstance().resetCircuitBreaker();
+  
+  // Clear all Spotify-related localStorage
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('spotify_access_token');
+    localStorage.removeItem('spotify_refresh_token');
+    localStorage.removeItem('spotify_token_expires_at');
+    localStorage.removeItem(PKCE_CODE_VERIFIER_KEY);
+    localStorage.removeItem(PKCE_STATE_KEY);
+    localStorage.removeItem('selectedPlaylist');
+    console.log('🧹 Cleared all Spotify localStorage data');
+  }
+  
+  // Reset global state
+  if (typeof window !== 'undefined') {
+    window.location.reload();
+  }
 };

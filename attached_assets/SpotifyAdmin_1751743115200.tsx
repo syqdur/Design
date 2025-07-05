@@ -7,8 +7,7 @@ import {
   getUserPlaylists,
   saveSelectedPlaylist,
   getSelectedPlaylist,
-  getCurrentUser,
-  resetSpotifyCircuitBreaker
+  getCurrentUser
 } from '../services/spotifyService';
 
 interface SpotifyAdminProps {
@@ -19,12 +18,11 @@ export const SpotifyAdmin: React.FC<SpotifyAdminProps> = ({ isDarkMode }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [playlists, setPlaylists] = useState<any[]>([]);
+  const [playlists, setPlaylists] = useState<SpotifyApi.PlaylistObjectSimplified[]>([]);
   const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(null);
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<SpotifyApi.CurrentUsersProfileResponse | null>(null);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [isSelectingPlaylist, setIsSelectingPlaylist] = useState(false);
-  const [isResetting, setIsResetting] = useState(false);
 
   // Check connection status on mount
   useEffect(() => {
@@ -41,6 +39,7 @@ export const SpotifyAdmin: React.FC<SpotifyAdminProps> = ({ isDarkMode }) => {
       setIsConnected(connected);
       
       if (connected) {
+        // Load user and playlists
         await loadUserData();
       }
     } catch (error) {
@@ -54,12 +53,15 @@ export const SpotifyAdmin: React.FC<SpotifyAdminProps> = ({ isDarkMode }) => {
   // Load user data and playlists
   const loadUserData = async () => {
     try {
+      // Get user profile
       const userProfile = await getCurrentUser();
       setUser(userProfile);
       
+      // Get playlists
       const userPlaylists = await getUserPlaylists();
       setPlaylists(userPlaylists);
       
+      // Get selected playlist
       const selectedPlaylist = await getSelectedPlaylist();
       if (selectedPlaylist) {
         setSelectedPlaylistId(selectedPlaylist.playlistId);
@@ -78,20 +80,6 @@ export const SpotifyAdmin: React.FC<SpotifyAdminProps> = ({ isDarkMode }) => {
     } catch (error) {
       console.error('Failed to get authorization URL:', error);
       setError('Failed to initiate Spotify connection');
-    }
-  };
-
-  // Reset Spotify connection (fix circuit breaker)
-  const handleReset = async () => {
-    setIsResetting(true);
-    setError(null);
-    
-    try {
-      resetSpotifyCircuitBreaker(); // This will clear all state and reload the page
-    } catch (error) {
-      console.error('Failed to reset Spotify:', error);
-      setError('Failed to reset Spotify connection');
-      setIsResetting(false);
     }
   };
 
@@ -118,7 +106,7 @@ export const SpotifyAdmin: React.FC<SpotifyAdminProps> = ({ isDarkMode }) => {
   };
 
   // Select playlist
-  const handleSelectPlaylist = async (playlist: any) => {
+  const handleSelectPlaylist = async (playlist: SpotifyApi.PlaylistObjectSimplified) => {
     setIsSelectingPlaylist(true);
     setError(null);
     
@@ -193,32 +181,17 @@ export const SpotifyAdmin: React.FC<SpotifyAdminProps> = ({ isDarkMode }) => {
             </div>
           )}
 
-          <div className="space-y-3">
-            <button
-              onClick={handleConnect}
-              className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 ${
-                isDarkMode 
-                  ? 'bg-green-600 hover:bg-green-700 text-white' 
-                  : 'bg-green-500 hover:bg-green-600 text-white'
-              }`}
-            >
-              <Music className="w-5 h-5" />
-              Connect to Spotify
-            </button>
-            
-            <button
-              onClick={handleReset}
-              disabled={isResetting}
-              className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
-                isDarkMode 
-                  ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' 
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-              } disabled:opacity-50`}
-            >
-              <RefreshCw className={`w-4 h-4 ${isResetting ? 'animate-spin' : ''}`} />
-              Reset Connection
-            </button>
-          </div>
+          <button
+            onClick={handleConnect}
+            className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 ${
+              isDarkMode 
+                ? 'bg-green-600 hover:bg-green-700 text-white' 
+                : 'bg-green-500 hover:bg-green-600 text-white'
+            }`}
+          >
+            <Music className="w-5 h-5" />
+            Connect to Spotify
+          </button>
         </div>
       </div>
     );
@@ -418,52 +391,27 @@ export const SpotifyAdmin: React.FC<SpotifyAdminProps> = ({ isDarkMode }) => {
         )}
       </div>
 
-      {/* Action Buttons */}
-      <div className="space-y-3">
-        {/* Reset Connection Button */}
-        <button
-          onClick={handleReset}
-          disabled={isResetting}
-          className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-colors duration-300 ${
-            isResetting
-              ? 'cursor-not-allowed opacity-50'
-              : ''
-          } ${
-            isDarkMode 
-              ? 'bg-orange-600 hover:bg-orange-700 text-white' 
-              : 'bg-orange-500 hover:bg-orange-600 text-white'
-          }`}
-        >
-          {isResetting ? (
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          ) : (
-            <RefreshCw className="w-5 h-5" />
-          )}
-          Reset Connection
-        </button>
-
-        {/* Disconnect Button */}
-        <button
-          onClick={handleDisconnect}
-          disabled={isDisconnecting}
-          className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-colors duration-300 ${
-            isDisconnecting
-              ? 'cursor-not-allowed opacity-50'
-              : ''
-          } ${
-            isDarkMode 
-              ? 'bg-red-600 hover:bg-red-700 text-white' 
-              : 'bg-red-500 hover:bg-red-600 text-white'
-          }`}
-        >
-          {isDisconnecting ? (
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          ) : (
-            <LogOut className="w-5 h-5" />
-          )}
-          Disconnect Spotify
-        </button>
-      </div>
+      {/* Disconnect Button */}
+      <button
+        onClick={handleDisconnect}
+        disabled={isDisconnecting}
+        className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl transition-colors duration-300 ${
+          isDisconnecting
+            ? 'cursor-not-allowed opacity-50'
+            : ''
+        } ${
+          isDarkMode 
+            ? 'bg-red-600 hover:bg-red-700 text-white' 
+            : 'bg-red-500 hover:bg-red-600 text-white'
+        }`}
+      >
+        {isDisconnecting ? (
+          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+        ) : (
+          <LogOut className="w-5 h-5" />
+        )}
+        Disconnect Spotify
+      </button>
     </div>
   );
 };

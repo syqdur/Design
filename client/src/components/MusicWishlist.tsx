@@ -12,7 +12,8 @@ import {
   bulkRemoveTracksFromPlaylist,
   getCurrentSnapshotId,
   getPendingOperationsCount,
-  resetSpotifyCircuitBreaker
+  resetSpotifyCircuitBreaker,
+  getAuthorizationUrl
 } from '../services/spotifyService';
 import { SpotifyTrack } from '../types';
 import { getUserName, getDeviceId } from '../utils/deviceId';
@@ -82,6 +83,12 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
             setCurrentUser(user);
           } catch (userError) {
             console.log('Could not get current user:', userError);
+            // If user retrieval fails, we're not properly authenticated
+            setIsSpotifyAvailable(false);
+            setError('Spotify authentication required. Please connect your Spotify account.');
+            setIsLoading(false);
+            setSyncStatus('error');
+            return;
           }
 
           const playlist = await getSelectedPlaylist();
@@ -330,11 +337,40 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
             Spotify nicht verbunden
           </h3>
           
-          <p className={`text-sm ${
+          <p className={`text-sm mb-6 ${
             isDarkMode ? 'text-gray-400' : 'text-gray-600'
           }`}>
             Ein Administrator muss zuerst ein Spotify-Konto verbinden und eine Playlist auswählen, bevor Musikwünsche möglich sind.
           </p>
+
+          {error && (
+            <div className={`mb-4 p-3 rounded-lg ${
+              isDarkMode ? 'bg-red-900/20 text-red-400' : 'bg-red-50 text-red-600'
+            }`}>
+              <p className="text-sm">{error}</p>
+            </div>
+          )}
+
+          <button
+            onClick={async () => {
+              try {
+                setError(null);
+                const authUrl = await getAuthorizationUrl();
+                window.location.href = authUrl;
+              } catch (error) {
+                console.error('Failed to get authorization URL:', error);
+                setError('Failed to connect to Spotify. Please try again.');
+              }
+            }}
+            className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+              isDarkMode 
+                ? 'bg-green-600 hover:bg-green-700 text-white' 
+                : 'bg-green-500 hover:bg-green-600 text-white'
+            }`}
+          >
+            <Music className="w-4 h-4" />
+            Mit Spotify verbinden
+          </button>
         </div>
       </div>
     );
