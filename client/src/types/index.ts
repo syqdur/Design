@@ -95,8 +95,6 @@ export interface SpotifyTrack {
     images: Array<{ url: string; height: number; width: number }>;
   };
   uri: string;
-  duration_ms?: number;
-  external_urls?: { spotify: string };
 }
 
 export interface ProfileData {

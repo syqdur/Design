@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Music, Search, X, Plus, Trash2, ExternalLink, AlertCircle, RefreshCw, Clock, Heart, Play, Volume2, Check, CheckSquare, Square, Zap, Wifi, Activity } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Music, Search, X, Plus, Trash2, ExternalLink, AlertCircle, RefreshCw, Check } from 'lucide-react';
 import { 
   searchTracks, 
   addTrackToPlaylist, 
@@ -9,11 +9,8 @@ import {
   isSpotifyConnected,
   getCurrentUser,
   subscribeToPlaylistUpdates,
-  bulkRemoveTracksFromPlaylist,
   getCurrentSnapshotId,
-  getPendingOperationsCount,
-  resetSpotifyCircuitBreaker,
-  getAuthorizationUrl
+  getPendingOperationsCount
 } from '../services/spotifyService';
 import { SpotifyTrack } from '../types';
 import { getUserName, getDeviceId } from '../utils/deviceId';
@@ -47,70 +44,45 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
   const [isAddingTrack, setIsAddingTrack] = useState<string | null>(null);
   const [isRemovingTrack, setIsRemovingTrack] = useState<string | null>(null);
   const [showAddSuccess, setShowAddSuccess] = useState(false);
-  const [currentUser, setCurrentUser] = useState<any | null>(null);
   const [songOwnerships, setSongOwnerships] = useState<SongOwnership[]>([]);
-  const [bulkDeleteMode, setBulkDeleteMode] = useState(false);
-  const [selectedTracks, setSelectedTracks] = useState<Set<string>>(new Set());
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [syncStatus, setSyncStatus] = useState<'connecting' | 'live' | 'syncing' | 'error'>('connecting');
-  const [snapshotId, setSnapshotId] = useState<string | null>(null);
-  const [pendingOperations, setPendingOperations] = useState(0);
   const [unsubscribeSnapshot, setUnsubscribeSnapshot] = useState<(() => void) | null>(null);
 
-  // Update admin state when prop changes
   useEffect(() => {
     setIsAdmin(adminProp);
   }, [adminProp]);
 
-  // Check Spotify availability and load data
+  // Reload ownership data when playlist tracks change
+  useEffect(() => {
+    if (playlistTracks.length > 0 && selectedPlaylist) {
+      loadSongOwnerships();
+    }
+  }, [playlistTracks, selectedPlaylist]);
+
   useEffect(() => {
     const checkSpotify = async () => {
       try {
         setIsLoading(true);
         setSyncStatus('connecting');
 
-        // Reset circuit breaker on component mount to clear any stuck state
-        resetSpotifyCircuitBreaker();
-
         const connected = await isSpotifyConnected();
         setIsSpotifyAvailable(connected);
 
         if (connected) {
-          try {
-            const user = await getCurrentUser();
-            setCurrentUser(user);
-          } catch (userError) {
-            console.log('Could not get current user:', userError);
-            // If user retrieval fails, we're not properly authenticated
-            setIsSpotifyAvailable(false);
-            setError('Spotify authentication required. Please connect your Spotify account.');
-            setIsLoading(false);
-            setSyncStatus('error');
-            return;
-          }
-
           const playlist = await getSelectedPlaylist();
           if (playlist) {
             setSelectedPlaylist(playlist);
-
-            try {
-              const cleanup = subscribeToPlaylistUpdates(playlist.playlistId, (tracks) => {
-                setPlaylistTracks(tracks);
-                setLastUpdate(new Date());
-                setSyncStatus('live');
-                setPendingOperations(getPendingOperationsCount());
-                const currentSnapshot = getCurrentSnapshotId();
-                setSnapshotId(currentSnapshot);
-              });
-
-              setUnsubscribeSnapshot(() => cleanup);
+            
+            const cleanup = subscribeToPlaylistUpdates(playlist.playlistId, async (tracks) => {
+              setPlaylistTracks(tracks);
+              setSyncStatus('live');
+              // Reload ownership data when tracks change
               await loadSongOwnerships();
-            } catch (playlistError) {
-              console.error('Failed to load playlist tracks:', playlistError);
-              setError('Failed to load playlist tracks. The playlist may no longer exist or you may not have access to it.');
-            }
+            });
+
+            setUnsubscribeSnapshot(() => cleanup);
+            await loadSongOwnerships();
           }
         }
       } catch (error) {
@@ -130,7 +102,6 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
     };
   }, []);
 
-  // Search with debounce
   useEffect(() => {
     if (!searchQuery.trim() || !isSpotifyAvailable) {
       setSearchResults([]);
@@ -156,14 +127,10 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
     return () => clearTimeout(timeoutId);
   }, [searchQuery, isSpotifyAvailable]);
 
-  // Song ownership management
   const loadSongOwnerships = async () => {
     if (!selectedPlaylist) return;
 
     try {
-      console.log('📋 === LOADING SONG OWNERSHIPS ===');
-      console.log('Playlist ID:', selectedPlaylist.playlistId);
-
       const q = query(
         collection(db, 'songOwnerships'),
         where('playlistId', '==', selectedPlaylist.playlistId)
@@ -175,9 +142,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
         ownerships.push({ id: doc.id, ...doc.data() } as SongOwnership);
       });
 
-      console.log(`📋 Loaded ${ownerships.length} ownership records`);
-      ownerships.forEach(o => console.log(`  - ${o.trackId} by ${o.addedByUser} (${o.addedByDeviceId?.slice(0, 8)}...)`));
-
+      console.log(`🎵 Refreshed ${ownerships.length} song ownerships after tab switch`);
       setSongOwnerships(ownerships);
     } catch (error) {
       console.error('Failed to load song ownerships:', error);
@@ -223,6 +188,17 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
 
   const handleAddTrack = async (track: SpotifyTrack) => {
     if (isAddingTrack) return;
+
+    // Check if track is already in the playlist
+    const isTrackAlreadyInPlaylist = playlistTracks.some(playlistTrack => 
+      playlistTrack.track?.id === track.id
+    );
+
+    if (isTrackAlreadyInPlaylist) {
+      setError('Dieser Song ist bereits in der Playlist vorhanden.');
+      setTimeout(() => setError(null), 3000);
+      return;
+    }
 
     setIsAddingTrack(track.id);
     setError(null);
@@ -277,36 +253,24 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
     }
   };
 
-  // Check if user can delete a track
   const canDeleteTrack = (track: any) => {
     if (isAdmin) {
-      console.log(`✅ Admin can delete "${track.track.name}"`);
       return true;
     }
 
     const currentUserName = getUserName();
     const currentDeviceId = getDeviceId();
 
-    console.log(`🔍 Checking delete permission for "${track.track.name}"`);
-    console.log(`👤 Current user: ${currentUserName} (${currentDeviceId})`);
-
     if (!currentUserName) {
-      console.log('❌ No username found');
       return false;
     }
 
     const ownership = songOwnerships.find(o => o.trackId === track.track.id);
     if (!ownership) {
-      console.log('❌ No ownership record found');
       return false;
     }
 
-    console.log(`🏷️ Track added by: ${ownership.addedByUser} (${ownership.addedByDeviceId})`);
-
-    const canDelete = ownership.addedByUser === currentUserName && ownership.addedByDeviceId === currentDeviceId;
-    console.log(`${canDelete ? '✅' : '❌'} Can delete: ${canDelete}`);
-
-    return canDelete;
+    return ownership.addedByUser === currentUserName && ownership.addedByDeviceId === currentDeviceId;
   };
 
   const formatDuration = (ms: number) => {
@@ -317,60 +281,38 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
 
   if (!isSpotifyAvailable) {
     return (
-      <div className={`mx-4 my-6 p-6 rounded-lg border ${
-        isDarkMode 
-          ? 'bg-gray-900 border-gray-700' 
-          : 'bg-white border-gray-200'
-      }`}>
-        <div className="text-center py-8">
-          <div className={`w-16 h-16 mx-auto mb-4 p-3 rounded-lg ${
-            isDarkMode ? 'bg-green-500/20' : 'bg-green-500/10'
+      <div className="mx-4 my-6 p-8 rounded-2xl glass-card relative overflow-hidden bg-pink-500/10 border-pink-400/20" style={{
+        background: isDarkMode 
+          ? 'linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(219, 39, 119, 0.05) 100%)' 
+          : 'linear-gradient(135deg, rgba(236, 72, 153, 0.05) 0%, rgba(219, 39, 119, 0.02) 100%)'
+      }}>
+        <div className="absolute inset-0 opacity-25">
+          <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl ${
+            isDarkMode ? 'bg-gradient-to-br from-pink-500 to-pink-500' : 'bg-gradient-to-br from-pink-300 to-pink-500'
+          }`} style={{ transform: 'translate(50%, -50%)' }}></div>
+          <div className={`absolute bottom-0 left-0 w-24 h-24 rounded-full blur-2xl ${
+            isDarkMode ? 'bg-gradient-to-br from-rose-500 to-pink-500' : 'bg-gradient-to-br from-rose-300 to-pink-500'
+          }`} style={{ transform: 'translate(-50%, 50%)' }}></div>
+        </div>
+        
+        <div className="relative z-10 text-center py-8">
+          <div className={`w-20 h-20 mx-auto mb-6 p-4 rounded-2xl transition-all duration-300 ${
+            isDarkMode ? 'bg-pink-500/20' : 'bg-pink-500/10'
           }`}>
             <Music className={`w-full h-full ${
-              isDarkMode ? 'text-green-400' : 'text-green-600'
+              isDarkMode ? 'text-pink-400' : 'text-pink-600'
             }`} />
           </div>
           
-          <h3 className={`text-xl font-semibold mb-3 ${
-            isDarkMode ? 'text-gray-100' : 'text-gray-900'
-          }`}>
+          <h3 className={`text-2xl font-bold mb-4 bg-gradient-to-br from-pink-500 to-emerald-600 bg-clip-text text-transparent`}>
             Spotify nicht verbunden
           </h3>
           
-          <p className={`text-sm mb-6 ${
-            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+          <p className={`text-sm max-w-md mx-auto leading-relaxed transition-colors duration-300 ${
+            isDarkMode ? 'text-white/70' : 'text-gray-600'
           }`}>
             Ein Administrator muss zuerst ein Spotify-Konto verbinden und eine Playlist auswählen, bevor Musikwünsche möglich sind.
           </p>
-
-          {error && (
-            <div className={`mb-4 p-3 rounded-lg ${
-              isDarkMode ? 'bg-red-900/20 text-red-400' : 'bg-red-50 text-red-600'
-            }`}>
-              <p className="text-sm">{error}</p>
-            </div>
-          )}
-
-          <button
-            onClick={async () => {
-              try {
-                setError(null);
-                const authUrl = await getAuthorizationUrl();
-                window.location.href = authUrl;
-              } catch (error) {
-                console.error('Failed to get authorization URL:', error);
-                setError('Failed to connect to Spotify. Please try again.');
-              }
-            }}
-            className={`inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-              isDarkMode 
-                ? 'bg-green-600 hover:bg-green-700 text-white' 
-                : 'bg-green-500 hover:bg-green-600 text-white'
-            }`}
-          >
-            <Music className="w-4 h-4" />
-            Mit Spotify verbinden
-          </button>
         </div>
       </div>
     );
@@ -378,28 +320,35 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
 
   if (!selectedPlaylist) {
     return (
-      <div className={`mx-4 my-6 p-6 rounded-lg border ${
+      <div className={`mx-4 my-6 p-8 rounded-3xl transition-all duration-500 relative overflow-hidden ${
         isDarkMode 
-          ? 'bg-gray-900 border-gray-700' 
-          : 'bg-white border-gray-200'
+          ? 'bg-gradient-to-br from-pink-900/40 via-pink-500/30 to-rose-900/30 border border-pink-500/20 backdrop-blur-xl shadow-2xl shadow-pink-500/20' 
+          : 'bg-gradient-to-br from-pink-50/90 via-purple-50/80 to-rose-50/80 border border-pink-200/60 backdrop-blur-xl shadow-2xl shadow-pink-500/15'
       }`}>
-        <div className="text-center py-8">
-          <div className={`w-16 h-16 mx-auto mb-4 p-3 rounded-lg ${
-            isDarkMode ? 'bg-green-500/20' : 'bg-green-500/10'
+        <div className="absolute inset-0 opacity-25">
+          <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl ${
+            isDarkMode ? 'bg-gradient-to-br from-pink-500 to-pink-500' : 'bg-gradient-to-br from-pink-300 to-pink-500'
+          }`} style={{ transform: 'translate(50%, -50%)' }}></div>
+          <div className={`absolute bottom-0 left-0 w-24 h-24 rounded-full blur-2xl ${
+            isDarkMode ? 'bg-gradient-to-br from-rose-500 to-pink-500' : 'bg-gradient-to-br from-rose-300 to-pink-500'
+          }`} style={{ transform: 'translate(-50%, 50%)' }}></div>
+        </div>
+        
+        <div className="relative z-10 text-center py-8">
+          <div className={`w-20 h-20 mx-auto mb-6 p-4 rounded-2xl transition-all duration-300 ${
+            isDarkMode ? 'bg-pink-500/20' : 'bg-pink-500/10'
           }`}>
             <Music className={`w-full h-full ${
-              isDarkMode ? 'text-green-400' : 'text-green-600'
+              isDarkMode ? 'text-pink-400' : 'text-pink-600'
             }`} />
           </div>
           
-          <h3 className={`text-xl font-semibold mb-3 ${
-            isDarkMode ? 'text-gray-100' : 'text-gray-900'
-          }`}>
+          <h3 className={`text-2xl font-bold mb-4 bg-gradient-to-br from-pink-500 to-emerald-600 bg-clip-text text-transparent`}>
             Keine Playlist ausgewählt
           </h3>
           
-          <p className={`text-sm ${
-            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+          <p className={`text-sm max-w-md mx-auto leading-relaxed transition-colors duration-300 ${
+            isDarkMode ? 'text-white/70' : 'text-gray-600'
           }`}>
             Ein Administrator muss zuerst eine Playlist für Musikwünsche auswählen.
           </p>
@@ -409,253 +358,217 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
   }
 
   return (
-    <div className="mx-4 my-6 space-y-6">
-      {/* Header with Instagram 2.0 Glassmorphism */}
-      <div className={`p-6 rounded-3xl mb-6 transition-all duration-500 relative overflow-hidden ${
+    <div className="mx-4 my-6 space-y-4">
+      {/* Compact Header */}
+      <div className={`p-4 rounded-2xl transition-all duration-500 ${
         isDarkMode 
-          ? 'bg-gradient-to-br from-pink-500/30 via-pink-900/20 to-orange-900/30 border border-white/10 backdrop-blur-xl shadow-2xl shadow-pink-500/20' 
-          : 'bg-gradient-to-br from-purple-50/80 via-pink-50/60 to-orange-50/80 border border-white/50 backdrop-blur-xl shadow-2xl shadow-pink-500/20'
+          ? 'bg-gray-900 border border-gray-700 shadow-2xl' 
+          : 'bg-white border border-gray-200 shadow-2xl'
       }`}>
-        {/* Decorative background elements */}
-        <div className="absolute inset-0 opacity-20">
-          <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl ${
-            isDarkMode ? 'bg-gradient-to-br from-pink-500 to-pink-500' : 'bg-gradient-to-br from-pink-500 to-pink-300'
-          }`} style={{ transform: 'translate(50%, -50%)' }}></div>
-          <div className={`absolute bottom-0 left-0 w-24 h-24 rounded-full blur-2xl ${
-            isDarkMode ? 'bg-gradient-to-br from-orange-500 to-red-500' : 'bg-gradient-to-br from-orange-300 to-red-300'
-          }`} style={{ transform: 'translate(-50%, 50%)' }}></div>
-          <div className={`absolute top-1/2 left-1/2 w-16 h-16 rounded-full blur-xl ${
-            isDarkMode ? 'bg-gradient-to-br from-blue-500 to-pink-500' : 'bg-gradient-to-br from-blue-300 to-pink-500'
-          }`} style={{ transform: 'translate(-50%, -50%)' }}></div>
-        </div>
 
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <div className={`w-16 h-16 p-3 rounded-2xl transition-all duration-300 shadow-lg ${
-                isDarkMode ? 'bg-gradient-to-br from-pink-500/40 to-pink-600/40 backdrop-blur-sm' : 'bg-gradient-to-br from-pink-500/80 to-pink-100/80 backdrop-blur-sm'
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className={`w-10 h-10 p-2 rounded-full ${
+              isDarkMode ? 'bg-pink-500/20' : 'bg-pink-100'
+            }`}>
+              <svg viewBox="0 0 24 24" width="24" height="24">
+                <path fill="#ff69b4" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.5 14.424c-.2.32-.623.42-.943.223-2.587-1.581-5.845-1.94-9.68-1.063-.414.094-.83-.156-.924-.57-.094-.414.156-.83.57-.924 4.195-.96 7.744-.546 10.633 1.223.32.2.42.623.223.943zm1.35-3.005c-.25.4-.781.525-1.181.275-2.96-1.82-7.473-2.349-10.98-1.285-.518.157-1.066-.132-1.223-.65-.157-.518.132-1.066.65-1.223 4.009-1.22 9.068-.643 12.459 1.477.4.25.525.781.275 1.181zm.116-3.129c-3.547-2.106-9.395-2.301-12.78-1.273-.622.189-1.278-.164-1.467-.786-.189-.622.164-1.278.786-1.467 3.876-1.178 10.44-.964 14.564 1.473.513.304.681 1.026.377 1.539-.304.513-1.026.681-1.539.377z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 className={`text-lg font-normal ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>
-                <svg
-                  viewBox="0 0 24 24"
-                  className={`w-full h-full transition-colors duration-300 ${
-                    isDarkMode ? 'fill-pink-500' : 'fill-pink-500'
-                  }`}
-                >
-                  <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.5 14.424c-.2.32-.623.42-.943.223-2.587-1.581-5.845-1.94-9.68-1.063-.414.094-.83-.156-.924-.57-.094-.414.156-.83.57-.924 4.195-.96 7.744-.546 10.633 1.223.32.2.42.623.223.943zm1.35-3.005c-.25.4-.781.525-1.181.275-2.96-1.82-7.473-2.349-10.98-1.285-.518.157-1.066-.132-1.223-.65-.157-.518.132-1.066.65-1.223 4.009-1.22 9.068-.643 12.459 1.477.4.25.525.781.275 1.181zm.116-3.129c-3.547-2.106-9.395-2.301-12.78-1.273-.622.189-1.278-.164-1.467-.786-.189-.622.164-1.278.786-1.467 3.876-1.178 10.44-.964 14.564 1.473.513.304.681 1.026.377 1.539-.304.513-1.026.681-1.539.377z"/>
-                </svg>
-              </div>
-              <div>
-                <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${
-                  isDarkMode ? 'text-pink-500' : 'text-pink-500'
-                }`}>Wedding Playlist</p>
-                <h3 className={`text-2xl font-bold bg-gradient-to-r from-pink-500 via-pink-500 to-orange-500 bg-clip-text text-transparent`}>
-                  {selectedPlaylist.name}
-                </h3>
-                <div className="flex items-center gap-3 mt-2">
-                  <p className={`text-sm transition-colors duration-300 ${
-                    isDarkMode ? 'text-white/80' : 'text-gray-700'
-                  }`}>
-                    {playlistTracks.length} Songs • Live Requests
-                  </p>
-                  <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 backdrop-blur-sm ${
-                    syncStatus === 'connecting' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' :
-                    syncStatus === 'syncing' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
-                    syncStatus === 'live' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
-                    'bg-red-500/20 text-red-300 border border-red-500/30'
-                  }`}>
-                    <div className={`w-2 h-2 rounded-full ${
-                      syncStatus === 'connecting' ? 'bg-yellow-400 animate-pulse' :
-                      syncStatus === 'syncing' ? 'bg-blue-400 animate-pulse' :
-                      syncStatus === 'live' ? 'bg-green-400' :
-                      'bg-red-400'
-                    }`}></div>
-                    <span>
-                      {syncStatus === 'connecting' ? 'Verbinde...' :
-                       syncStatus === 'syncing' ? 'Sync...' :
-                       syncStatus === 'live' ? 'Live' :
-                       'Fehler'}
-                    </span>
-                  </div>
+                {selectedPlaylist.name}
+              </h3>
+              <div className="flex items-center gap-2 text-sm">
+                <span className={isDarkMode ? 'text-white/70' : 'text-gray-600'}>
+                  {playlistTracks.length} Songs
+                </span>
+                <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
+                  syncStatus === 'live' ? 'bg-pink-500/20 text-pink-400' : 'bg-gray-500/20 text-gray-400'
+                }`}>
+                  <div className={`w-1.5 h-1.5 rounded-full ${
+                    syncStatus === 'live' ? 'bg-green-400' : 'bg-gray-400'
+                  }`}></div>
+                  <span>{syncStatus === 'live' ? 'Live' : 'Offline'}</span>
                 </div>
               </div>
             </div>
-            <a
-              href={`https://open.spotify.com/playlist/${selectedPlaylist.playlistId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`p-3 rounded-2xl transition-all duration-300 hover:scale-110 shadow-lg ${
-                isDarkMode 
-                  ? 'bg-gradient-to-br from-pink-500 to-pink-600 hover:from-pink-500 hover:to-pink-700 text-white' 
-                  : 'bg-gradient-to-br from-pink-500 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white'
-              }`}
-              title="In Spotify öffnen"
-            >
-              <ExternalLink className="w-5 h-5" />
-            </a>
           </div>
-
-          {/* Search Section with Instagram 2.0 Style */}
-          <div className={`relative p-6 rounded-2xl transition-all duration-500 backdrop-blur-sm ${
-            isDarkMode 
-              ? 'bg-white/5 border border-white/10' 
-              : 'bg-white/50 border border-white/30'
-          }`}>
-            <div className="relative">
-              <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
-                isDarkMode ? 'text-pink-500/60' : 'text-pink-500/60'
-              }`} />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for your favorite songs..."
-                className={`w-full pl-12 pr-12 py-4 rounded-xl transition-all duration-300 focus:ring-2 focus:ring-pink-500/50 outline-none backdrop-blur-sm ${
-                  isDarkMode 
-                    ? 'bg-white/10 text-white placeholder-white/50 border border-white/20 focus:bg-white/15' 
-                    : 'bg-white/70 text-gray-900 placeholder-gray-500 border border-white/30 focus:bg-white/90'
-                }`}
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className={`absolute right-4 top-1/2 transform -translate-y-1/2 p-1.5 rounded-full transition-all duration-300 hover:scale-110 ${
-                    isDarkMode ? 'hover:bg-white/20' : 'hover:bg-gray-200/50'
-                  }`}
-                >
-                  <X className={`w-4 h-4 ${
-                    isDarkMode ? 'text-white/70' : 'text-gray-500'
-                  }`} />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Success Message */}
-        {showAddSuccess && (
-          <div className={`mb-4 p-3 rounded-lg ${
-            isDarkMode 
-              ? 'bg-green-900/20 border border-green-500/30 text-green-400' 
-              : 'bg-green-50 border border-green-200 text-green-700'
-          }`}>
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4" />
-              <span className="text-sm font-medium">Song erfolgreich hinzugefügt!</span>
-            </div>
-          </div>
-        )}
-
-        {/* Error Message */}
-        {error && (
-          <div className={`mb-4 p-3 rounded-lg ${
-            isDarkMode 
-              ? 'bg-red-900/20 border border-red-500/30 text-red-400' 
-              : 'bg-red-50 border border-red-200 text-red-700'
-          }`}>
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" />
-              <span className="text-sm">{error}</span>
-            </div>
-          </div>
-        )}
-
-        {/* Search Results */}
-        {searchResults.length > 0 && (
-          <div className="space-y-2 mb-4">
-            {searchResults.map((track) => (
-              <div key={track.id} className={`p-3 rounded-lg border ${
-                isDarkMode 
-                  ? 'bg-gray-800 border-gray-700' 
-                  : 'bg-gray-50 border-gray-200'
-              }`}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={track.album.images[0]?.url}
-                      alt={track.album.name}
-                      className="w-12 h-12 rounded"
-                    />
-                    <div>
-                      <h4 className={`font-medium ${
-                        isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                      }`}>
-                        {track.name}
-                      </h4>
-                      <p className={`text-sm ${
-                        isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                      }`}>
-                        {track.artists.map(artist => artist.name).join(', ')}
-                      </p>
-                      <p className={`text-xs ${
-                        isDarkMode ? 'text-gray-500' : 'text-gray-500'
-                      }`}>
-                        {formatDuration(track.duration_ms || 0)}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleAddTrack(track)}
-                    disabled={isAddingTrack === track.id}
-                    className={`p-2 rounded-lg ${
-                      isDarkMode 
-                        ? 'bg-green-600 hover:bg-green-700 text-white' 
-                        : 'bg-green-500 hover:bg-green-600 text-white'
-                    } disabled:opacity-50`}
-                  >
-                    {isAddingTrack === track.id ? (
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Plus className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Playlist Tracks */}
-        <div className="space-y-2">
-          {playlistTracks.map((item) => (
-            <div key={item.track.id} className={`p-3 rounded-lg border ${
+          <a
+            href={`https://open.spotify.com/playlist/${selectedPlaylist.playlistId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`p-px rounded-lg transition-all duration-300 hover:scale-105 flex items-center justify-center ${
               isDarkMode 
-                ? 'bg-gray-800 border-gray-700' 
-                : 'bg-gray-50 border-gray-200'
+                ? 'bg-pink-600/20 hover:bg-pink-600/30 text-pink-300' 
+                : 'bg-pink-100 hover:bg-pink-200 text-pink-600'
+            }`}
+            title="In Spotify öffnen"
+          >
+            <ExternalLink className="w-2.5 h-2.5" />
+          </a>
+        </div>
+
+        {/* Compact Search */}
+        <div className="relative">
+          <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
+            isDarkMode ? 'text-pink-400' : 'text-pink-600'
+          }`} />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Suche nach einem Song..."
+            className={`w-full pl-10 pr-10 py-3 rounded-full transition-all duration-300 focus:ring-2 focus:ring-pink-500 outline-none text-sm ${
+              isDarkMode 
+                ? 'bg-gray-800 text-white placeholder-gray-400 border border-green-500/30 focus:bg-gray-750 focus:border-pink-500' 
+                : 'bg-white text-gray-900 placeholder-gray-500 border border-pink-300 focus:bg-pink-50 focus:border-pink-500'
+            }`}
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-px rounded-full transition-all duration-300 hover:scale-110 ${
+                isDarkMode ? 'hover:bg-gray-600 text-gray-300' : 'hover:bg-gray-200 text-gray-600'
+              }`}
+            >
+              <X className="w-2.5 h-2.5" />
+            </button>
+          )}
+        </div>
+      </div>
+      {/* Success Message with Instagram 2.0 Style */}
+      {showAddSuccess && (
+        <div className={`p-4 rounded-2xl backdrop-blur-sm transition-all duration-500 ${
+          isDarkMode 
+            ? 'bg-pink-500/20 border border-green-400/30 text-pink-300' 
+            : 'bg-pink-100/80 border border-pink-300/50 text-pink-700'
+        }`}>
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-full ${
+              isDarkMode ? 'bg-green-400/20' : 'bg-pink-500/20'
+            }`}>
+              <Check className="w-4 h-4" />
+            </div>
+            <span className="font-medium">Song erfolgreich hinzugefügt!</span>
+          </div>
+        </div>
+      )}
+      {/* Error Message with Instagram 2.0 Style */}
+      {error && (
+        <div className={`p-4 rounded-2xl backdrop-blur-sm transition-all duration-500 ${
+          isDarkMode 
+            ? 'bg-red-500/20 border border-red-400/30 text-red-300' 
+            : 'bg-red-100/80 border border-red-300/50 text-red-700'
+        }`}>
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-full ${
+              isDarkMode ? 'bg-red-400/20' : 'bg-red-500/20'
+            }`}>
+              <AlertCircle className="w-4 h-4" />
+            </div>
+            <span className="font-medium">{error}</span>
+          </div>
+        </div>
+      )}
+      {/* Compact Search Results */}
+      {searchResults.length > 0 && (
+        <div className="space-y-2">
+          {searchResults.map((track) => (
+            <div key={track.id} className={`p-3 rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
+              isDarkMode 
+                ? 'bg-gray-900 border border-pink-500/20 hover:bg-gray-800 hover:border-pink-500/40 shadow-lg shadow-pink-500/5' 
+                : 'bg-white border border-pink-200 hover:bg-pink-50 hover:border-pink-300 shadow-md shadow-pink-100'
             }`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <img
-                    src={item.track.album.images[0]?.url}
-                    alt={item.track.album.name}
-                    className="w-12 h-12 rounded"
+                    src={track.album.images[0]?.url}
+                    alt={track.album.name}
+                    className="w-10 h-10 rounded-xl shadow-lg"
                   />
                   <div>
-                    <h4 className={`font-medium ${
-                      isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                    <h4 className={`font-medium text-sm ${
+                      isDarkMode ? 'text-white' : 'text-gray-900'
                     }`}>
-                      {item.track.name}
+                      {track.name}
                     </h4>
-                    <p className={`text-sm ${
-                      isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {item.track.artists.map((artist: any) => artist.name).join(', ')}
-                    </p>
                     <p className={`text-xs ${
-                      isDarkMode ? 'text-gray-500' : 'text-gray-500'
+                      isDarkMode ? 'text-white/70' : 'text-gray-600'
                     }`}>
-                      {formatDuration(item.track.duration_ms)}
+                      {track.artists.map(artist => artist.name).join(', ')}
                     </p>
                   </div>
                 </div>
+                <button
+                  onClick={() => handleAddTrack(track)}
+                  disabled={isAddingTrack === track.id}
+                  className={`w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 flex items-center justify-center ${
+                    isDarkMode 
+                      ? 'bg-pink-500/20 hover:bg-pink-500/30 text-pink-400' 
+                      : 'bg-pink-500 hover:bg-pink-600 text-white'
+                  }`}
+                >
+                  {isAddingTrack === track.id ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Plus className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {/* Compact Playlist Tracks */}
+      <div className="space-y-2">
+        {playlistTracks.map((item) => (
+          <div key={item.track.id} className={`p-3 rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
+            isDarkMode 
+              ? 'bg-gray-900 border border-pink-500/20 hover:bg-gray-800 hover:border-pink-500/40 shadow-lg shadow-pink-500/5' 
+              : 'bg-white border border-pink-200 hover:bg-pink-50 hover:border-pink-300 shadow-md shadow-pink-100'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <img
+                  src={item.track.album.images[0]?.url}
+                  alt={item.track.album.name}
+                  className="w-10 h-10 rounded-xl shadow-lg"
+                />
+                <div>
+                  <h4 className={`font-medium text-sm ${
+                    isDarkMode ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    {item.track.name}
+                  </h4>
+                  <p className={`text-xs ${
+                    isDarkMode ? 'text-white/70' : 'text-gray-600'
+                  }`}>
+                    {item.track.artists.map((artist: any) => artist.name).join(', ')}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href={item.track.external_urls.spotify}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center hover:bg-pink-600 text-white bg-[#e34b8cab]"
+                  title="In Spotify öffnen"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </a>
                 {canDeleteTrack(item) && (
                   <button
                     onClick={() => handleRemoveTrack(item)}
                     disabled={isRemovingTrack === item.track.id}
-                    className={`p-2 rounded-lg ${
+                    className={`w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 flex items-center justify-center ${
                       isDarkMode 
-                        ? 'bg-red-600 hover:bg-red-700 text-white' 
+                        ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400' 
                         : 'bg-red-500 hover:bg-red-600 text-white'
-                    } disabled:opacity-50`}
+                    }`}
                   >
                     {isRemovingTrack === item.track.id ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />
@@ -666,40 +579,30 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                 )}
               </div>
             </div>
-          ))}
-        </div>
-
-        {playlistTracks.length === 0 && !isLoading && (
-          <div className="text-center py-8">
-            {songOwnerships.length > 0 ? (
-              <>
-                <AlertCircle className={`w-12 h-12 mx-auto mb-4 text-yellow-500`} />
-                <p className={`text-sm mb-2 ${
-                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  Spotify API vorübergehend überlastet
-                </p>
-                <p className={`text-xs ${
-                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  {songOwnerships.length} Songs registriert, aber Spotify lädt gerade nicht.
-                </p>
-              </>
-            ) : (
-              <>
-                <Music className={`w-12 h-12 mx-auto mb-4 ${
-                  isDarkMode ? 'text-gray-600' : 'text-gray-400'
-                }`} />
-                <p className={`text-sm ${
-                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  Noch keine Songs in der Playlist
-                </p>
-              </>
-            )}
           </div>
-        )}
+        ))}
       </div>
+      {playlistTracks.length === 0 && !isLoading && (
+        <div className={`text-center py-8 rounded-2xl ${
+          isDarkMode 
+            ? 'bg-gray-900 border border-green-500/20 shadow-lg shadow-pink-500/5' 
+            : 'bg-white border border-pink-200 shadow-md shadow-pink-100'
+        }`}>
+          <Music className={`w-16 h-16 mx-auto mb-4 ${
+            isDarkMode ? 'text-pink-400' : 'text-green-500'
+          }`} />
+          <p className={`text-lg font-medium ${
+            isDarkMode ? 'text-white/80' : 'text-gray-700'
+          }`}>
+            Noch keine Songs in der Playlist
+          </p>
+          <p className={`text-sm mt-2 ${
+            isDarkMode ? 'text-white/60' : 'text-gray-500'
+          }`}>
+            Suche nach Songs und füge sie zur Playlist hinzu
+          </p>
+        </div>
+      )}
     </div>
   );
 };
