@@ -176,7 +176,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
           )}
 
           {/* Right tabs */}
-          <div className="flex gap-6 ml-6">
+          <div className="flex gap-6 ml-8 sm:ml-6">
             {rightTabs.map((tab) => {
               const IconComponent = tab.icon;
               const isActive = activeTab === tab.id;
