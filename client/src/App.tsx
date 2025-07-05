@@ -46,6 +46,8 @@ import {
   UserProfile,
   createTestNotification
 } from './services/firebaseService';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from './config/firebase';
 import { subscribeSiteStatus, SiteStatus } from './services/siteStatusService';
 import { getUserName, getDeviceId } from './utils/deviceId';
 import { notificationService, initializePushNotifications } from './services/notificationService';
@@ -149,6 +151,32 @@ function App() {
 
     return unsubscribe;
   }, []);
+
+  // Listen for logout signals for the current user
+  useEffect(() => {
+    if (!userName || !deviceId) return;
+
+    const logoutDocRef = doc(db, 'user_logout_signals', deviceId);
+    
+    const unsubscribe = onSnapshot(logoutDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        console.log(`🚪 Logout signal received for ${userName} (${deviceId})`);
+        
+        // Set user as deleted and force logout
+        localStorage.setItem('userDeleted', 'true');
+        
+        // Clear all user data
+        localStorage.clear();
+        
+        // Force page reload to restart with username prompt
+        console.log(`🔄 Forcing logout and reload for deleted user: ${userName}`);
+        window.location.reload();
+      }
+    });
+
+    return unsubscribe;
+  }, [userName, deviceId]);
 
   // Initialize notification service when user is logged in
   useEffect(() => {

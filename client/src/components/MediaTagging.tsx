@@ -209,6 +209,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
         coordinates: { latitude: coordinates.latitude, longitude: coordinates.longitude }
       }, currentUser, currentDeviceId);
       await loadLocationTags();
+      onTagsUpdated(); // Notify parent component to refresh
       setShowLocationInput(false);
     } catch (error) {
       console.error('Error adding current location:', error);
@@ -227,6 +228,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
         name: customLocationName.trim()
       }, currentUser, currentDeviceId);
       await loadLocationTags();
+      onTagsUpdated(); // Notify parent component to refresh
       setShowLocationInput(false);
       setCustomLocationName('');
     } catch (error) {
@@ -245,6 +247,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
         address: suggestion.address
       }, currentUser, currentDeviceId);
       await loadLocationTags();
+      onTagsUpdated(); // Notify parent component to refresh
       setShowLocationInput(false);
       setCustomLocationName('');
       setLocationSuggestions([]);
@@ -275,6 +278,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
     try {
       await removeLocationTag(locationTag.id);
       await loadLocationTags();
+      onTagsUpdated(); // Notify parent component to refresh
     } catch (error) {
       console.error('Error removing location tag:', error);
       alert('Fehler beim Entfernen des Standort-Tags. Bitte versuchen Sie es erneut.');
@@ -298,23 +302,23 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
     <div className="py-2">
       {/* Existing User Tags */}
       {tags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1">
           {tags.map((tag) => (
             <div
               key={tag.id}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500/20 to-pink-500/20 text-pink-500 dark:text-pink-500 backdrop-blur-sm border border-pink-500/30 dark:border-pink-500/30 shadow-lg hover:shadow-xl"
+              className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-xs font-medium bg-pink-500/20 text-pink-500 dark:text-pink-500 border border-pink-500/30 dark:border-pink-500/30"
+              style={{ minHeight: '22px', minWidth: '22px' }}
             >
-              <Tag className="w-3 h-3" />
-              <span>{getUserDisplayName(tag.userName, tag.deviceId)}</span>
+              <span className="truncate max-w-12 text-xs leading-none">{getUserDisplayName(tag.userName, tag.deviceId)}</span>
               {(tag.taggedBy === currentUser || isAdmin || (mediaUploader && mediaUploader === currentUser)) && (
                 <button
                   onClick={() => handleRemoveTag(tag)}
                   disabled={isLoading}
-                  className={`ml-1 hover:opacity-70 transition-all duration-300 transform hover:scale-110 ${
+                  className={`hover:opacity-70 ${
                     isLoading ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >
-                  <X className="w-3 h-3" />
+                  <X className="w-2 h-2" />
                 </button>
               )}
             </div>
@@ -328,36 +332,38 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
       {(mediaUploader === currentUser || isAdmin) && (
         <>
           {!showTagInput && !showLocationInput && (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
               <button
                 onClick={() => setShowTagInput(true)}
-                className="flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-110 active:scale-95 bg-pink-500/20 hover:bg-pink-500/30 text-pink-500 dark:text-pink-500 backdrop-blur-lg border border-pink-500/30 dark:border-pink-500/30 shadow-lg hover:shadow-xl"
+                className="flex items-center justify-center w-5 h-5 rounded text-xs bg-pink-500/20 hover:bg-pink-500/30 text-pink-500 dark:text-pink-500 border border-pink-500/30 dark:border-pink-500/30"
+                style={{ minHeight: '22px', minWidth: '22px' }}
               >
-                <UserPlus className="w-5 h-5" />
+                <UserPlus className="w-2.5 h-2.5" />
               </button>
               <button
                 onClick={() => setShowLocationInput(true)}
-                className="flex items-center justify-center w-10 h-10 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-110 active:scale-95 bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400 backdrop-blur-lg border border-green-300/30 dark:border-green-500/30 shadow-lg hover:shadow-xl"
+                className="flex items-center justify-center w-5 h-5 rounded text-xs bg-green-500/20 hover:bg-green-500/30 text-green-600 dark:text-green-400 border border-green-300/30 dark:border-green-500/30"
+                style={{ minHeight: '22px', minWidth: '22px' }}
               >
-                <MapPin className="w-5 h-5" />
+                <MapPin className="w-2.5 h-2.5" />
               </button>
             </div>
           )}
 
           {showTagInput && (
-            <div className="p-4 rounded-2xl bg-white/80 dark:bg-gray-900/95 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 shadow-xl">
+            <div className="p-3 rounded-xl bg-white/80 dark:bg-gray-900/95 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 shadow-xl">
               {/* Search Input */}
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Nach Person suchen..."
-                className="w-full px-4 py-3 rounded-xl border-2 border-transparent bg-white/60 dark:bg-gray-800/80 backdrop-blur-lg focus:border-pink-500 focus:ring-4 focus:ring-pink-500/20 focus:outline-none placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 transition-all duration-300 mb-4"
+                className="w-full px-3 py-2 rounded-lg border-2 border-transparent bg-white/60 dark:bg-gray-800/80 backdrop-blur-lg focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 transition-all duration-300 mb-3 text-sm"
                 autoFocus
               />
 
               {/* User List */}
-              <div className="max-h-48 overflow-y-auto space-y-3">
+              <div className="max-h-40 overflow-y-auto space-y-2">
                 {filteredUsers.length > 0 ? (
                   filteredUsers.map((user) => {
                     const userAvatar = getUserAvatar(user.userName, user.deviceId);
@@ -368,7 +374,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
                         key={`${user.userName}_${user.deviceId}`}
                         onClick={() => handleAddTag(user)}
                         disabled={isLoading}
-                        className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${
+                        className={`w-full flex items-center gap-2 p-2 rounded-lg transition-all duration-300 transform hover:scale-[1.02] ${
                           isLoading ? 'opacity-50 cursor-not-allowed' : ''
                         } bg-white/60 dark:bg-gray-800/80 hover:bg-white/80 dark:hover:bg-gray-700/90 backdrop-blur-lg text-gray-900 dark:text-gray-100 border border-white/30 dark:border-gray-700/50 hover:border-pink-500 dark:hover:border-pink-500 shadow-md hover:shadow-lg`}
                       >
@@ -378,10 +384,10 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
                             <img
                               src={userAvatar}
                               alt={displayName}
-                              className="w-10 h-10 rounded-full object-cover border-2 border-white/50 dark:border-gray-600/50 shadow-sm"
+                              className="w-8 h-8 rounded-full object-cover border-2 border-white/50 dark:border-gray-600/50 shadow-sm"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-pink-400 flex items-center justify-center text-white font-medium text-sm border-2 border-white/50 dark:border-gray-600/50 shadow-sm">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-pink-400 flex items-center justify-center text-white font-medium text-xs border-2 border-white/50 dark:border-gray-600/50 shadow-sm">
                               {displayName.charAt(0).toUpperCase()}
                             </div>
                           )}
@@ -389,22 +395,22 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
                         
                         {/* User Name */}
                         <div className="flex-1 text-left">
-                          <span className="font-medium">{displayName}</span>
+                          <span className="font-medium text-sm truncate">{displayName}</span>
                         </div>
                         
                         {/* Add Icon */}
                         <div className="flex-shrink-0">
-                          <UserPlus className="w-4 h-4 text-pink-500 dark:text-pink-500" />
+                          <UserPlus className="w-3 h-3 text-pink-500 dark:text-pink-500" />
                         </div>
                       </button>
                     );
                   })
                 ) : (
-                  <div className="text-center py-6">
-                    <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                      <UserPlus className="w-8 h-8 text-gray-400" />
+                  <div className="text-center py-4">
+                    <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                      <UserPlus className="w-6 h-6 text-gray-400" />
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                       {searchTerm ? 'Keine Personen gefunden' : 'Alle Personen bereits markiert'}
                     </p>
                   </div>
@@ -412,13 +418,13 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
               </div>
 
               {/* Cancel Button */}
-              <div className="flex justify-end mt-4">
+              <div className="flex justify-end mt-3">
                 <button
                   onClick={() => {
                     setShowTagInput(false);
                     setSearchTerm('');
                   }}
-                  className="px-4 py-2 text-sm rounded-xl font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 bg-white/30 dark:bg-gray-800/60 hover:bg-white/50 dark:hover:bg-gray-700/80 text-gray-700 dark:text-gray-100 backdrop-blur-lg border border-white/30 dark:border-gray-700/40 shadow-lg"
+                  className="px-3 py-1.5 text-xs rounded-lg font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 bg-white/30 dark:bg-gray-800/60 hover:bg-white/50 dark:hover:bg-gray-700/80 text-gray-700 dark:text-gray-100 backdrop-blur-lg border border-white/30 dark:border-gray-700/40 shadow-lg"
                 >
                   Abbrechen
                 </button>
@@ -427,28 +433,28 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
           )}
 
           {showLocationInput && (
-            <div className="p-4 rounded-2xl bg-white/80 dark:bg-gray-900/95 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 shadow-xl">
+            <div className="p-3 rounded-xl bg-white/80 dark:bg-gray-900/95 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 shadow-xl">
               {/* Current Location Button */}
               <button
                 onClick={handleAddCurrentLocation}
                 disabled={isLoadingLocation}
-                className={`w-full flex items-center justify-center gap-2 px-4 py-3 mb-3 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-[1.02] ${
+                className={`w-full flex items-center justify-center gap-2 px-3 py-2 mb-2 rounded-lg text-xs font-medium transition-all duration-300 transform hover:scale-[1.02] ${
                   isLoadingLocation ? 'opacity-50 cursor-not-allowed' : ''
                 } bg-gradient-to-r from-green-500/20 to-blue-500/20 hover:from-green-500/30 hover:to-blue-500/30 text-green-700 dark:text-green-300 backdrop-blur-sm border border-green-200/30 dark:border-green-600/30 shadow-lg hover:shadow-xl`}
               >
-                <Navigation className="w-4 h-4" />
+                <Navigation className="w-3 h-3" />
                 {isLoadingLocation ? 'Standort wird ermittelt...' : 'Aktueller Standort'}
               </button>
 
               {/* Custom Location Input */}
-              <div className="space-y-3 relative">
+              <div className="space-y-2 relative">
                 <div className="relative">
                   <input
                     type="text"
                     value={customLocationName}
                     onChange={(e) => setCustomLocationName(e.target.value)}
-                    placeholder="Standort eingeben (z.B. Eiffelturm, Paris)"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-transparent bg-white/60 dark:bg-gray-800/80 backdrop-blur-lg focus:border-green-500 focus:ring-4 focus:ring-green-500/20 focus:outline-none placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 transition-all duration-300"
+                    placeholder="Standort eingeben"
+                    className="w-full px-3 py-2 rounded-lg border-2 border-transparent bg-white/60 dark:bg-gray-800/80 backdrop-blur-lg focus:border-green-500 focus:ring-2 focus:ring-green-500/20 focus:outline-none placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100 transition-all duration-300 text-sm"
                   />
                   {isSearchingLocations && (
                     <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -459,23 +465,23 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
 
                 {/* Location Suggestions Dropdown */}
                 {locationSuggestions.length > 0 && (
-                  <div className="absolute z-50 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-white/30 dark:border-gray-700/50 rounded-xl shadow-xl max-h-60 overflow-y-auto">
+                  <div className="absolute z-50 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-white/30 dark:border-gray-700/50 rounded-lg shadow-xl max-h-48 overflow-y-auto">
                     {locationSuggestions.map((suggestion, index) => (
                       <button
                         key={index}
                         onClick={() => handleSelectLocationSuggestion(suggestion)}
                         disabled={isLoadingLocation}
-                        className={`w-full text-left px-4 py-3 hover:bg-green-500/10 dark:hover:bg-green-500/20 transition-colors duration-200 border-b border-gray-200/30 dark:border-gray-700/30 last:border-b-0 ${
+                        className={`w-full text-left px-3 py-2 hover:bg-green-500/10 dark:hover:bg-green-500/20 transition-colors duration-200 border-b border-gray-200/30 dark:border-gray-700/30 last:border-b-0 ${
                           isLoadingLocation ? 'opacity-50 cursor-not-allowed' : ''
                         }`}
                       >
                         <div className="flex items-start gap-2">
-                          <MapPin className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                          <MapPin className="w-3 h-3 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                            <div className="font-medium text-gray-900 dark:text-gray-100 truncate text-xs">
                               {suggestion.name}
                             </div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                            <div className="text-xs text-gray-600 dark:text-gray-400 truncate">
                               {suggestion.address}
                             </div>
                           </div>
@@ -488,7 +494,7 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
                 <button
                   onClick={handleAddCustomLocation}
                   disabled={isLoadingLocation || !customLocationName.trim() || locationSuggestions.length > 0}
-                  className={`w-full px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-[1.02] ${
+                  className={`w-full px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 transform hover:scale-[1.02] ${
                     isLoadingLocation || !customLocationName.trim() || locationSuggestions.length > 0
                       ? 'opacity-50 cursor-not-allowed' 
                       : ''
@@ -499,13 +505,13 @@ export const MediaTagging: React.FC<MediaTaggingProps> = ({
               </div>
 
               {/* Cancel Button */}
-              <div className="flex justify-end mt-4">
+              <div className="flex justify-end mt-3">
                 <button
                   onClick={() => {
                     setShowLocationInput(false);
                     setCustomLocationName('');
                   }}
-                  className="px-4 py-2 text-sm rounded-xl font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 bg-white/30 dark:bg-gray-800/60 hover:bg-white/50 dark:hover:bg-gray-700/80 text-gray-700 dark:text-gray-100 backdrop-blur-lg border border-white/30 dark:border-gray-700/40 shadow-lg"
+                  className="px-3 py-1.5 text-xs rounded-lg font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 bg-white/30 dark:bg-gray-800/60 hover:bg-white/50 dark:hover:bg-gray-700/80 text-gray-700 dark:text-gray-100 backdrop-blur-lg border border-white/30 dark:border-gray-700/40 shadow-lg"
                 >
                   Abbrechen
                 </button>

@@ -156,8 +156,8 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
             })}
           </div>
 
-          {/* Center upload button */}
-          {onUploadClick && (
+          {/* Center upload button - only show when gallery is enabled */}
+          {onUploadClick && galleryEnabled && (
             <button
               onClick={onUploadClick}
               className={`absolute left-1/2 transform -translate-x-1/2 w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 active:scale-95 btn-touch bg-gradient-to-r from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-500 text-white ${

@@ -94,6 +94,8 @@ This is a comprehensive wedding gallery application with the following architect
 - **Consistent Overlay Styling**: Applied uniform glassmorphism styling with black/50 backgrounds, backdrop blur, and white borders for both like buttons and location tags across InstagramPost and NotePost components
 - **Space-Efficient Design**: Eliminated vertical space previously consumed by separate like and location sections, creating more compact posts while maintaining all functionality including heart overlay animations
 - **Mobile Touch Optimization**: Ensured overlay elements have appropriate touch targets and responsive sizing for mobile devices while keeping design clean and unobtrusive
+- **Global Touch Target Reduction**: Reduced minimum touch target sizes from 44px to 10px globally for all buttons and anchor elements, creating ultra-compact interface while maintaining touch functionality
+- **Upload Button Gallery Toggle**: Linked upload button visibility to gallery toggle - upload button now only appears when gallery is enabled by admin, preventing uploads when gallery is disabled
 
 ### January 5, 2025 (Mobile Optimization & Practical Improvements)
 - **Complete Mobile Optimization**: Fixed all components being too large for mobile devices by reducing header padding (py-2), compacting welcome section, smaller floating action button (w-12 h-12), and reduced bottom navigation padding (p-2)
