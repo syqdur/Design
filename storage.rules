@@ -1,0 +1,26 @@
+rules_version = '2';
+
+// Firebase Storage security rules for wedding gallery
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow access to all wedding gallery media files
+    match /wedding-gallery/{allPaths=**} {
+      allow read, write: if true;
+    }
+    
+    // Allow access to profile pictures
+    match /profile-pictures/{allPaths=**} {
+      allow read, write: if true;
+    }
+    
+    // Allow access to stories
+    match /stories/{allPaths=**} {
+      allow read, write: if true;
+    }
+    
+    // Allow access to all other files
+    match /{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}

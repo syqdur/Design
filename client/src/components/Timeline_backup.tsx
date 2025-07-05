@@ -1,0 +1,1 @@
+// Backup of Timeline component before fixing JSX structure

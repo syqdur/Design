@@ -1,0 +1,86 @@
+❌ New Places API search failed: InvalidValueError: in property locationBias: Invalid LocationBias: {"rectangle":{"low":{"lat":52.3149,"lng":9.706},"high":{"lat":52.414899999999996,"lng":9.806000000000001}}}
+    at _.cl (js?key=AIzaSyAo-Ak_1bLGFriNq-LiQUQqzQfwYwleBfw&libraries=places&language=de&region=DE:1372:445)
+    at js?key=AIzaSyAo-Ak_1bLGFriNq-LiQUQqzQfwYwleBfw&libraries=places&language=de&region=DE:1373:446
+    at uF (js?key=AIzaSyAo-Ak_1bLGFriNq-LiQUQqzQfwYwleBfw&libraries=places&language=de&region=DE:171:106)
+    at yF (js?key=AIzaSyAo-Ak_1bLGFriNq-LiQUQqzQfwYwleBfw&libraries=places&language=de&region=DE:174:176)
+    at vF.searchByText (js?key=AIzaSyAo-Ak_1bLGFriNq-LiQUQqzQfwYwleBfw&libraries=places&language=de&region=DE:983:454)
+    at searchLocations (locationService.ts:95:36)
+    at async searchLocations (firebaseService.ts:1160:21)
+    at async searchLocationSuggestions (MediaTagging.tsx:125:27)
+    at async MediaTagging.tsx:95:9
+Mt.forEach.n.<computed> @ Console.js:61
+searchLocations @ locationService.ts:138
+await in searchLocations
+searchLocations @ firebaseService.ts:1160
+await in searchLocations
+searchLocationSuggestions @ MediaTagging.tsx:125
+(anonymous) @ MediaTagging.tsx:95
+setTimeout
+(anonymous) @ MediaTagging.tsx:94
+commitHookEffectListMount @ chunk-EJTTOCY5.js?v=55561247:16915
+commitPassiveMountOnFiber @ chunk-EJTTOCY5.js?v=55561247:18156
+commitPassiveMountEffects_complete @ chunk-EJTTOCY5.js?v=55561247:18129
+commitPassiveMountEffects_begin @ chunk-EJTTOCY5.js?v=55561247:18119
+commitPassiveMountEffects @ chunk-EJTTOCY5.js?v=55561247:18109
+flushPassiveEffectsImpl @ chunk-EJTTOCY5.js?v=55561247:19490
+flushPassiveEffects @ chunk-EJTTOCY5.js?v=55561247:19447
+commitRootImpl @ chunk-EJTTOCY5.js?v=55561247:19416
+commitRoot @ chunk-EJTTOCY5.js?v=55561247:19277
+performSyncWorkOnRoot @ chunk-EJTTOCY5.js?v=55561247:18895
+flushSyncCallbacks @ chunk-EJTTOCY5.js?v=55561247:9119
+flushSync @ chunk-EJTTOCY5.js?v=55561247:18959
+finishEventHandler @ chunk-EJTTOCY5.js?v=55561247:3569
+batchedUpdates @ chunk-EJTTOCY5.js?v=55561247:3582
+dispatchEventForPluginEventSystem @ chunk-EJTTOCY5.js?v=55561247:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-EJTTOCY5.js?v=55561247:5478
+dispatchEvent @ chunk-EJTTOCY5.js?v=55561247:5472
+dispatchDiscreteEvent @ chunk-EJTTOCY5.js?v=55561247:5449
+Console.js:61 🔍 Location search results: 0
+/@morellimauri135/re…ocationService.ts:1 Uncaught (in promise) AbortError: The user aborted a request.
+Promise.then
+window.fechCallback.window.xhrCallback.window.fechCallback @ proxy.js:1
+(anonymous) @ hook.js:1
+Promise.then
+apply @ hook.js:1
+(anonymous) @ _app-3751ae31f5aa4b0e.js:38
+(anonymous) @ _app-3751ae31f5aa4b0e.js:25
+e @ _app-3751ae31f5aa4b0e.js:14
+t.subscribe @ _app-3751ae31f5aa4b0e.js:14
+e.consumeQueue @ _app-3751ae31f5aa4b0e.js:25
+(anonymous) @ _app-3751ae31f5aa4b0e.js:25
+n @ _app-3751ae31f5aa4b0e.js:38
+setTimeout
+(anonymous) @ _app-3751ae31f5aa4b0e.js:38
+e.scheduleQueueConsumption @ _app-3751ae31f5aa4b0e.js:25
+(anonymous) @ _app-3751ae31f5aa4b0e.js:25
+e @ _app-3751ae31f5aa4b0e.js:14
+t.subscribe @ _app-3751ae31f5aa4b0e.js:14
+(anonymous) @ _app-3751ae31f5aa4b0e.js:25
+e @ _app-3751ae31f5aa4b0e.js:14
+t.subscribe @ _app-3751ae31f5aa4b0e.js:14
+e.try @ _app-3751ae31f5aa4b0e.js:25
+e.start @ _app-3751ae31f5aa4b0e.js:25
+t.request @ _app-3751ae31f5aa4b0e.js:25
+(anonymous) @ _app-3751ae31f5aa4b0e.js:14
+(anonymous) @ _app-3751ae31f5aa4b0e.js:14
+(anonymous) @ _app-3751ae31f5aa4b0e.js:25
+(anonymous) @ _app-3751ae31f5aa4b0e.js:14
+e.execute @ _app-3751ae31f5aa4b0e.js:14
+e.getObservableFromLink @ _app-3751ae31f5aa4b0e.js:11
+(anonymous) @ _app-3751ae31f5aa4b0e.js:11
+(anonymous) @ _app-3751ae31f5aa4b0e.js:11
+(anonymous) @ _app-3751ae31f5aa4b0e.js:11
+(anonymous) @ _app-3751ae31f5aa4b0e.js:11
+s @ _app-3751ae31f5aa4b0e.js:11
+e.mutate @ _app-3751ae31f5aa4b0e.js:11
+e.mutate @ _app-3751ae31f5aa4b0e.js:11
+(anonymous) @ _app-3751ae31f5aa4b0e.js:14
+(anonymous) @ _app-3751ae31f5aa4b0e.js:40
+(anonymous) @ main-3705963c0ef94d58.js:1
+n @ main-3705963c0ef94d58.js:1
+u @ main-3705963c0ef94d58.js:1
+(anonymous) @ main-3705963c0ef94d58.js:1
+(anonymous) @ main-3705963c0ef94d58.js:1
+n @ _app-3751ae31f5aa4b0e.js:38
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  POST https://o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0 net::ERR_BLOCKED_BY_CLIENT
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  POST https://o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0 net::ERR_BLOCKED_BY_CLIENT

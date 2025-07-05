@@ -1,0 +1,747 @@
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+ 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+cdn.segment.com/next-integrations/actions/tiktok-pixel/920266289e7b08bf066b.js:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+Error with Permissions-Policy header: Unrecognized feature: 'run-ad-auction'.
+Error with Permissions-Policy header: Unrecognized feature: 'run-ad-auction'.
+Error with Permissions-Policy header: Unrecognized feature: 'run-ad-auction'.
+Error with Permissions-Policy header: Unrecognized feature: 'run-ad-auction'.
+Error with Permissions-Policy header: Unrecognized feature: 'run-ad-auction'.
+Error with Permissions-Policy header: Unrecognized feature: 'run-ad-auction'.
+Error with Permissions-Policy header: Unrecognized feature: 'run-ad-auction'.
+Error with Permissions-Policy header: Unrecognized feature: 'run-ad-auction'.
+Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'join-ad-interest-group'.
+Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'join-ad-interest-group'.
+Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'join-ad-interest-group'.
+Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'join-ad-interest-group'.
+Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'join-ad-interest-group'.
+Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'join-ad-interest-group'.
+Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'join-ad-interest-group'.
+Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'join-ad-interest-group'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-redemption'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-redemption'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-redemption'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-redemption'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-redemption'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-redemption'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-redemption'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-redemption'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-issuance'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-issuance'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-issuance'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-issuance'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-issuance'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-issuance'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-issuance'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-issuance'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-aggregation'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-aggregation'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-aggregation'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-aggregation'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-aggregation'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-aggregation'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-aggregation'.
+Error with Permissions-Policy header: Unrecognized feature: 'private-aggregation'.
+Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporting'.
+Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporting'.
+Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporting'.
+Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporting'.
+Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporting'.
+Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporting'.
+Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporting'.
+Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporting'.
+ Failed to create PluginFactory Object
+(anonymous) @ _app-3751ae31f5aa4b0e.js:38
+ Failed to load Remote Plugin 
+(anonymous) @ _app-3751ae31f5aa4b0e.js:38
+ [LaunchDarkly] LaunchDarkly client initialized
+/~:1 Uncaught (in promise) 
+/~:1 Uncaught (in promise) 
+/~:1 Uncaught (in promise) 
+/~:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+/~:1 Uncaught (in promise) 
+/~:1 Uncaught (in promise) 
+/~:1 Uncaught (in promise) 
+ WARN: A component changed from uncontrolled to controlled.
+(anonymous) @ _app-3751ae31f5aa4b0e.js:38
+ WARN: A component changed from uncontrolled to controlled.
+(anonymous) @ _app-3751ae31f5aa4b0e.js:38
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+/~:1 Uncaught (in promise) 
+/~:1 Uncaught (in promise) 
+/~:1 Uncaught (in promise) 
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+/~:1 Uncaught (in promise) 
+/~:1 Uncaught (in promise) 
+/~:1 Uncaught (in promise) 
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+/import:1 Uncaught (in promise) 
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+/import/github:1 Uncaught (in promise) 
+/import/github:1 Uncaught (in promise) 
+/import/github:1 Uncaught (in promise) 
+/import/github:1 Uncaught (in promise) 
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+/import/agent:1 Uncaught (in promise) 
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+ Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-2295fe4132f7c758.js:1
+ Unrecognized feature: 'battery'.
+_ @ framework-2295fe4132f7c758.js:1
+ Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-2295fe4132f7c758.js:1
+ Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-2295fe4132f7c758.js:1
+ Unrecognized feature: 'layout-animations'.
+_ @ framework-2295fe4132f7c758.js:1
+ Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-2295fe4132f7c758.js:1
+ Unrecognized feature: 'navigation-override'.
+_ @ framework-2295fe4132f7c758.js:1
+ Unrecognized feature: 'oversized-images'.
+_ @ framework-2295fe4132f7c758.js:1
+ Unrecognized feature: 'publickey-credentials'.
+_ @ framework-2295fe4132f7c758.js:1
+ Unrecognized feature: 'speaker-selection'.
+_ @ framework-2295fe4132f7c758.js:1
+ Unrecognized feature: 'unoptimized-images'.
+_ @ framework-2295fe4132f7c758.js:1
+ Unrecognized feature: 'unsized-media'.
+_ @ framework-2295fe4132f7c758.js:1
+ Unrecognized feature: 'pointer-lock'.
+_ @ framework-2295fe4132f7c758.js:1
+ Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-2295fe4132f7c758.js:1
+ Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-2295fe4132f7c758.js:1
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Abeacon%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3A01d3f9f1&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=d61838c2-f0a4-44a8-be3b-b7ef4e3405ec:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+replit:1 Uncaught (in promise) 
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Abeacon%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3A01d3f9f1&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=db98465c-6fb2-4ea4-8ef9-666c49a2f0c9:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Abeacon%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3A01d3f9f1&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=86edb02c-177a-49e9-8ae7-e5466c090a49:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Abeacon%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3A01d3f9f1&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=5ca7f331-184f-42f8-a9c5-c5e6747342f0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+logs.browser-intake-us5-datadoghq.com/api/v2/logs?ddsource=browser&ddtags=sdk_version%3A4.46.0%2Capi%3Abeacon%2Cenv%3Aproduction%2Cservice%3Awebsite%2Cversion%3A01d3f9f1&dd-api-key=pub31a5047a3a4692afb84a423db984dc57&dd-evp-origin-version=4.46.0&dd-evp-origin=browser&dd-request-id=e50d3e36-618e-48c7-91c1-3e6a72e21469:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+o1151714.ingest.sentry.io/api/6318792/envelope/?sentry_key=8aa91189a4274b5a8c9b7b01d46ea360&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.112.0:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+replit:1 Uncaught (in promise) 
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+ Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading
+Mt.forEach.n.<computed> @ eruda.js:2
+maps.googleapis.com/maps/api/mapsjs/gen_204?csp_test=true:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+/public/js/beacon.js:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+ 🔄 Syncing all user profiles for display name consistency...
+ 📊 Loading all user profiles from Firebase...
+ 🔄 Syncing all user profiles for display name consistency...
+ 📊 Loading all user profiles from Firebase...
+ 🔄 Setting up profile sync for qwe
+ 🔍 Looking for profile: qwe with deviceId da546069-3358-49f1-91a7-97e1c1b6853a
+ ✅ Service Worker registered
+ ❌ Push subscription failed: 
+Mt.forEach.n.<computed> @ eruda.js:2
+ ✅ Push notifications initialized
+ ❌ Notification permission denied
+Mt.forEach.n.<computed> @ eruda.js:2
+ 👤 Found 24 user profiles in database
+   - M (M) [4948cffa...]
+   - developer^1 (developer) [57a60039...]
+   - developer^1 (E) [a96f1abd...]
+   - Mauro (Test) [310bc2d6...]
+   - developer^1 (We) [a5dc750f...]
+   - wd (wd) [36a95a2c...]
+   - Kristin (Kristin) [30fb0e7d...]
+   - Leslie (Leslie) [53d54500...]
+   - e (e) [45697406...]
+   - Andreas (Andreas) [b7affd60...]
+   - developer^1 (qwe) [da546069...]
+   - René (René) [f847d9f8...]
+   - Telya (Telya) [8c3f701c...]
+   - developer^1 (Telya) [8c3f701c...]
+   - wd (wd) [36a95a2c...]
+   - . (.) [c5d938e2...]
+   - developer (d) [202c6365...]
+   - e (e) [45697406...]
+   - Bobby (Bobby) [cc11f166...]
+   - M (M) [1f92ca61...]
+   - M (M) [1f92ca61...]
+   - Leslie (Leslie) [c36b9a18...]
+   - Daniel (Daniel) [2362c958...]
+   - M (M) [6dee04f8...]
+ ✅ Synced 24 user profiles
+ 👤 Found 24 user profiles in database
+   - M (M) [4948cffa...]
+   - developer^1 (developer) [57a60039...]
+   - developer^1 (E) [a96f1abd...]
+   - Mauro (Test) [310bc2d6...]
+   - developer^1 (We) [a5dc750f...]
+   - wd (wd) [36a95a2c...]
+   - Kristin (Kristin) [30fb0e7d...]
+   - Leslie (Leslie) [53d54500...]
+   - e (e) [45697406...]
+   - Andreas (Andreas) [b7affd60...]
+   - developer^1 (qwe) [da546069...]
+   - René (René) [f847d9f8...]
+   - Telya (Telya) [8c3f701c...]
+   - developer^1 (Telya) [8c3f701c...]
+   - wd (wd) [36a95a2c...]
+   - . (.) [c5d938e2...]
+   - developer (d) [202c6365...]
+   - e (e) [45697406...]
+   - Bobby (Bobby) [cc11f166...]
+   - M (M) [1f92ca61...]
+   - M (M) [1f92ca61...]
+   - Leslie (Leslie) [c36b9a18...]
+   - Daniel (Daniel) [2362c958...]
+   - M (M) [6dee04f8...]
+ ✅ Synced 24 user profiles
+ ✅ Found profile for qwe: developer^1
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+ 📊 Total online: 0
+ 👤 Current user online: false
+ 👥 Other users: 0
+ ❌ Has error: false
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+ 📊 Total online: 0
+ 👤 Current user online: false
+ 👥 Other users: 0
+ ❌ Has error: false
+ 📱 === STORIES BAR RENDER ===
+ 📊 Total stories: 0
+ 👤 Current user: qwe
+ 👥 Grouped stories: Array(0)
+ 📋 User stories sorted: Array(0)
+ 📱 === STORIES BAR RENDER ===
+ 📊 Total stories: 0
+ 👤 Current user: qwe
+ 👥 Grouped stories: Array(0)
+ 📋 User stories sorted: Array(0)
+ 🔄 Cleaning up profile sync for qwe
+ 🔔 Setting up notification subscription for: qwe (da546069-3358-49f1-91a7-97e1c1b6853a)
+ 🔄 === INITIALIZING LIVE USER TRACKING ===
+ 👤 User: qwe
+ 📱 Device ID: da546069-3358-49f1-91a7-97e1c1b6853a
+ 🧹 Cleaning up duplicate entries for qwe...
+ 👥 Subscribing to live users (simple query without orderBy)...
+ 📱 === SUBSCRIBING TO STORIES (SIMPLIFIED) ===
+ 🔄 Setting up profile sync for qwe
+ 🧹 Cleaning up live user tracking for qwe
+ 📡 Setting qwe offline...
+ 🔔 Setting up notification subscription for: qwe (da546069-3358-49f1-91a7-97e1c1b6853a)
+ 🔄 === INITIALIZING LIVE USER TRACKING ===
+ 👤 User: qwe
+ 📱 Device ID: da546069-3358-49f1-91a7-97e1c1b6853a
+ 🧹 Cleaning up duplicate entries for qwe...
+ 👥 Subscribing to live users (simple query without orderBy)...
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+ 📊 Total online: 0
+ 👤 Current user online: false
+ 👥 Other users: 0
+ ❌ Has error: false
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+ 📊 Total online: 0
+ 👤 Current user online: false
+ 👥 Other users: 0
+ ❌ Has error: false
+ 📱 === STORIES BAR RENDER ===
+ 📊 Total stories: 0
+ 👤 Current user: qwe
+ 👥 Grouped stories: Array(0)
+ 📋 User stories sorted: Array(0)
+ 📱 === STORIES BAR RENDER ===
+ 📊 Total stories: 0
+ 👤 Current user: qwe
+ 👥 Grouped stories: Array(0)
+ 📋 User stories sorted: Array(0)
+ 🔍 Found 0 existing entries for qwe
+ ✅ Cleaned up 0 duplicate entries
+ 📡 Updating presence for qwe...
+ 🔍 Found 0 existing entries for qwe
+ ✅ Cleaned up 0 duplicate entries
+ 📡 Updating presence for qwe...
+ 📱 Raw stories from Firestore: 0
+ 📱 Total stories: 0, Active: 0
+ 📊 Loading 7 items from Firestore...
+ 🔍 Attempting to get URL for: 1751542752441-logo.png
+ 🔍 Trying path: uploads/1751542752441-logo.png
+ 🔍 Attempting to get URL for: 1751541616441-logo.png
+ 🔍 Trying path: uploads/1751541616441-logo.png
+ 🔍 Attempting to get URL for: 1751541177143-IMG_0073.mov
+ 🔍 Trying path: uploads/1751541177143-IMG_0073.mov
+ 🔍 Attempting to get URL for: 1751540828050-logo.png
+ 🔍 Trying path: uploads/1751540828050-logo.png
+ 🔍 Attempting to get URL for: 1751540093999-file_example_MOV_1920_2_2MB.mov
+ 🔍 Trying path: uploads/1751540093999-file_example_MOV_1920_2_2MB.mov
+ 🔍 Attempting to get URL for: 1750922437497-1000040937.jpg
+ 🔍 Trying path: uploads/1750922437497-1000040937.jpg
+ 💬 Loaded 0 comments
+ ❤️ Loaded 2 likes
+ 📬 Loaded notifications: 0
+ 📬 Loaded notifications: 0
+ 📬 Received notifications: Array(0)
+ 📊 Calculated unread count: 0
+ 👥 === LIVE USERS UPDATE (SIMPLE QUERY) ===
+ 📊 Raw docs from Firebase: 5
+   1. developer (57a60039-50db-4017-9abe-210033814d7c) - Last seen: 14:11:30 - Recent: true
+   2. Andreas (b7affd60-e2a1-470a-ac28-46062b0c63e8) - Last seen: 19:20:27 - Recent: false
+   3. Mauro (ba19a2d6-b571-4512-82ce-8acc8d131cef) - Last seen: 18:30:08 - Recent: false
+   4. . (c5d938e2-2286-438b-9943-71466337a326) - Last seen: 08:12:14 - Recent: false
+   5. Bobby (cc11f166-d0f3-4b6b-b7fe-76c89607adbf) - Last seen: 15:28:50 - Recent: false
+ 👥 Active users (last 5 min, sorted, deduplicated): 1
+   1. developer 
+ 👤 Profile loaded: Kristin & Maurizio
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+ 📊 Total online: 1
+ 👤 Current user online: false
+ 👥 Other users: 1
+ ❌ Has error: false
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+ 📊 Total online: 1
+ 👤 Current user online: false
+ 👥 Other users: 1
+ ❌ Has error: false
+ 📱 === STORIES BAR RENDER ===
+ 📊 Total stories: 0
+ 👤 Current user: qwe
+ 👥 Grouped stories: Array(0)
+ 📋 User stories sorted: Array(0)
+ 📱 === STORIES BAR RENDER ===
+ 📊 Total stories: 0
+ 👤 Current user: qwe
+ 👥 Grouped stories: Array(0)
+ 📋 User stories sorted: Array(0)
+ 👥 === LIVE USERS UPDATE (SIMPLE QUERY) ===
+ 📊 Raw docs from Firebase: 6
+   1. developer (57a60039-50db-4017-9abe-210033814d7c) - Last seen: 14:11:30 - Recent: true
+   2. Andreas (b7affd60-e2a1-470a-ac28-46062b0c63e8) - Last seen: 19:20:27 - Recent: false
+   3. Mauro (ba19a2d6-b571-4512-82ce-8acc8d131cef) - Last seen: 18:30:08 - Recent: false
+   4. . (c5d938e2-2286-438b-9943-71466337a326) - Last seen: 08:12:14 - Recent: false
+   5. Bobby (cc11f166-d0f3-4b6b-b7fe-76c89607adbf) - Last seen: 15:28:50 - Recent: false
+   6. qwe (da546069-3358-49f1-91a7-97e1c1b6853a) - Last seen: 14:11:47 - Recent: true
+ 👥 Active users (last 5 min, sorted, deduplicated): 2
+   1. qwe (YOU)
+   2. developer 
+ 👥 === LIVE USERS UPDATE (SIMPLE QUERY) ===
+ 📊 Raw docs from Firebase: 6
+   1. developer (57a60039-50db-4017-9abe-210033814d7c) - Last seen: 14:11:30 - Recent: true
+   2. Andreas (b7affd60-e2a1-470a-ac28-46062b0c63e8) - Last seen: 19:20:27 - Recent: false
+   3. Mauro (ba19a2d6-b571-4512-82ce-8acc8d131cef) - Last seen: 18:30:08 - Recent: false
+   4. . (c5d938e2-2286-438b-9943-71466337a326) - Last seen: 08:12:14 - Recent: false
+   5. Bobby (cc11f166-d0f3-4b6b-b7fe-76c89607adbf) - Last seen: 15:28:50 - Recent: false
+   6. qwe (da546069-3358-49f1-91a7-97e1c1b6853a) - Last seen: 14:11:47 - Recent: true
+ 👥 Active users (last 5 min, sorted, deduplicated): 2
+   1. qwe (YOU)
+   2. developer 
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+ 📊 Total online: 2
+ 👤 Current user online: true
+ 👥 Other users: 1
+ ❌ Has error: false
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+ 📊 Total online: 2
+ 👤 Current user online: true
+ 👥 Other users: 1
+ ❌ Has error: false
+ ✅ URL found at path: uploads/1751540093999-file_example_MOV_1920_2_2MB.mov
+ ✅ URL found at path: uploads/1751540828050-logo.png
+ ✅ URL found at path: uploads/1751541616441-logo.png
+ ✅ URL found at path: uploads/1751541177143-IMG_0073.mov
+ ✅ URL found at path: uploads/1751542752441-logo.png
+ ✅ URL found at path: uploads/1750922437497-1000040937.jpg
+ 📊 Gallery loaded successfully:
+    📸 Images: 4
+    🎥 Videos: 2
+    💌 Notes: 1
+    ⚠️ Unavailable: 0
+    ❌ Failed: 0
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+ 📊 Total online: 2
+ 👤 Current user online: true
+ 👥 Other users: 1
+ ❌ Has error: false
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+ 📊 Total online: 2
+ 👤 Current user online: true
+ 👥 Other users: 1
+ ❌ Has error: false
+ 📱 === STORIES BAR RENDER ===
+ 📊 Total stories: 0
+ 👤 Current user: qwe
+ 👥 Grouped stories: Array(0)
+ 📋 User stories sorted: Array(0)
+ 📱 === STORIES BAR RENDER ===
+ 📊 Total stories: 0
+ 👤 Current user: qwe
+ 👥 Grouped stories: Array(0)
+ 📋 User stories sorted: Array(0)
+ 🔍 Fetching all users for tagging...
+ 🔍 Fetching all users for tagging...
+ 🔍 Fetching all users for tagging...
+ 🔍 Fetching all users for tagging...
+ 🔍 Fetching all users for tagging...
+ 🔍 Fetching all users for tagging...
+ 🔍 Fetching all users for tagging...
+ 🔍 Fetching all users for tagging...
+ 🔍 Fetching all users for tagging...
+ 🔍 Fetching all users for tagging...
+ 🔍 Fetching all users for tagging...
+ 🔍 Fetching all users for tagging...
+ 📊 Found 32 live user entries
+ 👥 Processed 19 unique users
+ 📊 Found 32 live user entries
+ 👥 Processed 19 unique users
+ 📊 Found 32 live user entries
+ 👥 Processed 19 unique users
+ 📊 Found 32 live user entries
+ 👥 Processed 19 unique users
+ 📊 Found 32 live user entries
+ 👥 Processed 19 unique users
+ 📊 Found 32 live user entries
+ 👥 Processed 19 unique users
+ 📊 Found 32 live user entries
+ 👥 Processed 19 unique users
+ 📊 Found 32 live user entries
+ 👥 Processed 19 unique users
+ 📊 Found 32 live user entries
+ 👥 Processed 19 unique users
+ 📊 Found 32 live user entries
+ 👥 Processed 19 unique users
+ 📊 Found 32 live user entries
+ 👥 Processed 19 unique users
+ 📊 Found 32 live user entries
+ 👥 Processed 19 unique users
+ ✅ qwe set offline
+ 👤 Found 0 user profiles
+ ✅ Updated display names for 0 users
+ 📋 Returning 19 users for tagging
+ 👤 Found 0 user profiles
+ ✅ Updated display names for 0 users
+ 📋 Returning 19 users for tagging
+ 👤 Found 0 user profiles
+ ✅ Updated display names for 0 users
+ 📋 Returning 19 users for tagging
+ 👤 Found 0 user profiles
+ ✅ Updated display names for 0 users
+ 📋 Returning 19 users for tagging
+ 👤 Found 0 user profiles
+ ✅ Updated display names for 0 users
+ 📋 Returning 19 users for tagging
+ 👤 Found 0 user profiles
+ ✅ Updated display names for 0 users
+ 📋 Returning 19 users for tagging
+ 👤 Found 0 user profiles
+ ✅ Updated display names for 0 users
+ 📋 Returning 19 users for tagging
+ 👤 Found 0 user profiles
+ ✅ Updated display names for 0 users
+ 📋 Returning 19 users for tagging
+ 👤 Found 0 user profiles
+ ✅ Updated display names for 0 users
+ 📋 Returning 19 users for tagging
+ 👤 Found 0 user profiles
+ ✅ Updated display names for 0 users
+ 📋 Returning 19 users for tagging
+ 👤 Found 0 user profiles
+ ✅ Updated display names for 0 users
+ 📋 Returning 19 users for tagging
+ 👤 Found 0 user profiles
+ ✅ Updated display names for 0 users
+ 📋 Returning 19 users for tagging
+ ✅ Presence updated for qwe (da546069-3358-49f1-91a7-97e1c1b6853a)
+ ✅ Presence updated for qwe (da546069-3358-49f1-91a7-97e1c1b6853a)
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+ 📊 Total online: 2
+ 👤 Current user online: true
+ 👥 Other users: 1
+ ❌ Has error: false
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+ 📊 Total online: 2
+ 👤 Current user online: true
+ 👥 Other users: 1
+ ❌ Has error: false
+ 🧹 Cleaning up live user tracking for qwe
+ 📡 Setting qwe offline...
+ 🔄 === INITIALIZING LIVE USER TRACKING ===
+ 👤 User: qwe
+ 📱 Device ID: da546069-3358-49f1-91a7-97e1c1b6853a
+ 🧹 Cleaning up duplicate entries for qwe...
+ 👥 Subscribing to live users (simple query without orderBy)...
+ 👥 === LIVE USERS UPDATE (SIMPLE QUERY) ===
+ 📊 Raw docs from Firebase: 5
+   1. developer (57a60039-50db-4017-9abe-210033814d7c) - Last seen: 14:11:30 - Recent: true
+   2. Andreas (b7affd60-e2a1-470a-ac28-46062b0c63e8) - Last seen: 19:20:27 - Recent: false
+   3. Mauro (ba19a2d6-b571-4512-82ce-8acc8d131cef) - Last seen: 18:30:08 - Recent: false
+   4. . (c5d938e2-2286-438b-9943-71466337a326) - Last seen: 08:12:14 - Recent: false
+   5. Bobby (cc11f166-d0f3-4b6b-b7fe-76c89607adbf) - Last seen: 15:28:50 - Recent: false
+ 👥 Active users (last 5 min, sorted, deduplicated): 1
+   1. developer 
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+ 📊 Total online: 1
+ 👤 Current user online: false
+ 👥 Other users: 1
+ ❌ Has error: false
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+ 📊 Total online: 1
+ 👤 Current user online: false
+ 👥 Other users: 1
+ ❌ Has error: false
+ ✅ qwe set offline
+ 🔍 Found 1 existing entries for qwe
+ 🗑️ Deleting duplicate entry: da546069-3358-49f1-91a7-97e1c1b6853a
+ ✅ Cleaned up 1 duplicate entries
+ 📡 Updating presence for qwe...
+ 👥 === LIVE USERS UPDATE (SIMPLE QUERY) ===
+ 📊 Raw docs from Firebase: 6
+   1. developer (57a60039-50db-4017-9abe-210033814d7c) - Last seen: 14:11:30 - Recent: true
+   2. Andreas (b7affd60-e2a1-470a-ac28-46062b0c63e8) - Last seen: 19:20:27 - Recent: false
+   3. Mauro (ba19a2d6-b571-4512-82ce-8acc8d131cef) - Last seen: 18:30:08 - Recent: false
+   4. . (c5d938e2-2286-438b-9943-71466337a326) - Last seen: 08:12:14 - Recent: false
+   5. Bobby (cc11f166-d0f3-4b6b-b7fe-76c89607adbf) - Last seen: 15:28:50 - Recent: false
+   6. qwe (da546069-3358-49f1-91a7-97e1c1b6853a) - Last seen: 14:11:48 - Recent: true
+ 👥 Active users (last 5 min, sorted, deduplicated): 2
+   1. qwe (YOU)
+   2. developer 
+ 📊 === LIVE USER INDICATOR RENDER ===
+ 👤 Current user: qwe
+Console.js:61 📊 Total online: 2
+Console.js:61 👤 Current user online: true
+Console.js:61 👥 Other users: 1
+Console.js:61 ❌ Has error: false
+Console.js:61 📊 === LIVE USER INDICATOR RENDER ===
+Console.js:61 👤 Current user: qwe
+Console.js:61 📊 Total online: 2
+Console.js:61 👤 Current user online: true
+Console.js:61 👥 Other users: 1
+Console.js:61 ❌ Has error: false
+Console.js:61 ✅ Presence updated for qwe (da546069-3358-49f1-91a7-97e1c1b6853a)
+replit:1 Uncaught (in promise) AbortError: The user aborted a request.
+d23d0438-ee7a-49ac-a688-5b2b0ca6c552-00-1kvn5vy72nc59.worf.replit.dev/:1 Access to video at 'https://firebasestorage.googleapis.com/v0/b/weddingpix-744e5.firebasestorage.app/o/uploads%2F1751540093999-file_example_MOV_1920_2_2MB.mov?alt=media&token=0e8f1bec-ebc7-4ea3-bfc7-e524fd6131ad' from origin 'https://d23d0438-ee7a-49ac-a688-5b2b0ca6c552-00-1kvn5vy72nc59.worf.replit.dev' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+firebasestorage.googleapis.com/v0/b/weddingpix-744e5.firebasestorage.app/o/uploads%2F1751540093999-file_example_MOV_1920_2_2MB.mov?alt=media&token=0e8f1bec-ebc7-4ea3-bfc7-e524fd6131ad:1  Failed to load resource: net::ERR_FAILED
+Console.js:61 ❌ Video error: Event
+Mt.forEach.n.<computed> @ Console.js:61
+d23d0438-ee7a-49ac-a688-5b2b0ca6c552-00-1kvn5vy72nc59.worf.replit.dev/:1 Access to video at 'https://firebasestorage.googleapis.com/v0/b/weddingpix-744e5.firebasestorage.app/o/uploads%2F1751541177143-IMG_0073.mov?alt=media&token=d99ca4a8-51ed-4031-b8cc-982fde20191d' from origin 'https://d23d0438-ee7a-49ac-a688-5b2b0ca6c552-00-1kvn5vy72nc59.worf.replit.dev' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+firebasestorage.googleapis.com/v0/b/weddingpix-744e5.firebasestorage.app/o/uploads%2F1751541177143-IMG_0073.mov?alt=media&token=d99ca4a8-51ed-4031-b8cc-982fde20191d:1  Failed to load resource: net::ERR_FAILED
+Console.js:61 ❌ Video error: Event
+Mt.forEach.n.<computed> @ Console.js:61
+d23d0438-ee7a-49ac-a688-5b2b0ca6c552-00-1kvn5vy72nc59.worf.replit.dev/:1 Access to video at 'https://firebasestorage.googleapis.com/v0/b/weddingpix-744e5.firebasestorage.app/o/uploads%2F1751541177143-IMG_0073.mov?alt=media&token=d99ca4a8-51ed-4031-b8cc-982fde20191d' from origin 'https://d23d0438-ee7a-49ac-a688-5b2b0ca6c552-00-1kvn5vy72nc59.worf.replit.dev' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+firebasestorage.googleapis.com/v0/b/weddingpix-744e5.firebasestorage.app/o/uploads%2F1751541177143-IMG_0073.mov?alt=media&token=d99ca4a8-51ed-4031-b8cc-982fde20191d:1  Failed to load resource: net::ERR_FAILED
+Console.js:61 ❌ Video error: Event
+Mt.forEach.n.<computed> @ Console.js:61
+d23d0438-ee7a-49ac-a688-5b2b0ca6c552-00-1kvn5vy72nc59.worf.replit.dev/:1 Access to video at 'https://firebasestorage.googleapis.com/v0/b/weddingpix-744e5.firebasestorage.app/o/uploads%2F1751540093999-file_example_MOV_1920_2_2MB.mov?alt=media&token=0e8f1bec-ebc7-4ea3-bfc7-e524fd6131ad' from origin 'https://d23d0438-ee7a-49ac-a688-5b2b0ca6c552-00-1kvn5vy72nc59.worf.replit.dev' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+firebasestorage.googleapis.com/v0/b/weddingpix-744e5.firebasestorage.app/o/uploads%2F1751540093999-file_example_MOV_1920_2_2MB.mov?alt=media&token=0e8f1bec-ebc7-4ea3-bfc7-e524fd6131ad:1  Failed to load resource: net::ERR_FAILED
+Console.js:61 ❌ Video error: Event
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 👥 === LIVE USERS UPDATE (SIMPLE QUERY) ===
+Console.js:61 📊 Raw docs from Firebase: 6
+Console.js:61   1. developer (57a60039-50db-4017-9abe-210033814d7c) - Last seen: 14:12:00 - Recent: true
+Console.js:61   2. Andreas (b7affd60-e2a1-470a-ac28-46062b0c63e8) - Last seen: 19:20:27 - Recent: false
+Console.js:61   3. Mauro (ba19a2d6-b571-4512-82ce-8acc8d131cef) - Last seen: 18:30:08 - Recent: false
+Console.js:61   4. . (c5d938e2-2286-438b-9943-71466337a326) - Last seen: 08:12:14 - Recent: false
+Console.js:61   5. Bobby (cc11f166-d0f3-4b6b-b7fe-76c89607adbf) - Last seen: 15:28:50 - Recent: false
+Console.js:61   6. qwe (da546069-3358-49f1-91a7-97e1c1b6853a) - Last seen: 14:11:48 - Recent: true
+Console.js:61 👥 Active users (last 5 min, sorted, deduplicated): 2
+Console.js:61   1. developer 
+Console.js:61   2. qwe (YOU)
+Console.js:61 📊 === LIVE USER INDICATOR RENDER ===
+Console.js:61 👤 Current user: qwe
+Console.js:61 📊 Total online: 2
+Console.js:61 👤 Current user online: true
+Console.js:61 👥 Other users: 1
+Console.js:61 ❌ Has error: false
+Console.js:61 📊 === LIVE USER INDICATOR RENDER ===
+Console.js:61 👤 Current user: qwe
+Console.js:61 📊 Total online: 2
+Console.js:61 👤 Current user online: true
+Console.js:61 👥 Other users: 1
+Console.js:61 ❌ Has error: false
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_BLOCKED_BY_CLIENT
+Console.js:61 🔍 Fetching all users for tagging...
+Console.js:61 🔍 Fetching all users for tagging...
+Console.js:61 🔍 Fetching all users for tagging...
+Console.js:61 🔍 Fetching all users for tagging...
+Console.js:61 🔍 Fetching all users for tagging...
+Console.js:61 🔍 Fetching all users for tagging...
+Console.js:61 🔍 Fetching all users for tagging...
+Console.js:61 🔍 Fetching all users for tagging...
+Console.js:61 🔍 Fetching all users for tagging...
+Console.js:61 🔍 Fetching all users for tagging...
+Console.js:61 🔍 Fetching all users for tagging...
+Console.js:61 🔍 Fetching all users for tagging...
+Console.js:61 📊 Found 32 live user entries
+Console.js:61 👥 Processed 19 unique users
+Console.js:61 📊 Found 32 live user entries
+Console.js:61 👥 Processed 19 unique users
+Console.js:61 📊 Found 32 live user entries
+Console.js:61 👥 Processed 19 unique users
+Console.js:61 📊 Found 32 live user entries
+Console.js:61 👥 Processed 19 unique users
+Console.js:61 📊 Found 32 live user entries
+Console.js:61 👥 Processed 19 unique users
+Console.js:61 📊 Found 32 live user entries
+Console.js:61 👥 Processed 19 unique users
+Console.js:61 📊 Found 32 live user entries
+Console.js:61 👥 Processed 19 unique users
+Console.js:61 📊 Found 32 live user entries
+Console.js:61 👥 Processed 19 unique users
+Console.js:61 📊 Found 32 live user entries
+Console.js:61 👥 Processed 19 unique users
+Console.js:61 📊 Found 32 live user entries
+Console.js:61 👥 Processed 19 unique users
+Console.js:61 📊 Found 32 live user entries
+Console.js:61 👥 Processed 19 unique users
+Console.js:61 📊 Found 32 live user entries
+Console.js:61 👥 Processed 19 unique users
+Console.js:61 👤 Found 0 user profiles
+Console.js:61 ✅ Updated display names for 0 users
+Console.js:61 📋 Returning 19 users for tagging
+Console.js:61 👤 Found 0 user profiles
+Console.js:61 ✅ Updated display names for 0 users
+Console.js:61 📋 Returning 19 users for tagging
+Console.js:61 👤 Found 0 user profiles
+Console.js:61 ✅ Updated display names for 0 users
+Console.js:61 📋 Returning 19 users for tagging
+Console.js:61 👤 Found 0 user profiles
+Console.js:61 ✅ Updated display names for 0 users
+Console.js:61 📋 Returning 19 users for tagging
+Console.js:61 👤 Found 0 user profiles
+Console.js:61 ✅ Updated display names for 0 users
+Console.js:61 📋 Returning 19 users for tagging
+Console.js:61 👤 Found 0 user profiles
+Console.js:61 ✅ Updated display names for 0 users
+Console.js:61 📋 Returning 19 users for tagging
+Console.js:61 👤 Found 0 user profiles
+Console.js:61 ✅ Updated display names for 0 users
+Console.js:61 📋 Returning 19 users for tagging
+Console.js:61 👤 Found 0 user profiles
+Console.js:61 ✅ Updated display names for 0 users
+Console.js:61 📋 Returning 19 users for tagging
+Console.js:61 👤 Found 0 user profiles
+Console.js:61 ✅ Updated display names for 0 users
+Console.js:61 📋 Returning 19 users for tagging
+Console.js:61 👤 Found 0 user profiles
+Console.js:61 ✅ Updated display names for 0 users
+Console.js:61 📋 Returning 19 users for tagging
+Console.js:61 👤 Found 0 user profiles
+Console.js:61 ✅ Updated display names for 0 users
+Console.js:61 📋 Returning 19 users for tagging
+Console.js:61 👤 Found 0 user profiles
+Console.js:61 ✅ Updated display names for 0 users
+Console.js:61 📋 Returning 19 users for tagging
+d23d0438-ee7a-49ac-a688-5b2b0ca6c552-00-1kvn5vy72nc59.worf.replit.dev/:1 Access to video at 'https://firebasestorage.googleapis.com/v0/b/weddingpix-744e5.firebasestorage.app/o/uploads%2F1751541177143-IMG_0073.mov?alt=media&token=d99ca4a8-51ed-4031-b8cc-982fde20191d' from origin 'https://d23d0438-ee7a-49ac-a688-5b2b0ca6c552-00-1kvn5vy72nc59.worf.replit.dev' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+firebasestorage.googleapis.com/v0/b/weddingpix-744e5.firebasestorage.app/o/uploads%2F1751541177143-IMG_0073.mov?alt=media&token=d99ca4a8-51ed-4031-b8cc-982fde20191d:1  Failed to load resource: net::ERR_FAILED
+Console.js:61 ❌ Video error: Event
+Mt.forEach.n.<computed> @ Console.js:61
+d23d0438-ee7a-49ac-a688-5b2b0ca6c552-00-1kvn5vy72nc59.worf.replit.dev/:1 Access to video at 'https://firebasestorage.googleapis.com/v0/b/weddingpix-744e5.firebasestorage.app/o/uploads%2F1751540093999-file_example_MOV_1920_2_2MB.mov?alt=media&token=0e8f1bec-ebc7-4ea3-bfc7-e524fd6131ad' from origin 'https://d23d0438-ee7a-49ac-a688-5b2b0ca6c552-00-1kvn5vy72nc59.worf.replit.dev' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+firebasestorage.googleapis.com/v0/b/weddingpix-744e5.firebasestorage.app/o/uploads%2F1751540093999-file_example_MOV_1920_2_2MB.mov?alt=media&token=0e8f1bec-ebc7-4ea3-bfc7-e524fd6131ad:1  Failed to load resource: net::ERR_FAILED
+Console.js:61 ❌ Video error: Event
+Mt.forEach.n.<computed> @ Console.js:61

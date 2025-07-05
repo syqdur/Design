@@ -1,0 +1,54 @@
+Hier ist der erweiterte Prompt mit Layout-Optimierung:
+
+Prompt für komplette UI/UX Modernisierung:
+"Bitte überarbeite meine Webapp komplett und bringe sie auf den modernsten Designstandard. Orientiere dich dabei an den besten Practices von Spotify und Instagram. Hier sind die spezifischen Anforderungen:
+Design-Ziele:
+
+Modernes, minimalistisches Design mit klaren visuellen Hierarchien
+Dunkler Modus als Standard mit eleganten Farbverläufen
+Glassmorphismus-Effekte und subtile Schatten für Tiefe
+Smooth Micro-Animations und Hover-Effekte
+Responsive Design mit Mobile-First Ansatz
+
+Layout & Komponenten-Optimierung:
+
+Analysiere die bestehende Struktur und reorganisiere Komponenten nach UX-Best-Practices
+Priorisiere wichtige Elemente - bringe die wichtigsten Funktionen in den sichtbaren Bereich
+Reduziere Clutter - entferne oder kombiniere überflüssige UI-Elemente
+Optimiere Information Architecture - gruppiere verwandte Funktionen logisch
+Verbessere den User Flow - stelle sicher, dass häufige Aktionen schnell erreichbar sind
+Nutze vertikalen Platz effizient - besonders auf mobilen Geräten
+
+Mobile Optimierung (höchste Priorität):
+
+Touch-optimierte Buttons (mindestens 44px Höhe)
+Bottom Navigation für wichtigste Features (wie Instagram/Spotify)
+Thumb-Zone Optimierung - wichtige Buttons im unteren Bildschirmbereich
+Swipe-Gesten für Navigation zwischen Bereichen
+Pull-to-Refresh und andere native mobile Patterns
+Sticky Headers mit wichtigen Aktionen
+Große, gut erkennbare Icons mit ausreichend Whitespace
+
+Intelligente Komponenten-Anordnung:
+
+Header: Minimalistisch, nur essenzielle Navigation
+Content Area: Maximaler Platz für Hauptinhalte
+Footer/Bottom Nav: Schnellzugriff auf Hauptfunktionen
+Floating Action Buttons für primäre Aktionen
+Collapsible Sections für sekundäre Informationen
+Card-based Layout für bessere Scanbarkeit
+
+Komponenten-Styling:
+
+Überarbeite ALLE bestehenden Komponenten komplett
+Verwende moderne CSS-Features (Grid, Flexbox, CSS Variables)
+Konsistente Spacing-Systeme (8px-Grid)
+Hochwertige Typographie mit angemessenen Kontrasten
+Interaktive Elemente mit klarem visuellen Feedback
+
+Technische Umsetzung:
+
+Nutze aktuelle Web-Standards und CSS-Features
+Implementiere zugängliche (ARIA) und semantische HTML-Struktur
+Optimiere für verschiedene Bildschirmgrößen und Geräte
+Berücksichtige Performance und Ladezeiten
