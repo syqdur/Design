@@ -95,9 +95,9 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
       paddingRight: '8px'
     }}>
       <div className="max-w-lg mx-auto">
-        <div className="flex justify-between items-center relative">
+        <div className="flex items-center justify-between relative">
           {/* Left tabs */}
-          <div className="flex gap-6">
+          <div className="flex gap-4 sm:gap-6">
             {leftTabs.map((tab) => {
               const IconComponent = tab.icon;
               const isActive = activeTab === tab.id;
@@ -160,7 +160,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
           {onUploadClick && galleryEnabled && (
             <button
               onClick={onUploadClick}
-              className={`absolute left-1/2 transform -translate-x-1/2 w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 active:scale-95 btn-touch bg-gradient-to-r from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-500 text-white ${
+              className={`absolute left-1/2 transform -translate-x-1/2 w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 active:scale-95 btn-touch bg-gradient-to-r from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-500 text-white z-10 ${
                 isDarkMode 
                   ? 'shadow-pink-500/40' 
                   : 'shadow-pink-500/30'
@@ -176,7 +176,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
           )}
 
           {/* Right tabs */}
-          <div className="flex gap-6">
+          <div className="flex gap-4 sm:gap-6">
             {rightTabs.map((tab) => {
               const IconComponent = tab.icon;
               const isActive = activeTab === tab.id;

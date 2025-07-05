@@ -90,13 +90,20 @@ export const SpotifyAdmin: React.FC<SpotifyAdminProps> = ({ isDarkMode }) => {
     }
     
     setIsDisconnecting(true);
+    setError(null);
     
     try {
       await disconnectSpotify();
+      
+      // Reset all state immediately
       setIsConnected(false);
       setUser(null);
       setPlaylists([]);
       setSelectedPlaylistId(null);
+      
+      // Force a connection status recheck to ensure UI is updated
+      await checkConnectionStatus();
+      
     } catch (error) {
       console.error('Failed to disconnect Spotify:', error);
       setError('Failed to disconnect Spotify');

@@ -544,15 +544,16 @@ export const getValidCredentials = async (): Promise<SpotifyCredentials | null> 
 // Disconnect Spotify account
 export const disconnectSpotify = async (): Promise<void> => {
   try {
+    console.log('🔌 Disconnecting Spotify...');
+    
     // Get credentials
     const credentials = await getValidCredentials();
     
-    if (!credentials) {
-      return;
+    if (credentials) {
+      console.log('🗑️ Removing credentials from Firebase...');
+      // Delete credentials from Firestore
+      await deleteDoc(doc(db, 'spotifyCredentials', credentials.id));
     }
-    
-    // Delete credentials from Firestore
-    await deleteDoc(doc(db, 'spotifyCredentials', credentials.id));
     
     // Clear any cached tokens
     localStorage.removeItem(PKCE_CODE_VERIFIER_KEY);
@@ -560,6 +561,21 @@ export const disconnectSpotify = async (): Promise<void> => {
     
     // Cleanup optimistic manager
     SnapshotOptimisticManager.getInstance().cleanup();
+    
+    // Clear any selected playlist data
+    try {
+      const playlistQuery = query(collection(db, 'selectedPlaylists'));
+      const playlistDocs = await getDocs(playlistQuery);
+      
+      for (const playlistDoc of playlistDocs.docs) {
+        await deleteDoc(playlistDoc.ref);
+      }
+      console.log('🗑️ Removed selected playlist data');
+    } catch (playlistError) {
+      console.warn('Warning: Could not clear playlist data:', playlistError);
+    }
+    
+    console.log('✅ Spotify disconnected successfully');
     
   } catch (error) {
     console.error('Failed to disconnect Spotify:', error);
