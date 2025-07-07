@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Music, Search, X, Plus, Trash2, ExternalLink, AlertCircle, RefreshCw, Check } from 'lucide-react';
+import { Music, Search, X, Plus, Trash2, ExternalLink, AlertCircle, RefreshCw, Check, Grid3X3, List } from 'lucide-react';
 import { 
   searchTracks, 
   addTrackToPlaylist, 
@@ -48,6 +48,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
   const [isAdmin, setIsAdmin] = useState(false);
   const [syncStatus, setSyncStatus] = useState<'connecting' | 'live' | 'syncing' | 'error'>('connecting');
   const [unsubscribeSnapshot, setUnsubscribeSnapshot] = useState<(() => void) | null>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
 
   useEffect(() => {
     setIsAdmin(adminProp);
@@ -396,19 +397,56 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
               </div>
             </div>
           </div>
-          <a
-            href={`https://open.spotify.com/playlist/${selectedPlaylist.playlistId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`p-px rounded-lg transition-all duration-300 hover:scale-105 flex items-center justify-center ${
-              isDarkMode 
-                ? 'bg-pink-600/20 hover:bg-pink-600/30 text-pink-300' 
-                : 'bg-pink-100 hover:bg-pink-200 text-pink-600'
-            }`}
-            title="In Spotify öffnen"
-          >
-            <ExternalLink className="w-2.5 h-2.5" />
-          </a>
+          <div className="flex items-center gap-2">
+            {/* View Toggle */}
+            <div className={`flex items-center rounded-full p-1 ${
+              isDarkMode ? 'bg-gray-800 border border-gray-700' : 'bg-gray-100 border border-gray-200'
+            }`}>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-1.5 rounded-full transition-all duration-200 ${
+                  viewMode === 'list'
+                    ? isDarkMode 
+                      ? 'bg-pink-500/20 text-pink-400' 
+                      : 'bg-pink-500 text-white'
+                    : isDarkMode 
+                      ? 'text-gray-400 hover:text-gray-200' 
+                      : 'text-gray-600 hover:text-gray-800'
+                }`}
+                title="Liste"
+              >
+                <List className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-1.5 rounded-full transition-all duration-200 ${
+                  viewMode === 'grid'
+                    ? isDarkMode 
+                      ? 'bg-pink-500/20 text-pink-400' 
+                      : 'bg-pink-500 text-white'
+                    : isDarkMode 
+                      ? 'text-gray-400 hover:text-gray-200' 
+                      : 'text-gray-600 hover:text-gray-800'
+                }`}
+                title="Raster"
+              >
+                <Grid3X3 className="w-4 h-4" />
+              </button>
+            </div>
+            <a
+              href={`https://open.spotify.com/playlist/${selectedPlaylist.playlistId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`p-px rounded-lg transition-all duration-300 hover:scale-105 flex items-center justify-center ${
+                isDarkMode 
+                  ? 'bg-pink-600/20 hover:bg-pink-600/30 text-pink-300' 
+                  : 'bg-pink-100 hover:bg-pink-200 text-pink-600'
+              }`}
+              title="In Spotify öffnen"
+            >
+              <ExternalLink className="w-2.5 h-2.5" />
+            </a>
+          </div>
         </div>
 
         {/* Compact Search */}
@@ -522,66 +560,131 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
           ))}
         </div>
       )}
-      {/* Compact Playlist Tracks */}
-      <div className="space-y-2">
-        {playlistTracks.map((item) => (
-          <div key={item.track.id} className={`p-3 rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
-            isDarkMode 
-              ? 'bg-gray-900 border border-pink-500/20 hover:bg-gray-800 hover:border-pink-500/40 shadow-lg shadow-pink-500/5' 
-              : 'bg-white border border-pink-200 hover:bg-pink-50 hover:border-pink-300 shadow-md shadow-pink-100'
-          }`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+      {/* Playlist Tracks */}
+      {viewMode === 'list' ? (
+        <div className="space-y-2">
+          {playlistTracks.map((item) => (
+            <div key={item.track.id} className={`p-3 rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
+              isDarkMode 
+                ? 'bg-gray-900 border border-pink-500/20 hover:bg-gray-800 hover:border-pink-500/40 shadow-lg shadow-pink-500/5' 
+                : 'bg-white border border-pink-200 hover:bg-pink-50 hover:border-pink-300 shadow-md shadow-pink-100'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={item.track.album.images[0]?.url}
+                    alt={item.track.album.name}
+                    className="w-10 h-10 rounded-xl shadow-lg"
+                  />
+                  <div>
+                    <h4 className={`font-medium text-sm ${
+                      isDarkMode ? 'text-white' : 'text-gray-900'
+                    }`}>
+                      {item.track.name}
+                    </h4>
+                    <p className={`text-xs ${
+                      isDarkMode ? 'text-white/70' : 'text-gray-600'
+                    }`}>
+                      {item.track.artists.map((artist: any) => artist.name).join(', ')}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={item.track.external_urls.spotify}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center hover:bg-pink-600 text-white bg-[#e34b8cab]"
+                    title="In Spotify öffnen"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                  {canDeleteTrack(item) && (
+                    <button
+                      onClick={() => handleRemoveTrack(item)}
+                      disabled={isRemovingTrack === item.track.id}
+                      className={`w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 flex items-center justify-center ${
+                        isDarkMode 
+                          ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400' 
+                          : 'bg-red-500 hover:bg-red-600 text-white'
+                      }`}
+                    >
+                      {isRemovingTrack === item.track.id ? (
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-3">
+          {playlistTracks.map((item) => (
+            <div key={item.track.id} className={`relative group rounded-2xl overflow-hidden transition-all duration-300 hover:scale-105 ${
+              isDarkMode 
+                ? 'bg-gray-900 border border-pink-500/20 hover:border-pink-500/40 shadow-lg shadow-pink-500/5' 
+                : 'bg-white border border-pink-200 hover:border-pink-300 shadow-md shadow-pink-100'
+            }`}>
+              <div className="aspect-square relative">
                 <img
                   src={item.track.album.images[0]?.url}
                   alt={item.track.album.name}
-                  className="w-10 h-10 rounded-xl shadow-lg"
+                  className="w-full h-full object-cover"
                 />
-                <div>
-                  <h4 className={`font-medium text-sm ${
-                    isDarkMode ? 'text-white' : 'text-gray-900'
-                  }`}>
-                    {item.track.name}
-                  </h4>
-                  <p className={`text-xs ${
-                    isDarkMode ? 'text-white/70' : 'text-gray-600'
-                  }`}>
-                    {item.track.artists.map((artist: any) => artist.name).join(', ')}
-                  </p>
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                
+                {/* Action buttons overlay */}
+                <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <a
+                    href={item.track.external_urls.spotify}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-8 h-8 rounded-full bg-black/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-pink-500 transition-colors duration-200"
+                    title="In Spotify öffnen"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                  {canDeleteTrack(item) && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveTrack(item);
+                      }}
+                      disabled={isRemovingTrack === item.track.id}
+                      className="w-8 h-8 rounded-full bg-black/70 backdrop-blur-sm flex items-center justify-center text-white hover:bg-red-500 transition-colors duration-200 disabled:opacity-50"
+                      title="Entfernen"
+                    >
+                      {isRemovingTrack === item.track.id ? (
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                    </button>
+                  )}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <a
-                  href={item.track.external_urls.spotify}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 flex items-center justify-center hover:bg-pink-600 text-white bg-[#e34b8cab]"
-                  title="In Spotify öffnen"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-                {canDeleteTrack(item) && (
-                  <button
-                    onClick={() => handleRemoveTrack(item)}
-                    disabled={isRemovingTrack === item.track.id}
-                    className={`w-8 h-8 rounded-full transition-all duration-300 hover:scale-110 disabled:opacity-50 flex items-center justify-center ${
-                      isDarkMode 
-                        ? 'bg-red-500/20 hover:bg-red-500/30 text-red-400' 
-                        : 'bg-red-500 hover:bg-red-600 text-white'
-                    }`}
-                  >
-                    {isRemovingTrack === item.track.id ? (
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Trash2 className="w-4 h-4" />
-                    )}
-                  </button>
-                )}
+              
+              <div className="p-2">
+                <h4 className={`font-medium text-xs line-clamp-2 ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                }`} title={item.track.name}>
+                  {item.track.name}
+                </h4>
+                <p className={`text-xs mt-1 line-clamp-1 ${
+                  isDarkMode ? 'text-white/70' : 'text-gray-600'
+                }`} title={item.track.artists.map((artist: any) => artist.name).join(', ')}>
+                  {item.track.artists.map((artist: any) => artist.name).join(', ')}
+                </p>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
       {playlistTracks.length === 0 && !isLoading && (
         <div className={`text-center py-8 rounded-2xl ${
           isDarkMode 

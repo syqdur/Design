@@ -2,28 +2,120 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Mobile Safe Area Support */
+/* Mobile Vollbild Optimierungen */
 @supports (padding: max(0px)) {
   .pb-safe {
     padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
+  .pt-safe {
+    padding-top: max(8px, env(safe-area-inset-top));
+  }
+  .pl-safe {
+    padding-left: max(8px, env(safe-area-inset-left));
+  }
+  .pr-safe {
+    padding-right: max(8px, env(safe-area-inset-right));
+  }
 }
 
-/* Ensure all elements are visible on mobile */
+/* Vollbild Mobile Viewport */
+html {
+  height: 100vh;
+  height: -webkit-fill-available;
+  height: stretch;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
 body {
   min-height: 100vh;
   min-height: -webkit-fill-available;
+  min-height: stretch;
+  width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+  
+  /* iOS Safari Vollbild-Optimierungen */
+  -webkit-overflow-scrolling: touch;
+  -webkit-text-size-adjust: 100%;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-/* Mobile viewport handling */
-html {
+/* iOS Safari Address Bar verstecken */
+@media screen and (max-device-width: 480px) {
+  html {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
+  
+  body {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
+}
+
+/* Vollbild Container */
+#root {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  min-height: stretch;
+  width: 100vw;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mobile Browser UI verstecken beim Scrollen */
+.mobile-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
   height: -webkit-fill-available;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Fix for iOS bottom bar issues */
+/* Fix für iOS bottom bar */
 @media screen and (max-width: 768px) {
   .fixed.bottom-0 {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Verhindert Zoom bei Input-Focus */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+  
+  /* Verbessert Touch-Targets */
+  button, a, [role="button"] {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* PWA Vollbild-Modus */
+@media (display-mode: fullscreen) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+@media (display-mode: standalone) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 }
 

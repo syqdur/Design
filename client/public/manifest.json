@@ -3,7 +3,8 @@
   "short_name": "Wedding Gallery",
   "description": "Share your wedding memories in real-time",
   "start_url": "/",
-  "display": "standalone",
+  "display": "fullscreen",
+  "orientation": "portrait",
   "background_color": "#1f2937",
   "theme_color": "#ec4899",
   "icons": [
