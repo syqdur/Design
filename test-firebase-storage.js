@@ -3,12 +3,12 @@ import { initializeApp } from 'firebase/app';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB5kbpgei7k133J-2qyQ4XWg_b1BNf5M0c",
-  authDomain: "weddingpix-744e5.firebaseapp.com",
-  projectId: "weddingpix-744e5",
-  storageBucket: "weddingpix-744e5.firebasestorage.app",
-  messagingSenderId: "490398482579",
-  appId: "1:490398482579:web:47e1b0bd6bb0a329944d66"
+  apiKey: "AIzaSyCqDlIxPDp-QU6mzthkWnmzM6rZ8rnJdiI",
+  authDomain: "dev1-b3973.firebaseapp.com",
+  projectId: "dev1-b3973",
+  storageBucket: "dev1-b3973.firebasestorage.app",
+  messagingSenderId: "658150387877",
+  appId: "1:658150387877:web:ac90e7b1597a45258f5d4c"
 };
 
 const app = initializeApp(firebaseConfig);

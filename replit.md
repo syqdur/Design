@@ -87,6 +87,10 @@ This is a comprehensive wedding gallery application with the following architect
 
 ## Recent Changes
 
+### January 8, 2025 (Replit Agent to Replit Migration Complete + Firebase Configuration Update)
+- **Firebase Configuration Updated**: Successfully migrated from weddingpix-744e5 Firebase project to dev1-b3973 Firebase project with new credentials including API keys, auth domain, storage bucket, and messaging sender ID
+- **Cross-File Configuration Update**: Updated Firebase configuration in all relevant files including main config, test files, and storage test files to ensure consistent connectivity to new Firebase project
+
 ### January 8, 2025 (Replit Agent to Replit Migration Complete + User System Fix)
 - **Replit Agent to Replit Migration**: Successfully completed migration from Replit Agent to Replit environment with all functionality preserved including Express server, Firebase integration, Spotify music wishlist, live user tracking, and all gallery features
 - **User Isolation System Fixed**: Completely overhauled device ID generation system to prevent user identity conflicts and mixing - implemented device ID registry to track used IDs, enhanced UUID validation, timestamp-based unique generation, and proper user isolation
