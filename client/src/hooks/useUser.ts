@@ -3,27 +3,30 @@ import { getDeviceId, getUserName, setUserName } from '../utils/deviceId';
 
 export const useUser = () => {
   const [userName, setUserNameState] = useState<string | null>(null);
-  // Fix: Always get fresh device ID to prevent stale state issues
-  const [deviceId] = useState<string>(() => getDeviceId());
+  const [deviceId, setDeviceId] = useState<string>('');
   const [showNamePrompt, setShowNamePrompt] = useState(false);
 
   useEffect(() => {
+    // Always get a fresh device ID on component mount
+    const currentDeviceId = getDeviceId();
+    setDeviceId(currentDeviceId);
+    
     // Check if user was deleted and clear the flag after reload
     if (localStorage.getItem('userDeleted') === 'true') {
       console.log(`🧹 Clearing userDeleted flag after reload`);
       localStorage.clear(); // Clear everything including the flag
+      // After clearing, get a new device ID
+      const newDeviceId = getDeviceId();
+      setDeviceId(newDeviceId);
+      setShowNamePrompt(true);
+      return;
     }
     
-    // Check for potential device ID contamination
-    const currentDeviceId = getDeviceId();
     const storedName = getUserName();
     
     // Validate that device ID and username are properly paired
     if (storedName && currentDeviceId) {
       console.log(`🔍 Validating user identity: ${storedName} (${currentDeviceId})`);
-    }
-    
-    if (storedName) {
       setUserNameState(storedName);
     } else {
       setShowNamePrompt(true);

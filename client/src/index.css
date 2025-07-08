@@ -18,25 +18,20 @@
   }
 }
 
-/* Mobile Viewport with address bar handling */
+/* Mobile Viewport with address bar handling - KORRIGIERT */
 html {
-  height: 100vh;
-  height: -webkit-fill-available;
-  height: stretch;
-  height: calc(var(--vh, 1vh) * 100); /* Use custom viewport height */
-  width: 100vw;
+  height: 100%;
   overflow-x: hidden;
 }
 
 body {
   min-height: 100vh;
-  min-height: -webkit-fill-available;
-  min-height: stretch;
   min-height: 100dvh; /* Dynamic viewport height */
-  min-height: calc(var(--vh, 1vh) * 100); /* Use custom viewport height */
   width: 100vw;
   overflow-x: hidden;
   position: relative;
+  margin: 0;
+  padding: 0;
   
   /* iOS Safari optimizations */
   -webkit-overflow-scrolling: touch;
@@ -44,23 +39,23 @@ body {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
+  
+  /* Wichtig: Padding für Scroll-Trigger */
+  padding-bottom: 60px;
 }
 
-/* Safari Mobile Address Bar Handling */
+/* Safari Mobile Address Bar Handling - KORRIGIERT */
 .mobile-safari-viewport {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
+  /* NICHT position: fixed verwenden! */
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 .mobile-safari-viewport > * {
-  height: 100vh;
-  height: -webkit-fill-available;
-  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -68,40 +63,57 @@ body {
 /* Safari Mobile specific styles */
 @media screen and (max-device-width: 480px) {
   html {
-    height: 100vh;
-    height: -webkit-fill-available;
-    height: 100dvh; /* Dynamic viewport height */
+    height: 100%;
   }
   
   body {
-    height: 100vh;
-    height: -webkit-fill-available;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 }
 
-/* Vollbild Container */
+/* Vollbild Container - KORRIGIERT */
 #root {
   min-height: 100vh;
-  min-height: -webkit-fill-available;
-  min-height: stretch;
+  min-height: 100dvh;
   width: 100vw;
-  position: relative;
+  position: relative; /* NICHT fixed! */
   display: flex;
   flex-direction: column;
 }
 
-/* Mobile Browser UI verstecken beim Scrollen */
+/* Mobile Browser UI verstecken beim Scrollen - KORRIGIERT */
 .mobile-fullscreen {
+  /* ALTE VERSION (ENTFERNT):
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  */
+  
+  /* NEUE VERSION: */
+  min-height: calc(100vh + 60px);
+  min-height: calc(100dvh + 60px);
   width: 100vw;
-  height: 100vh;
-  height: -webkit-fill-available;
-  overflow: auto;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Hauptcontainer für scrollbaren Inhalt - NEU */
+.main-container {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  min-height: calc(100vh + 60px);
+  min-height: calc(100dvh + 60px);
+}
+
+/* Erzwinge scrollbaren Inhalt - NEU */
+.force-scroll {
+  min-height: calc(100vh + 100px);
+  min-height: calc(100dvh + 100px);
+  padding-bottom: 100px;
 }
 
 /* Fix für iOS bottom bar */
@@ -117,6 +129,8 @@ body {
   
   /* Verbessert Touch-Targets */
   button, a, [role="button"] {
+    min-height: 44px; /* Apple-empfohlene Mindestgröße */
+    min-width: 44px;
     touch-action: manipulation;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
@@ -144,6 +158,10 @@ body {
 
 /* Modern CSS Variables - Dark Mode First */
 :root {
+  /* Viewport-Variablen für JavaScript */
+  --vh: 1vh;
+  --real-vh: 1vh;
+  
   /* Dark theme colors (default) */
   --bg-primary: #0a0a0a;
   --bg-secondary: #1a1a1a;
@@ -206,8 +224,6 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
-  margin: 0;
-  padding: 0;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -285,16 +301,16 @@ body {
 
 /* Touch-optimized mobile buttons */
 .btn-touch {
-  min-height: 10px;
-  min-width: 10px;
+  min-height: 44px;
+  min-width: 44px;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
 /* Global minimum sizes for all interactive elements */
 button, a {
-  min-height: 10px;
-  min-width: 10px;
+  min-height: 44px;
+  min-width: 44px;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
@@ -340,16 +356,6 @@ html {
   bottom: 0 !important;
   z-index: 999999999 !important;
   isolation: isolate;
-}
-
-/* Modern scrollbar styling for Instagram 2.0 design */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
 }
 
 /* Custom gradient ring effect */
