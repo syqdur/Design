@@ -14,8 +14,8 @@ const getRedirectUri = (): string => {
     return import.meta.env.VITE_SPOTIFY_REDIRECT_URI;
   }
   
-  // For development, use current origin
-  if (import.meta.env.DEV && typeof window !== 'undefined') {
+  // For development and Replit, use current origin
+  if (typeof window !== 'undefined') {
     return window.location.origin + '/';
   }
   
