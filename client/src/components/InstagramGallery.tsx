@@ -84,56 +84,39 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
 
   return (
     <div>
-      {/* Modern View Toggle - Spotify Style */}
-      <div className={`mx-2 sm:mx-4 mb-4 sm:mb-6 p-2 rounded-2xl glass-card ${
-        isDarkMode 
-          ? 'bg-white/5 border-white/10' 
-          : 'bg-black/5 border-black/10'
-      }`}>
-        {/* Decorative background elements */}
-        <div className="absolute inset-0 opacity-5 pointer-events-none">
-          <div className={`absolute top-0 right-0 w-16 h-16 rounded-full blur-xl ${
-            isDarkMode ? 'bg-pink-500' : 'bg-pink-300'
-          }`} style={{ transform: 'translate(30%, -30%)' }}></div>
-          <div className={`absolute bottom-0 left-0 w-12 h-12 rounded-full blur-xl ${
-            isDarkMode ? 'bg-pink-500' : 'bg-pink-500'
-          }`} style={{ transform: 'translate(-30%, 30%)' }}></div>
-        </div>
-        <div className="flex items-center justify-center relative z-10">
-          <div className={`p-1 rounded-2xl transition-all duration-300 flex flex-row ${
-            isDarkMode ? 'bg-gray-700/30' : 'bg-white/50'
-          }`}>
-            <button
-              onClick={() => setViewMode('feed')}
-              className={`flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 transform hover:scale-105 touch-manipulation ${
-                viewMode === 'feed'
-                  ? isDarkMode
-                    ? 'bg-pink-600 text-white shadow-lg'
-                    : 'bg-pink-500 text-white shadow-lg'
+      {/* Compact View Toggle */}
+      <div className="flex justify-end mb-2 px-4">
+        <div className={`flex p-1 rounded-full ${
+          isDarkMode ? 'bg-gray-800/50' : 'bg-gray-100/50'
+        }`}>
+          <button
+            onClick={() => setViewMode('feed')}
+            className={`p-2 rounded-full transition-all duration-200 ${
+              viewMode === 'feed'
+                ? isDarkMode
+                  ? 'bg-pink-600 text-white'
+                  : 'bg-pink-500 text-white'
+              : isDarkMode
+                ? 'text-gray-400 hover:text-gray-200'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <List className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setViewMode('grid')}
+            className={`p-2 rounded-full transition-all duration-200 ${
+              viewMode === 'grid'
+                ? isDarkMode
+                  ? 'bg-pink-600 text-white'
+                  : 'bg-pink-500 text-white'
                 : isDarkMode
-                  ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
-              }`}
-            >
-              <List className="w-4 h-4" />
-              <span className="text-xs sm:text-sm font-medium">Feed</span>
-            </button>
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 transform hover:scale-105 touch-manipulation ${
-                viewMode === 'grid'
-                  ? isDarkMode
-                    ? 'bg-pink-600 text-white shadow-lg'
-                    : 'bg-pink-500 text-white shadow-lg'
-                  : isDarkMode
-                    ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
-              }`}
-            >
-              <Grid className="w-4 h-4" />
-              <span className="text-xs sm:text-sm font-medium">Grid</span>
-            </button>
-          </div>
+                  ? 'text-gray-400 hover:text-gray-200'
+                  : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <Grid className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
@@ -185,7 +168,7 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
         </div>
       ) : (
         // Grid View
-        <div className="p-1">
+        <div className="px-0 py-1 sm:p-1">
           {/* Notes Slider */}
           {noteItems.length > 0 && (
             <div className="mb-6">

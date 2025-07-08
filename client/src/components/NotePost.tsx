@@ -193,7 +193,7 @@ export const NotePost: React.FC<NotePostProps> = ({
   };
 
   return (
-    <div className={`mb-6 mx-4 rounded-3xl border transition-all duration-500 relative overflow-hidden backdrop-blur-xl ${
+    <div className={`mb-6 mx-0 sm:mx-4 rounded-none sm:rounded-3xl border-y sm:border transition-all duration-500 relative overflow-hidden backdrop-blur-xl ${
       isDarkMode 
         ? 'bg-gray-800/40 border-gray-700/30 shadow-2xl shadow-pink-500/10' 
         : 'bg-white/80 border-gray-200/40 shadow-2xl shadow-pink-500/10'
@@ -286,7 +286,7 @@ export const NotePost: React.FC<NotePostProps> = ({
 
         {/* Note Content */}
         {isEditingNote ? (
-          <div className={`mx-6 mb-4 p-6 rounded-2xl transition-colors duration-300 backdrop-blur-sm ${
+          <div className={`mx-0 sm:mx-6 mb-4 p-6 rounded-none sm:rounded-2xl transition-colors duration-300 backdrop-blur-sm ${
             isDarkMode 
               ? 'bg-blue-900/30 border border-blue-700/30' 
               : 'bg-blue-50/80 border border-blue-200/50'

@@ -127,7 +127,7 @@ export const StoriesBar: React.FC<StoriesBarProps> = ({
 
   // 🔧 FIX: Always show Stories Bar, even if no stories exist
   return (
-    <div className={`mx-4 my-2 p-2 rounded-2xl transition-all duration-500 ${
+    <div className={`mx-0 sm:mx-4 my-2 p-2 rounded-none sm:rounded-2xl transition-all duration-500 ${
       isDarkMode 
         ? 'bg-gray-800/30 border border-gray-700/20 backdrop-blur-xl' 
         : 'bg-white/50 border border-gray-200/30 backdrop-blur-xl'

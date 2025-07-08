@@ -221,7 +221,7 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
   };
 
   return (
-    <div className={`mb-6 mx-4 rounded-3xl border transition-all duration-500 relative overflow-hidden backdrop-blur-xl ${
+    <div className={`mb-6 mx-0 sm:mx-4 rounded-none sm:rounded-3xl border-y sm:border transition-all duration-500 relative overflow-hidden backdrop-blur-xl ${
       isDarkMode 
         ? 'bg-gray-800/40 border-gray-700/30 shadow-2xl shadow-pink-500/10' 
         : 'bg-white/80 border-gray-200/40 shadow-2xl shadow-pink-500/10'
@@ -313,7 +313,7 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
         </div>
 
         {/* Media Content */}
-        <div className="relative mx-6 mb-4 rounded-2xl overflow-hidden group">
+        <div className="relative mx-0 sm:mx-6 mb-4 rounded-none sm:rounded-2xl overflow-hidden group">
           {item.type === 'video' ? (
             <VideoThumbnail
               src={item.url}

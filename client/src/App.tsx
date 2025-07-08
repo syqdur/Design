@@ -960,7 +960,7 @@ function App() {
         </div>
       </div>
 
-      <div className="max-w-md mx-auto px-2 sm:px-0" style={{
+      <div className="w-full px-0 sm:max-w-md sm:mx-auto sm:px-2" style={{
         paddingBottom: 'max(64px, calc(64px + env(safe-area-inset-bottom)))'
       }}>
         <ProfileHeader 

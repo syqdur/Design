@@ -64,33 +64,40 @@ export const LiveUserIndicator: React.FC<LiveUserIndicatorProps> = ({
       return;
     }
 
-    const deviceId = localStorage.getItem('deviceId') || localStorage.getItem('wedding_device_id') || 'unknown';
+    // Use consistent device ID retrieval from utils
+    const deviceId = localStorage.getItem('deviceId');
+    
+    if (!deviceId) {
+      console.error('❌ No device ID found in localStorage');
+      return;
+    }
     console.log(`🔄 === INITIALIZING LIVE USER TRACKING ===`);
     console.log(`👤 User: ${currentUser}`);
     console.log(`📱 Device ID: ${deviceId}`);
 
-    // 🔧 FIX: Clean up any duplicate entries first
+    // 🔧 FIX: Clean up only duplicate entries for the SAME deviceId
     const cleanupDuplicates = async () => {
       try {
-        console.log(`🧹 Cleaning up duplicate entries for ${currentUser}...`);
+        console.log(`🧹 Cleaning up duplicate entries for device: ${deviceId}...`);
         
-        // Find all entries for this user (by userName, not deviceId)
+        // Find all entries for this specific device ID (not username)
         const duplicateQuery = query(
           collection(db, 'live_users'),
-          where('userName', '==', currentUser)
+          where('deviceId', '==', deviceId)
         );
         
         const duplicateSnapshot = await getDocs(duplicateQuery);
-        console.log(`🔍 Found ${duplicateSnapshot.docs.length} existing entries for ${currentUser}`);
+        console.log(`🔍 Found ${duplicateSnapshot.docs.length} existing entries for device ${deviceId}`);
         
-        // Delete all existing entries for this user
+        // Delete only entries that match this exact device ID (to prevent ID confusion)
         const deletePromises = duplicateSnapshot.docs.map(doc => {
-          console.log(`🗑️ Deleting duplicate entry: ${doc.id}`);
+          const data = doc.data();
+          console.log(`🗑️ Deleting duplicate entry: ${doc.id} (user: ${data.userName}, device: ${data.deviceId})`);
           return deleteDoc(doc.ref);
         });
         
         await Promise.all(deletePromises);
-        console.log(`✅ Cleaned up ${deletePromises.length} duplicate entries`);
+        console.log(`✅ Cleaned up ${deletePromises.length} duplicate entries for device ${deviceId}`);
         
       } catch (error) {
         console.error('❌ Error cleaning up duplicates:', error);
@@ -186,7 +193,7 @@ export const LiveUserIndicator: React.FC<LiveUserIndicatorProps> = ({
         
         const users: LiveUser[] = [];
         const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-        const seenUsers = new Set<string>(); // 🔧 FIX: Track seen usernames to prevent duplicates
+        const seenDevices = new Set<string>(); // 🔧 FIX: Track seen device IDs to prevent ID mixing
         
         snapshot.docs.forEach((doc, index) => {
           const data = doc.data();
@@ -195,15 +202,15 @@ export const LiveUserIndicator: React.FC<LiveUserIndicatorProps> = ({
           
           console.log(`  ${index + 1}. ${data.userName} (${data.deviceId}) - Last seen: ${lastSeen.toLocaleTimeString()} - Recent: ${isRecent}`);
           
-          // 🔧 FIX: Only include users who were active in the last 5 minutes AND not already seen
-          if (isRecent && !seenUsers.has(data.userName)) {
-            seenUsers.add(data.userName);
+          // 🔧 FIX: Use deviceId for uniqueness to prevent visitor ID confusion
+          if (isRecent && !seenDevices.has(data.deviceId)) {
+            seenDevices.add(data.deviceId);
             users.push({
               id: doc.id,
               ...data
             } as LiveUser);
-          } else if (seenUsers.has(data.userName)) {
-            console.log(`    ⚠️ Duplicate user ${data.userName} ignored`);
+          } else if (seenDevices.has(data.deviceId)) {
+            console.log(`    ⚠️ Duplicate device ${data.deviceId} (${data.userName}) ignored`);
           }
         });
         

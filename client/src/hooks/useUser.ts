@@ -3,7 +3,8 @@ import { getDeviceId, getUserName, setUserName } from '../utils/deviceId';
 
 export const useUser = () => {
   const [userName, setUserNameState] = useState<string | null>(null);
-  const [deviceId] = useState<string>(getDeviceId());
+  // Fix: Always get fresh device ID to prevent stale state issues
+  const [deviceId] = useState<string>(() => getDeviceId());
   const [showNamePrompt, setShowNamePrompt] = useState(false);
 
   useEffect(() => {
@@ -27,11 +28,11 @@ export const useUser = () => {
     setShowNamePrompt(false);
     
     // Log new visitor connection for profile sync
-    console.log(`👋 New visitor connected: ${name} (${getDeviceId()})`);
+    console.log(`👋 New visitor connected: ${name} (${deviceId})`);
     
     // Trigger a window event to notify App component to resync profiles
     window.dispatchEvent(new CustomEvent('userConnected', { 
-      detail: { userName: name, deviceId: getDeviceId(), profilePicture } 
+      detail: { userName: name, deviceId: deviceId, profilePicture } 
     }));
   };
 
