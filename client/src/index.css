@@ -18,11 +18,12 @@
   }
 }
 
-/* Vollbild Mobile Viewport */
+/* Mobile Viewport with address bar handling */
 html {
   height: 100vh;
   height: -webkit-fill-available;
   height: stretch;
+  height: calc(var(--vh, 1vh) * 100); /* Use custom viewport height */
   width: 100vw;
   overflow-x: hidden;
 }
@@ -31,11 +32,13 @@ body {
   min-height: 100vh;
   min-height: -webkit-fill-available;
   min-height: stretch;
+  min-height: 100dvh; /* Dynamic viewport height */
+  min-height: calc(var(--vh, 1vh) * 100); /* Use custom viewport height */
   width: 100vw;
   overflow-x: hidden;
   position: relative;
   
-  /* iOS Safari Vollbild-Optimierungen */
+  /* iOS Safari optimizations */
   -webkit-overflow-scrolling: touch;
   -webkit-text-size-adjust: 100%;
   -webkit-touch-callout: none;
@@ -43,11 +46,31 @@ body {
   user-select: none;
 }
 
-/* iOS Safari Address Bar verstecken */
+/* Safari Mobile Address Bar Handling */
+.mobile-safari-viewport {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-safari-viewport > * {
+  height: 100vh;
+  height: -webkit-fill-available;
+  height: 100dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safari Mobile specific styles */
 @media screen and (max-device-width: 480px) {
   html {
     height: 100vh;
     height: -webkit-fill-available;
+    height: 100dvh; /* Dynamic viewport height */
   }
   
   body {

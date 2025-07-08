@@ -83,6 +83,59 @@ function App() {
   const [status, setStatus] = useState('');
   const [siteStatus, setSiteStatus] = useState<SiteStatus | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  // Safari Mobile Address Bar Handler
+  useEffect(() => {
+    const handleSafariAddressBar = () => {
+      // Only run on mobile Safari/iOS
+      if (!/iPhone|iPad|iPod|Safari/i.test(navigator.userAgent) || window.innerWidth > 768) {
+        return;
+      }
+
+      // Force scroll to trigger address bar hiding
+      const scrollToHideAddressBar = () => {
+        setTimeout(() => {
+          window.scrollTo(0, 1);
+          setTimeout(() => {
+            window.scrollTo(0, 0);
+          }, 100);
+        }, 100);
+      };
+
+      // Set viewport height to account for address bar
+      const setMobileViewportHeight = () => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      };
+
+      // Initial setup
+      scrollToHideAddressBar();
+      setMobileViewportHeight();
+
+      // Update on resize (when address bar shows/hides)
+      const handleResize = () => {
+        setMobileViewportHeight();
+      };
+
+      const handleOrientationChange = () => {
+        setTimeout(() => {
+          setMobileViewportHeight();
+          scrollToHideAddressBar();
+        }, 500);
+      };
+
+      window.addEventListener('resize', handleResize);
+      window.addEventListener('orientationchange', handleOrientationChange);
+
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        window.removeEventListener('orientationchange', handleOrientationChange);
+      };
+    };
+
+    const cleanup = handleSafariAddressBar();
+    return cleanup;
+  }, []);
   const [showStoriesViewer, setShowStoriesViewer] = useState(false);
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const [selectedStoryUser, setSelectedStoryUser] = useState<string>('');

@@ -87,10 +87,13 @@ This is a comprehensive wedding gallery application with the following architect
 
 ## Recent Changes
 
-### January 8, 2025 (Fullscreen Removal & Compact UI Improvements)
+### January 8, 2025 (Fullscreen Removal & Mobile Safari Address Bar Fix)
 - **Fullscreen Function Removal**: Completely removed FullscreenButton component and fullscreen utilities due to mobile address bar display issues that prevented proper hiding
+- **Safari Address Bar CSS Solution**: Implemented comprehensive Safari mobile address bar handling using dynamic viewport height variables and CSS optimizations
+- **JavaScript Address Bar Handler**: Added automated scroll triggers and viewport height calculations to force Safari address bar hiding on mobile devices
+- **Dynamic Viewport Height**: Created CSS custom property system (--vh) that adjusts in real-time as Safari address bar shows/hides during scrolling
+- **Mobile Event Handling**: Added resize and orientation change listeners to maintain proper viewport height calculations across device rotations
 - **Compact View Toggle**: Replaced large decorative view toggle section with minimal icon-only buttons in rounded container for space efficiency  
-- **Mobile Address Bar Fix**: Eliminated problematic fullscreen functionality that interfered with mobile browser address bar hiding, improving mobile user experience
 - **Code Cleanup**: Removed FullscreenButton.tsx and fullscreenUtils.ts files along with all associated imports and usage for cleaner codebase
 
 ### January 5, 2025 (Overlay UI & Space Optimization)
