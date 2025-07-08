@@ -638,7 +638,7 @@ export const MusicWishlist: React.FC<MusicWishlistProps> = ({ isDarkMode, isAdmi
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
                 
                 {/* Action buttons overlay */}
-                <div className="absolute top-2 right-2 flex gap-1 opacity-100 transition-opacity duration-300">
+                <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <a
                     href={item.track.external_urls.spotify}
                     target="_blank"
