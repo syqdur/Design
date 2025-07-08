@@ -22,7 +22,8 @@ import { UserProfileModal } from './components/UserProfileModal';
 import { BackToTopButton } from './components/BackToTopButton';
 import { NotificationCenter } from './components/NotificationCenter';
 import { PhotoChallenges } from './components/PhotoChallenges';
-import { VideoRecorder } from './components/VideoRecorder';
+import { RecapGenerator } from './components/RecapGenerator';
+
 
 import { useUser } from './hooks/useUser';
 import { useDarkMode } from './hooks/useDarkMode';
@@ -83,6 +84,7 @@ function App() {
   const [status, setStatus] = useState('');
   const [siteStatus, setSiteStatus] = useState<SiteStatus | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showRecapGenerator, setShowRecapGenerator] = useState(false);
 
   // Safari Mobile Address Bar Handler
   useEffect(() => {
@@ -141,7 +143,7 @@ function App() {
   const [selectedStoryUser, setSelectedStoryUser] = useState<string>('');
   const [showStoryUpload, setShowStoryUpload] = useState(false);
   const [showUploadOptions, setShowUploadOptions] = useState(false);
-  const [showVideoRecorder, setShowVideoRecorder] = useState(false);
+
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [activeTab, setActiveTab] = useState<'gallery' | 'music' | 'timeline' | 'challenges'>('gallery');
@@ -649,49 +651,10 @@ function App() {
           } else {
             console.log(`❌ No profile found for ${userName} (${deviceId})`);
             
-            // Try to find any existing profile for this username or similar usernames
-            console.log(`🔍 Checking for existing profiles for username: ${userName}`);
-            const allProfiles = await getAllUserProfiles();
-            
-            // First try exact match
-            let existingUserProfile = allProfiles.find(p => p.userName === userName);
-            
-            // If no exact match, try fuzzy matching for similar names (e.g., Maurizio -> Mauro)
-            if (!existingUserProfile) {
-              const lowerUserName = userName.toLowerCase();
-              existingUserProfile = allProfiles.find(p => {
-                const lowerProfileName = p.userName.toLowerCase();
-                return lowerProfileName.includes(lowerUserName.slice(0, 4)) || 
-                       lowerUserName.includes(lowerProfileName.slice(0, 4));
-              });
-              
-              if (existingUserProfile) {
-                console.log(`🔗 Found similar profile: ${existingUserProfile.userName} for ${userName}`);
-              }
-            }
-            
-            if (existingUserProfile) {
-              console.log(`🔗 Found existing profile for ${userName}, linking to current device`);
-              try {
-                // Create a new profile entry for this device but use existing display name/picture
-                await createOrUpdateUserProfile(userName, deviceId, {
-                  displayName: existingUserProfile.displayName || userName,
-                  profilePicture: existingUserProfile.profilePicture
-                });
-                
-                const linkedProfile = await getUserProfile(userName, deviceId);
-                setCurrentUserProfile(linkedProfile);
-                console.log(`✅ Linked existing profile data to current device for ${userName}`);
-              } catch (error) {
-                console.error('Error linking profile:', error);
-                // Fallback to basic profile
-                setCurrentUserProfile(null);
-              }
-            } else {
-              console.log(`🔧 No existing profile found, user will need to create one manually`);
-              // Don't auto-create profile to avoid Firebase errors
-              setCurrentUserProfile(null);
-            }
+            // Each user gets their own unique profile - no fuzzy matching
+            console.log(`🔧 No existing profile found for ${userName} (${deviceId}), user will need to create one manually`);
+            // Don't auto-create profile to avoid Firebase errors
+            setCurrentUserProfile(null);
           }
         } catch (error) {
           console.error('Error loading current user profile:', error);
@@ -1120,27 +1083,36 @@ function App() {
                 </div>
 
                 {/* Video Recording */}
-                <button
-                  onClick={() => {
-                    setShowVideoRecorder(true);
-                    setShowUploadOptions(false);
-                  }}
-                  className={`flex items-center gap-3 p-4 rounded-xl w-full transition-all duration-200 btn-touch ${
+                <label
+                  className={`flex items-center gap-3 p-4 rounded-xl w-full transition-all duration-200 btn-touch cursor-pointer ${
                     isDarkMode 
                       ? 'bg-gray-700 hover:bg-gray-600 text-white' 
                       : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                   }`}
                 >
+                  <input
+                    type="file"
+                    accept="video/*"
+                    capture="environment"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        handleVideoUpload(file);
+                        setShowUploadOptions(false);
+                      }
+                    }}
+                    className="hidden"
+                  />
                   <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center">
                     <VideoIcon className="w-5 h-5 text-white" />
                   </div>
                   <div className="text-left">
                     <p className="font-medium">Video aufnehmen</p>
                     <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Neues Video erstellen
+                      Mit der Gerätekamera aufnehmen
                     </p>
                   </div>
-                </button>
+                </label>
 
                 {/* Note */}
                 <button
@@ -1194,14 +1166,7 @@ function App() {
           </div>
         )}
 
-        {/* Video Recorder Modal */}
-        {showVideoRecorder && (
-          <VideoRecorder
-            onVideoRecorded={handleVideoUpload}
-            onClose={() => setShowVideoRecorder(false)}
-            isDarkMode={isDarkMode}
-          />
-        )}
+
 
         {/* Note Input Modal */}
         {showNoteInput && (
@@ -1427,10 +1392,19 @@ function App() {
         siteStatus={siteStatus}
         getUserAvatar={getUserAvatar}
         getUserDisplayName={getUserDisplayName}
+        onShowRecapGenerator={() => setShowRecapGenerator(true)}
       />
 
       {/* Back to Top Button */}
       <BackToTopButton isDarkMode={isDarkMode} />
+
+      {/* Recap Generator Modal */}
+      <RecapGenerator
+        isOpen={showRecapGenerator}
+        onClose={() => setShowRecapGenerator(false)}
+        mediaItems={mediaItems}
+        isDarkMode={isDarkMode}
+      />
 
       {/* Mobile Admin Burger Menu - Above Bottom Navigation */}
       {userName && (

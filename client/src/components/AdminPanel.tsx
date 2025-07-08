@@ -15,6 +15,7 @@ interface AdminPanelProps {
   siteStatus?: SiteStatus;
   getUserAvatar?: (userName: string, deviceId?: string) => string | null;
   getUserDisplayName?: (userName: string, deviceId?: string) => string;
+  onShowRecapGenerator?: () => void;
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ 
@@ -24,7 +25,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   mediaItems = [],
   siteStatus,
   getUserAvatar,
-  getUserDisplayName
+  getUserDisplayName,
+  onShowRecapGenerator
 }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [showDownloadWarning, setShowDownloadWarning] = useState(false);
@@ -447,6 +449,21 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               ) : (
                 <Unlock className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
               )}
+            </button>
+          )}
+
+          {/* Video Recap Generator */}
+          {onShowRecapGenerator && (
+            <button
+              onClick={onShowRecapGenerator}
+              className={`p-2 sm:p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+                isDarkMode
+                  ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-purple-500/10'
+                  : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-purple-500/10'
+              }`}
+              title="Video Recap erstellen"
+            >
+              <Video className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
             </button>
           )}
 
