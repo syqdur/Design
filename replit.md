@@ -87,6 +87,12 @@ This is a comprehensive wedding gallery application with the following architect
 
 ## Recent Changes
 
+### January 8, 2025 (Fullscreen Removal & Compact UI Improvements)
+- **Fullscreen Function Removal**: Completely removed FullscreenButton component and fullscreen utilities due to mobile address bar display issues that prevented proper hiding
+- **Compact View Toggle**: Replaced large decorative view toggle section with minimal icon-only buttons in rounded container for space efficiency  
+- **Mobile Address Bar Fix**: Eliminated problematic fullscreen functionality that interfered with mobile browser address bar hiding, improving mobile user experience
+- **Code Cleanup**: Removed FullscreenButton.tsx and fullscreenUtils.ts files along with all associated imports and usage for cleaner codebase
+
 ### January 5, 2025 (Overlay UI & Space Optimization)
 - **Like Button Overlay Implementation**: Moved like buttons from bottom sections to floating overlays positioned in bottom-right corner of media content with semi-transparent backgrounds and backdrop blur for optimal visibility
 - **Location Tags Overlay System**: Implemented location tags as compact bottom-left overlays on media content with map pin icons and truncated text, replacing separate display sections for space efficiency

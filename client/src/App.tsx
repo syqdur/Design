@@ -23,7 +23,7 @@ import { BackToTopButton } from './components/BackToTopButton';
 import { NotificationCenter } from './components/NotificationCenter';
 import { PhotoChallenges } from './components/PhotoChallenges';
 import { VideoRecorder } from './components/VideoRecorder';
-import { FullscreenButton } from './components/FullscreenButton';
+
 import { useUser } from './hooks/useUser';
 import { useDarkMode } from './hooks/useDarkMode';
 import { MediaItem, Comment, Like } from './types';
@@ -938,11 +938,6 @@ function App() {
                 isDarkMode={isDarkMode}
               />
               
-              {/* Vollbild Button für mobile Optimierung */}
-              <FullscreenButton 
-                isDarkMode={isDarkMode}
-                className="w-8 h-8 sm:w-10 sm:h-10"
-              />
               
               <button
                 onClick={toggleDarkMode}
