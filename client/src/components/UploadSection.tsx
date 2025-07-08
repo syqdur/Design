@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Camera, MessageSquare, Image, Video, Zap } from 'lucide-react';
+import { VideoRecorder } from './VideoRecorder';
 
 interface UploadSectionProps {
   onUpload: (files: FileList) => Promise<void>;
@@ -25,7 +26,7 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
   const [files, setFiles] = useState<FileList | null>(null);
   const [showUploadOptions, setShowUploadOptions] = useState(false);
   const [showNoteInput, setShowNoteInput] = useState(false);
-
+  const [showVideoRecorder, setShowVideoRecorder] = useState(false);
   const [noteText, setNoteText] = useState('');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,11 +46,9 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
     }
   };
 
-  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      await onVideoUpload(file);
-    }
+  const handleVideoRecorded = async (videoBlob: Blob) => {
+    setShowVideoRecorder(false);
+    await onVideoUpload(videoBlob);
   };
 
   return (
@@ -195,20 +194,17 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
                 }`} />
               </label>
 
-              <label
+              <button
+                onClick={() => {
+                  setShowVideoRecorder(true);
+                  setShowUploadOptions(false);
+                }}
                 className={`group flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all duration-200 hover:scale-[1.02] w-full ${
                   isDarkMode 
                     ? 'bg-red-600/10 hover:bg-red-600/20 border border-red-500/30' 
                     : 'bg-red-50 hover:bg-red-100 border border-red-200'
                 }`}
               >
-                <input
-                  type="file"
-                  accept="video/*"
-                  capture="environment"
-                  onChange={handleVideoUpload}
-                  className="hidden"
-                />
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                   isDarkMode ? 'bg-red-500/20' : 'bg-red-500/10'
                 }`}>
@@ -225,13 +221,13 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
                   <p className={`text-sm ${
                     isDarkMode ? 'text-gray-400' : 'text-gray-600'
                   }`}>
-                    Mit der Gerätekamera
+                    Direkt mit der Kamera (max. 10s)
                   </p>
                 </div>
                 <Zap className={`w-5 h-5 ${
                   isDarkMode ? 'text-gray-500' : 'text-gray-400'
                 }`} />
-              </label>
+              </button>
 
               <button
                 onClick={() => {
@@ -419,7 +415,14 @@ export const UploadSection: React.FC<UploadSectionProps> = ({
         </div>
       )}
 
-
+      {/* Video Recorder Modal */}
+      {showVideoRecorder && (
+        <VideoRecorder
+          onVideoRecorded={handleVideoRecorded}
+          onClose={() => setShowVideoRecorder(false)}
+          isDarkMode={isDarkMode}
+        />
+      )}
     </>
   );
 };

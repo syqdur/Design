@@ -22,26 +22,45 @@ import { UserProfileModal } from './components/UserProfileModal';
 import { BackToTopButton } from './components/BackToTopButton';
 import { NotificationCenter } from './components/NotificationCenter';
 import { PhotoChallenges } from './components/PhotoChallenges';
-import { RecapGenerator } from './components/RecapGenerator';
-import { SupabaseTest } from './components/SupabaseTest';
-
+import { VideoRecorder } from './components/VideoRecorder';
 
 import { useUser } from './hooks/useUser';
 import { useDarkMode } from './hooks/useDarkMode';
+import { MediaItem, Comment, Like } from './types';
 import {
-  mediaService,
-  commentsService,
-  likesService,
-  userProfileService,
-  liveUsersService,
-  storiesService,
-  siteStatusService,
-  subscriptions,
-  uploadFile
-} from './services/supabaseService';
-import { UserProfile, MediaItem, Comment, Like, Story, SiteStatus } from './lib/supabase';
+  uploadFiles,
+  uploadVideoBlob,
+  loadGallery,
+  deleteMediaItem,
+  loadComments,
+  addComment,
+  deleteComment,
+  loadLikes,
+  toggleLike,
+  addNote,
+  editNote,
+  loadUserProfiles,
+  getUserProfile,
+  getAllUserProfiles,
+  createOrUpdateUserProfile,
+  uploadUserProfilePicture,
+  UserProfile,
+  createTestNotification
+} from './services/firebaseService';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from './config/firebase';
+import { subscribeSiteStatus, SiteStatus } from './services/siteStatusService';
 import { getUserName, getDeviceId } from './utils/deviceId';
 import { notificationService, initializePushNotifications } from './services/notificationService';
+import {
+  subscribeStories,
+  subscribeAllStories,
+  addStory,
+  markStoryAsViewed,
+  deleteStory,
+  cleanupExpiredStories,
+  Story
+} from './services/liveService';
 
 function App() {
   // Check if user was deleted and prevent app initialization
@@ -64,7 +83,6 @@ function App() {
   const [status, setStatus] = useState('');
   const [siteStatus, setSiteStatus] = useState<SiteStatus | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [showRecapGenerator, setShowRecapGenerator] = useState(false);
 
   // Safari Mobile Address Bar Handler
   useEffect(() => {
@@ -123,7 +141,7 @@ function App() {
   const [selectedStoryUser, setSelectedStoryUser] = useState<string>('');
   const [showStoryUpload, setShowStoryUpload] = useState(false);
   const [showUploadOptions, setShowUploadOptions] = useState(false);
-
+  const [showVideoRecorder, setShowVideoRecorder] = useState(false);
   const [showNoteInput, setShowNoteInput] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [activeTab, setActiveTab] = useState<'gallery' | 'music' | 'timeline' | 'challenges'>('gallery');
@@ -181,39 +199,37 @@ function App() {
 
   // Subscribe to site status changes
   useEffect(() => {
-    const loadSiteStatus = async () => {
-      try {
-        const status = await siteStatusService.getSiteStatus();
-        setSiteStatus(status);
-      } catch (error) {
-        console.error('Error loading site status:', error);
-      }
-    };
+    const unsubscribe = subscribeSiteStatus((status) => {
+      setSiteStatus(status);
+    });
 
-    loadSiteStatus();
+    return unsubscribe;
   }, []);
 
-  // User logout handling - updated for Supabase
+  // Listen for logout signals for the current user
   useEffect(() => {
     if (!userName || !deviceId) return;
 
-    // Update user presence for tracking
-    const updatePresence = async () => {
-      try {
-        await liveUsersService.updatePresence(userName, deviceId);
-      } catch (error) {
-        console.error('Error updating presence:', error);
+    const logoutDocRef = doc(db, 'user_logout_signals', deviceId);
+    
+    const unsubscribe = onSnapshot(logoutDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        console.log(`🚪 Logout signal received for ${userName} (${deviceId})`);
+        
+        // Set user as deleted and force logout
+        localStorage.setItem('userDeleted', 'true');
+        
+        // Clear all user data
+        localStorage.clear();
+        
+        // Force page reload to restart with username prompt
+        console.log(`🔄 Forcing logout and reload for deleted user: ${userName}`);
+        window.location.reload();
       }
-    };
+    });
 
-    updatePresence();
-    const presenceInterval = setInterval(updatePresence, 30000); // Update every 30 seconds
-
-    return () => {
-      clearInterval(presenceInterval);
-      // Set user offline when component unmounts
-      liveUsersService.setOffline(userName, deviceId).catch(console.error);
-    };
+    return unsubscribe;
   }, [userName, deviceId]);
 
   // Initialize notification service when user is logged in
@@ -258,75 +274,39 @@ function App() {
     };
   }, [userName, deviceId]);
 
-  // Subscribe to stories when user is logged in - Supabase version
+  // Subscribe to stories when user is logged in
   useEffect(() => {
-    if (!userName || !siteStatus) return;
+    if (!userName || !siteStatus || siteStatus.isUnderConstruction) return;
 
-    const loadStories = async () => {
-      try {
-        const storiesData = await storiesService.getStories();
-        setStories(storiesData);
-      } catch (error) {
-        console.error('Error loading stories:', error);
-      }
-    };
+    // Subscribe to stories (admin sees all, users see only active)
+    const unsubscribeStories = isAdmin 
+      ? subscribeAllStories(setStories)
+      : subscribeStories(setStories);
 
-    loadStories();
-
-    // Subscribe to real-time updates
-    const subscription = subscriptions.subscribeToStories((payload) => {
-      console.log('Stories update:', payload);
-      loadStories(); // Reload stories on any change
-    });
+    // Cleanup expired stories periodically
+    const cleanupInterval = setInterval(() => {
+      cleanupExpiredStories();
+    }, 60000); // Check every minute
 
     return () => {
-      subscriptions.unsubscribe(subscription);
+      clearInterval(cleanupInterval);
+      unsubscribeStories();
     };
   }, [userName, deviceId, siteStatus, isAdmin]);
 
   useEffect(() => {
-    if (!userName || !siteStatus) return;
+    if (!userName || !siteStatus || siteStatus.isUnderConstruction) return;
 
-    const loadAllData = async () => {
-      try {
-        const [mediaData, commentsData, likesData, profilesData] = await Promise.all([
-          mediaService.getMedia(),
-          commentsService.getAllComments(),
-          likesService.getAllLikes(),
-          userProfileService.getAllProfiles()
-        ]);
-
-        setMediaItems(mediaData);
-        setComments(commentsData);
-        setLikes(likesData);
-        setUserProfiles(profilesData);
-      } catch (error) {
-        console.error('Error loading data:', error);
-      }
-    };
-
-    loadAllData();
-
-    // Subscribe to real-time updates
-    const mediaSubscription = subscriptions.subscribeToMedia((payload) => {
-      console.log('Media update:', payload);
-      mediaService.getMedia().then(setMediaItems);
-    });
-
-    const commentsSubscription = subscriptions.subscribeToComments((payload) => {
-      console.log('Comments update:', payload);
-      commentsService.getAllComments().then(setComments);
-    });
-
-    const likesSubscription = subscriptions.subscribeToLikes((payload) => {
-      console.log('Likes update:', payload);
-      likesService.getAllLikes().then(setLikes);
-    });
+    const unsubscribeGallery = loadGallery(setMediaItems);
+    const unsubscribeComments = loadComments(setComments);
+    const unsubscribeLikes = loadLikes(setLikes);
+    const unsubscribeUserProfiles = loadUserProfiles(setUserProfiles);
 
     return () => {
-      subscriptions.unsubscribe(mediaSubscription);
-      subscriptions.unsubscribe(commentsSubscription);
-      subscriptions.unsubscribe(likesSubscription);
+      unsubscribeGallery();
+      unsubscribeComments();
+      unsubscribeLikes();
+      unsubscribeUserProfiles();
     };
   }, [userName, siteStatus]);
 
@@ -359,18 +339,10 @@ function App() {
     setStatus('⏳ Lädt hoch...');
 
     try {
-      // Upload each file using Supabase
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        await mediaService.uploadMedia(file, userName, deviceId);
-        setUploadProgress(((i + 1) / files.length) * 100);
-      }
+      await uploadFiles(files, userName, deviceId, setUploadProgress);
       
       // Ensure user profile exists for proper display name sync
-      await userProfileService.createProfile({
-        user_name: userName,
-        device_id: deviceId
-      });
+      await createOrUpdateUserProfile(userName, deviceId, {});
       
       setStatus('✅ Bilder erfolgreich hochgeladen!');
       setTimeout(() => setStatus(''), 3000);
@@ -392,16 +364,10 @@ function App() {
     setStatus('⏳ Video wird hochgeladen...');
 
     try {
-      // Convert blob to file
-      const videoFile = new File([videoBlob], `video-${Date.now()}.mp4`, { type: 'video/mp4' });
-      await mediaService.uploadMedia(videoFile, userName, deviceId);
-      setUploadProgress(100);
+      await uploadVideoBlob(videoBlob, userName, deviceId, setUploadProgress);
       
       // Ensure user profile exists for proper display name sync
-      await userProfileService.createProfile({
-        user_name: userName,
-        device_id: deviceId
-      });
+      await createOrUpdateUserProfile(userName, deviceId, {});
       
       setStatus('✅ Video erfolgreich hochgeladen!');
       setTimeout(() => setStatus(''), 3000);
@@ -422,15 +388,10 @@ function App() {
     setStatus('⏳ Notiz wird gespeichert...');
 
     try {
-      // Create a note post in media items (with type 'note')
-      const noteFile = new File([noteText], 'note.txt', { type: 'text/plain' });
-      await mediaService.uploadMedia(noteFile, userName, deviceId, noteText);
+      await addNote(noteText, userName, deviceId);
       
       // Ensure user profile exists for proper display name sync
-      await userProfileService.createProfile({
-        user_name: userName,
-        device_id: deviceId
-      });
+      await createOrUpdateUserProfile(userName, deviceId, {});
       
       setStatus('✅ Notiz erfolgreich hinterlassen!');
       setTimeout(() => setStatus(''), 3000);
@@ -453,7 +414,7 @@ function App() {
     setStatus('⏳ Notiz wird aktualisiert...');
 
     try {
-      await mediaService.updateMediaNote(item.id, newText);
+      await editNote(item.id, newText);
       setStatus('✅ Notiz erfolgreich aktualisiert!');
       setTimeout(() => setStatus(''), 3000);
     } catch (error) {
@@ -480,7 +441,7 @@ function App() {
     if (!window.confirm(confirmMessage)) return;
 
     try {
-      await mediaService.deleteMedia(item.id);
+      await deleteMediaItem(item);
       setStatus(`✅ ${itemType} erfolgreich gelöscht!`);
       setTimeout(() => setStatus(''), 3000);
     } catch (error) {
@@ -494,11 +455,11 @@ function App() {
     if (!userName) return;
     
     try {
-      await commentsService.addComment(mediaId, userName, deviceId, text);
+      await addComment(mediaId, text, userName, deviceId);
       
       // Find the media owner to send notification
       const mediaItem = mediaItems.find(item => item.id === mediaId);
-      if (mediaItem && mediaItem.uploaded_by !== userName) {
+      if (mediaItem && mediaItem.uploadedBy !== userName) {
         await notificationService.sendCommentNotification(
           mediaItem.uploadedBy,
           mediaItem.deviceId,
@@ -510,10 +471,7 @@ function App() {
       }
       
       // Ensure user profile exists for proper display name sync
-      await userProfileService.createProfile({
-        user_name: userName,
-        device_id: deviceId
-      });
+      await createOrUpdateUserProfile(userName, deviceId, {});
     } catch (error) {
       console.error('Error adding comment:', error);
     }
@@ -531,14 +489,14 @@ function App() {
     if (!userName) return;
     
     try {
-      await likesService.toggleLike(mediaId, userName, deviceId);
+      await toggleLike(mediaId, userName, deviceId);
       
       // Send notification for likes (simplified approach)
       const mediaItem = mediaItems.find(item => item.id === mediaId);
-      if (mediaItem && mediaItem.uploaded_by !== userName) {
+      if (mediaItem && mediaItem.uploadedBy !== userName) {
         await notificationService.sendLikeNotification(
-          mediaItem.uploaded_by,
-          mediaItem.uploaded_by_device_id,
+          mediaItem.uploadedBy,
+          mediaItem.deviceId,
           userName,
           deviceId,
           mediaId
@@ -560,7 +518,7 @@ function App() {
       const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
       
       // Add story using the service function
-      await storiesService.uploadStory(file, userName, deviceId);
+      await addStory(file, mediaType, userName, deviceId);
       
       setStatus('✅ Story erfolgreich hinzugefügt!');
       setTimeout(() => setStatus(''), 3000);
@@ -581,13 +539,12 @@ function App() {
   };
 
   const handleStoryViewed = async (storyId: string) => {
-    // Story viewed functionality - can be implemented later if needed
-    console.log('Story viewed:', storyId);
+    await markStoryAsViewed(storyId, deviceId);
   };
 
   const handleDeleteStory = async (storyId: string) => {
     try {
-      await storiesService.deleteStory(storyId);
+      await deleteStory(storyId);
       setStatus('✅ Story erfolgreich gelöscht!');
       setTimeout(() => setStatus(''), 3000);
     } catch (error) {
@@ -659,9 +616,9 @@ function App() {
     
     const checkProfileUpdates = async () => {
       try {
-        const latestProfile = await userProfileService.getProfile(userName, deviceId);
+        const latestProfile = await getUserProfile(userName, deviceId);
         if (latestProfile && JSON.stringify(latestProfile) !== JSON.stringify(currentUserProfile)) {
-          console.log(`📸 Profile updated for ${userName}:`, latestProfile.profile_picture ? 'Has picture' : 'No picture');
+          console.log(`📸 Profile updated for ${userName}:`, latestProfile.profilePicture ? 'Has picture' : 'No picture');
           setCurrentUserProfile(latestProfile);
         }
       } catch (error) {
@@ -684,18 +641,57 @@ function App() {
       if (userName && deviceId) {
         try {
           console.log(`🔍 Looking for profile: ${userName} with deviceId ${deviceId}`);
-          const userProfile = await userProfileService.getProfile(userName, deviceId);
+          const userProfile = await getUserProfile(userName, deviceId);
           setCurrentUserProfile(userProfile);
           
           if (userProfile) {
-            console.log(`✅ Found profile for ${userName}: ${userProfile.display_name || 'No display name'}`);
+            console.log(`✅ Found profile for ${userName}: ${userProfile.displayName || 'No display name'}`);
           } else {
             console.log(`❌ No profile found for ${userName} (${deviceId})`);
             
-            // Each user gets their own unique profile - no fuzzy matching
-            console.log(`🔧 No existing profile found for ${userName} (${deviceId}), user will need to create one manually`);
-            // Don't auto-create profile to avoid Supabase errors
-            setCurrentUserProfile(null);
+            // Try to find any existing profile for this username or similar usernames
+            console.log(`🔍 Checking for existing profiles for username: ${userName}`);
+            const allProfiles = await getAllUserProfiles();
+            
+            // First try exact match
+            let existingUserProfile = allProfiles.find(p => p.userName === userName);
+            
+            // If no exact match, try fuzzy matching for similar names (e.g., Maurizio -> Mauro)
+            if (!existingUserProfile) {
+              const lowerUserName = userName.toLowerCase();
+              existingUserProfile = allProfiles.find(p => {
+                const lowerProfileName = p.userName.toLowerCase();
+                return lowerProfileName.includes(lowerUserName.slice(0, 4)) || 
+                       lowerUserName.includes(lowerProfileName.slice(0, 4));
+              });
+              
+              if (existingUserProfile) {
+                console.log(`🔗 Found similar profile: ${existingUserProfile.userName} for ${userName}`);
+              }
+            }
+            
+            if (existingUserProfile) {
+              console.log(`🔗 Found existing profile for ${userName}, linking to current device`);
+              try {
+                // Create a new profile entry for this device but use existing display name/picture
+                await createOrUpdateUserProfile(userName, deviceId, {
+                  displayName: existingUserProfile.displayName || userName,
+                  profilePicture: existingUserProfile.profilePicture
+                });
+                
+                const linkedProfile = await getUserProfile(userName, deviceId);
+                setCurrentUserProfile(linkedProfile);
+                console.log(`✅ Linked existing profile data to current device for ${userName}`);
+              } catch (error) {
+                console.error('Error linking profile:', error);
+                // Fallback to basic profile
+                setCurrentUserProfile(null);
+              }
+            } else {
+              console.log(`🔧 No existing profile found, user will need to create one manually`);
+              // Don't auto-create profile to avoid Firebase errors
+              setCurrentUserProfile(null);
+            }
           }
         } catch (error) {
           console.error('Error loading current user profile:', error);
@@ -712,7 +708,7 @@ function App() {
     const syncAllUserProfiles = async () => {
       try {
         console.log('🔄 Syncing all user profiles for display name consistency...');
-        const allProfiles = await userProfileService.getAllProfiles();
+        const allProfiles = await getAllUserProfiles();
         setUserProfiles(allProfiles);
         console.log(`✅ Synced ${allProfiles.length} user profiles`);
       } catch (error) {
@@ -733,24 +729,22 @@ function App() {
         try {
           console.log('📷 Uploading profile picture for new user:', userName);
           
-          // Upload the profile picture to Supabase Storage
-          const profilePictureUrl = await uploadFile(profilePicture, 'profile-pictures');
+          // Upload the profile picture to Firebase Storage
+          const profilePictureUrl = await uploadUserProfilePicture(profilePicture, userName, deviceId);
           
           console.log('✅ Profile picture uploaded, creating user profile...');
           
           // Create user profile with the uploaded picture URL
-          await userProfileService.createProfile({
-            user_name: userName,
-            device_id: deviceId,
-            display_name: userName,
-            profile_picture: profilePictureUrl
+          await createOrUpdateUserProfile(userName, deviceId, {
+            displayName: userName,
+            profilePicture: profilePictureUrl
           });
           
           // Update current user profile if this is the current user
           const currentStoredName = getUserName();
           const currentStoredDeviceId = getDeviceId();
           if (userName === currentStoredName && deviceId === currentStoredDeviceId) {
-            const updatedProfile = await userProfileService.getProfile(userName, deviceId);
+            const updatedProfile = await getUserProfile(userName, deviceId);
             setCurrentUserProfile(updatedProfile);
           }
           console.log('✅ Profile picture saved for new user');
@@ -775,20 +769,20 @@ function App() {
   // Function to get user's profile picture or fallback to generated avatar
   const getUserAvatar = (targetUserName: string, targetDeviceId?: string) => {
     const userProfile = userProfiles.find(p => 
-      p.user_name === targetUserName && (!targetDeviceId || p.device_id === targetDeviceId)
+      p.userName === targetUserName && (!targetDeviceId || p.deviceId === targetDeviceId)
     );
     // Return custom profile picture if available, otherwise return null for generated avatar fallback
-    return userProfile?.profile_picture || null;
+    return userProfile?.profilePicture || null;
   };
 
   // Function to get user's display name (display name overrides username)
   const getUserDisplayName = (targetUserName: string, targetDeviceId?: string) => {
     const userProfile = userProfiles.find(p => 
-      p.user_name === targetUserName && (!targetDeviceId || p.device_id === targetDeviceId)
+      p.userName === targetUserName && (!targetDeviceId || p.deviceId === targetDeviceId)
     );
     // Return display name if it exists and is different from username, otherwise return username
-    return (userProfile?.display_name && userProfile.display_name !== targetUserName) 
-      ? userProfile.display_name 
+    return (userProfile?.displayName && userProfile.displayName !== targetUserName) 
+      ? userProfile.displayName 
       : targetUserName;
   };
 
@@ -1126,36 +1120,27 @@ function App() {
                 </div>
 
                 {/* Video Recording */}
-                <label
-                  className={`flex items-center gap-3 p-4 rounded-xl w-full transition-all duration-200 btn-touch cursor-pointer ${
+                <button
+                  onClick={() => {
+                    setShowVideoRecorder(true);
+                    setShowUploadOptions(false);
+                  }}
+                  className={`flex items-center gap-3 p-4 rounded-xl w-full transition-all duration-200 btn-touch ${
                     isDarkMode 
                       ? 'bg-gray-700 hover:bg-gray-600 text-white' 
                       : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                   }`}
                 >
-                  <input
-                    type="file"
-                    accept="video/*"
-                    capture="environment"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        handleVideoUpload(file);
-                        setShowUploadOptions(false);
-                      }
-                    }}
-                    className="hidden"
-                  />
                   <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center">
                     <VideoIcon className="w-5 h-5 text-white" />
                   </div>
                   <div className="text-left">
                     <p className="font-medium">Video aufnehmen</p>
                     <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Mit der Gerätekamera aufnehmen
+                      Neues Video erstellen
                     </p>
                   </div>
-                </label>
+                </button>
 
                 {/* Note */}
                 <button
@@ -1209,7 +1194,14 @@ function App() {
           </div>
         )}
 
-
+        {/* Video Recorder Modal */}
+        {showVideoRecorder && (
+          <VideoRecorder
+            onVideoRecorded={handleVideoUpload}
+            onClose={() => setShowVideoRecorder(false)}
+            isDarkMode={isDarkMode}
+          />
+        )}
 
         {/* Note Input Modal */}
         {showNoteInput && (
@@ -1435,19 +1427,10 @@ function App() {
         siteStatus={siteStatus}
         getUserAvatar={getUserAvatar}
         getUserDisplayName={getUserDisplayName}
-        onShowRecapGenerator={() => setShowRecapGenerator(true)}
       />
 
       {/* Back to Top Button */}
       <BackToTopButton isDarkMode={isDarkMode} />
-
-      {/* Recap Generator Modal */}
-      <RecapGenerator
-        isOpen={showRecapGenerator}
-        onClose={() => setShowRecapGenerator(false)}
-        mediaItems={mediaItems}
-        isDarkMode={isDarkMode}
-      />
 
       {/* Mobile Admin Burger Menu - Above Bottom Navigation */}
       {userName && (

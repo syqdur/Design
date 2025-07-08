@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { X, Camera, Image, Video, AlertCircle, CheckCircle, Clock } from 'lucide-react';
-
+import { VideoRecorder } from './VideoRecorder';
 
 interface StoryUploadModalProps {
   isOpen: boolean;
@@ -16,7 +16,7 @@ export const StoryUploadModal: React.FC<StoryUploadModalProps> = ({
   isDarkMode
 }) => {
   const [isUploading, setIsUploading] = useState(false);
-
+  const [showVideoRecorder, setShowVideoRecorder] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<string | null>(null);
@@ -127,7 +127,50 @@ export const StoryUploadModal: React.FC<StoryUploadModalProps> = ({
     }
   };
 
-
+  const handleVideoRecorded = async (videoBlob: Blob) => {
+    setShowVideoRecorder(false);
+    resetStates();
+    setIsUploading(true);
+    setUploadProgress('📤 Bereite Video-Upload vor...');
+    
+    try {
+      // Convert blob to file for upload
+      const file = new File([videoBlob], `story-${Date.now()}.webm`, { type: 'video/webm' });
+      
+      // Log video info for debugging
+      const fileSizeKB = (file.size / 1024).toFixed(1);
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      console.log(`📤 === STORY VIDEO RECORDING ===`);
+      console.log(`📁 Name: ${file.name}`);
+      console.log(`📊 Size: ${file.size} bytes (${fileSizeKB} KB / ${fileSizeMB} MB)`);
+      console.log(`📁 Type: ${file.type}`);
+      
+      setUploadProgress('☁️ Lade Video zu Firebase hoch...');
+      await onUpload(file);
+      
+      setUploadSuccess('Video-Story erfolgreich hochgeladen! 🎥');
+      setUploadProgress('✅ Video-Upload abgeschlossen!');
+      
+      // Auto-close after success
+      setTimeout(() => {
+        onClose();
+      }, 1500);
+      
+    } catch (error: any) {
+      console.error('❌ Story video upload error:', error);
+      
+      let errorMessage = 'Unbekannter Fehler beim Hochladen des Videos.';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      setUploadError(`🎥 Video-Upload fehlgeschlagen\n\n${errorMessage}\n\n💡 Versuche es erneut oder wähle eine Datei aus der Galerie`);
+      setUploadProgress(null);
+      
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -279,23 +322,19 @@ export const StoryUploadModal: React.FC<StoryUploadModalProps> = ({
             </button>
 
             {/* Live Camera Recording */}
-            <label
-              className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-300 cursor-pointer ${
+            <button
+              onClick={() => setShowVideoRecorder(true)}
+              disabled={isUploading}
+              className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${
                 isUploading
-                  ? 'opacity-50 cursor-not-allowed'
+                  ? isDarkMode
+                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : isDarkMode 
                     ? 'bg-gray-700 hover:bg-gray-600 border border-gray-600' 
                     : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
               }`}
             >
-              <input
-                type="file"
-                accept="video/*"
-                capture="environment"
-                onChange={handleFileSelect}
-                disabled={isUploading}
-                className="hidden"
-              />
               <div className={`p-3 rounded-full transition-colors duration-300 ${
                 isDarkMode ? 'bg-red-600' : 'bg-red-500'
               }`}>
@@ -310,10 +349,10 @@ export const StoryUploadModal: React.FC<StoryUploadModalProps> = ({
                 <p className={`text-sm transition-colors duration-300 ${
                   isDarkMode ? 'text-gray-400' : 'text-gray-600'
                 }`}>
-                  Mit der Gerätekamera aufnehmen
+                  Direkt mit der Kamera (max. 10s)
                 </p>
               </div>
-            </label>
+            </button>
           </div>
 
           {/* Upload Status */}
@@ -352,7 +391,15 @@ export const StoryUploadModal: React.FC<StoryUploadModalProps> = ({
         </div>
       </div>
 
-
+      {/* Video Recorder for Stories */}
+      {showVideoRecorder && (
+        <VideoRecorder
+          onVideoRecorded={handleVideoRecorded}
+          onClose={() => setShowVideoRecorder(false)}
+          isDarkMode={isDarkMode}
+          maxDuration={10} // 10 seconds for stories
+        />
+      )}
     </>
   );
 };
