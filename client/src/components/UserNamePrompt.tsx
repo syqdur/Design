@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heart, Camera, Image, X } from 'lucide-react';
 import { CameraCapture } from './CameraCapture';
+import { getAllUserProfiles } from '../services/firebaseService';
 
 interface UserNamePromptProps {
   onSubmit: (name: string, profilePicture?: File) => void;
@@ -11,11 +12,83 @@ export const UserNamePrompt: React.FC<UserNamePromptProps> = ({ onSubmit, isDark
   const [name, setName] = useState('');
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [showCamera, setShowCamera] = useState(false);
+  const [existingNames, setExistingNames] = useState<string[]>([]);
+  const [nameError, setNameError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    // Load existing usernames on component mount
+    const loadExistingNames = async () => {
+      try {
+        const profiles = await getAllUserProfiles();
+        const names = profiles.map(profile => profile.userName.toLowerCase());
+        setExistingNames(names);
+        console.log(`🔍 Loaded ${names.length} existing usernames for validation`);
+      } catch (error) {
+        console.error('Error loading existing usernames:', error);
+      }
+    };
+    loadExistingNames();
+  }, []);
+
+  const validateName = (inputName: string): boolean => {
+    const trimmedName = inputName.trim();
+    
+    if (trimmedName.length < 2) {
+      setNameError('Name muss mindestens 2 Zeichen lang sein');
+      return false;
+    }
+    
+    if (trimmedName.length > 20) {
+      setNameError('Name darf maximal 20 Zeichen lang sein');
+      return false;
+    }
+    
+    // Check for duplicate names (case-insensitive)
+    if (existingNames.includes(trimmedName.toLowerCase())) {
+      setNameError('Dieser Name ist bereits vergeben. Bitte wähle einen anderen Namen.');
+      return false;
+    }
+    
+    setNameError('');
+    return true;
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    setName(newName);
+    
+    // Clear error when user starts typing
+    if (nameError) {
+      setNameError('');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (name.trim()) {
+    
+    if (!validateName(name)) {
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+      // Double-check for duplicates right before submission
+      const profiles = await getAllUserProfiles();
+      const currentNames = profiles.map(profile => profile.userName.toLowerCase());
+      
+      if (currentNames.includes(name.trim().toLowerCase())) {
+        setNameError('Dieser Name wurde gerade erst registriert. Bitte wähle einen anderen Namen.');
+        setIsLoading(false);
+        return;
+      }
+      
       onSubmit(name.trim(), profilePicture || undefined);
+    } catch (error) {
+      console.error('Error during name validation:', error);
+      setNameError('Fehler bei der Überprüfung. Bitte versuche es erneut.');
+      setIsLoading(false);
     }
   };
 
@@ -121,29 +194,40 @@ export const UserNamePrompt: React.FC<UserNamePromptProps> = ({ onSubmit, isDark
             )}
           </div>
 
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Dein Name"
-            className={`w-full p-4 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors duration-300 ${
-              isDarkMode 
-                ? 'bg-neutral-700 border-neutral-600 text-white placeholder-neutral-400 focus:border-pink-500 focus:ring-pink-500/20' 
-                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-pink-500 focus:ring-pink-500/20'
-            }`}
-            maxLength={50}
-            required
-          />
+          <div className="space-y-2">
+            <input
+              type="text"
+              value={name}
+              onChange={handleNameChange}
+              placeholder="Dein Name"
+              className={`w-full p-4 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors duration-300 ${
+                nameError
+                  ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                  : isDarkMode 
+                    ? 'bg-neutral-700 border-neutral-600 text-white placeholder-neutral-400 focus:border-pink-500 focus:ring-pink-500/20' 
+                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-pink-500 focus:ring-pink-500/20'
+              } ${
+                isDarkMode ? 'bg-neutral-700 text-white placeholder-neutral-400' : 'bg-white text-gray-900 placeholder-gray-500'
+              }`}
+              maxLength={20}
+              required
+            />
+            {nameError && (
+              <p className="text-sm text-red-500 px-1">
+                {nameError}
+              </p>
+            )}
+          </div>
           <button
             type="submit"
-            disabled={!name.trim()}
+            disabled={!name.trim() || isLoading || !!nameError}
             className={`w-full p-4 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed ${
-              name.trim()
+              name.trim() && !nameError && !isLoading
                 ? 'bg-pink-500 hover:bg-pink-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
                 : isDarkMode ? 'bg-neutral-700 text-neutral-400' : 'bg-gray-200 text-gray-500'
             }`}
           >
-            Weitermachen
+            {isLoading ? 'Überprüfung...' : 'Weitermachen'}
           </button>
         </form>
       </div>

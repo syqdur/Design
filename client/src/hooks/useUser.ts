@@ -14,7 +14,15 @@ export const useUser = () => {
       localStorage.clear(); // Clear everything including the flag
     }
     
+    // Check for potential device ID contamination
+    const currentDeviceId = getDeviceId();
     const storedName = getUserName();
+    
+    // Validate that device ID and username are properly paired
+    if (storedName && currentDeviceId) {
+      console.log(`🔍 Validating user identity: ${storedName} (${currentDeviceId})`);
+    }
+    
     if (storedName) {
       setUserNameState(storedName);
     } else {

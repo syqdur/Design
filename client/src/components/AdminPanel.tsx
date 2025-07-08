@@ -297,80 +297,61 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     <>
       
 
-      {/* Admin Controls - Icon Only */}
+      {/* Admin Controls - Mobile Optimized - Positioned above Admin Menu */}
       {isAdmin && (
-        <div className="fixed bottom-16 left-4 flex flex-col gap-2">
+        <div className="fixed left-1 right-1 sm:left-4 sm:right-auto flex flex-row sm:flex-col gap-1 sm:gap-2 max-w-full sm:max-w-none overflow-x-auto sm:overflow-x-visible sm:overflow-y-auto sm:max-h-[60vh] scrollbar-hide p-1 sm:p-0 bg-black/10 sm:bg-transparent rounded-2xl sm:rounded-none backdrop-blur-sm sm:backdrop-blur-none"
+             style={{ 
+               bottom: 'max(110px, calc(110px + env(safe-area-inset-bottom)))',
+               scrollbarWidth: 'none', 
+               msOverflowStyle: 'none' 
+             }}>
           {/* LOGOUT BUTTON */}
           <button
             onClick={() => onToggleAdmin(false)}
-            className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+            className={`p-2 sm:p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border flex-shrink-0 ${
               isDarkMode
                 ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-red-500/10'
                 : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-red-500/10'
             }`}
             title="Admin Modus verlassen"
           >
-            <LogOut className="w-5 h-5 text-red-400" />
-          </button>
-
-          {/* POST-WEDDING RECAP BUTTON */}
-          <button
-            onClick={handleOpenPostWeddingRecap}
-            className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
-              isDarkMode
-                ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-pink-500/10'
-                : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-pink-500/10'
-            }`}
-            title="Post-Hochzeits-Zusammenfassung"
-          >
-            <Sparkles className="w-5 h-5 text-pink-400" />
+            <LogOut className="w-4 h-4 sm:w-5 sm:h-5 text-red-400" />
           </button>
 
           {/* USER MANAGEMENT BUTTON */}
           <button
             onClick={() => setShowUserManagement(true)}
-            className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+            className={`p-2 sm:p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border flex-shrink-0 ${
               isDarkMode
                 ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-cyan-500/10'
                 : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-cyan-500/10'
             }`}
             title="User Management"
           >
-            <Users className="w-5 h-5 text-cyan-400" />
+            <Users className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
           </button>
 
           {/* SPOTIFY ADMIN BUTTON */}
           <button
             onClick={() => setShowSpotifyAdmin(true)}
-            className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+            className={`p-2 sm:p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border flex-shrink-0 ${
               isDarkMode
                 ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-green-500/10'
                 : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-green-500/10'
             }`}
             title="Spotify Admin"
           >
-            <Music className="w-5 h-5 text-green-400" />
+            <Music className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
           </button>
 
-          {/* Showcase Button */}
-          <button
-            onClick={() => setShowShowcase(true)}
-            className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
-              isDarkMode
-                ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-yellow-500/10'
-                : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-yellow-500/10'
-            }`}
-            title="WeddingPix Showcase"
-          >
-            <Code className="w-5 h-5 text-yellow-400" />
-          </button>
+
 
           {/* Gallery Toggle */}
           {siteStatus && (
             <button
               onClick={handleToggleGallery}
               disabled={isUpdatingFeatures}
-              className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+              className={`p-2 sm:p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border flex-shrink-0 ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -381,7 +362,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               }`}
               title={`Galerie ${siteStatus.galleryEnabled ? 'deaktivieren' : 'aktivieren'}`}
             >
-              <Image className={`w-5 h-5 ${siteStatus.galleryEnabled ? 'text-blue-400' : 'text-gray-400'}`} />
+              <Image className={`w-4 h-4 sm:w-5 sm:h-5 ${siteStatus.galleryEnabled ? 'text-blue-400' : 'text-gray-400'}`} />
             </button>
           )}
 
@@ -390,7 +371,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleMusicWishlist}
               disabled={isUpdatingFeatures}
-              className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+              className={`p-2 sm:p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border flex-shrink-0 ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -410,7 +391,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleStories}
               disabled={isUpdatingFeatures}
-              className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+              className={`p-2 sm:p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -430,7 +411,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleChallenges}
               disabled={isUpdatingFeatures}
-              className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+              className={`p-2 sm:p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -450,7 +431,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleTabLock}
               disabled={isUpdatingFeatures}
-              className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+              className={`p-2 sm:p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -462,9 +443,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               title={`Tab-Sperre bis Countdown ${siteStatus.tabsLockedUntilCountdown ? 'deaktivieren' : 'aktivieren'}`}
             >
               {siteStatus.tabsLockedUntilCountdown ? (
-                <Lock className="w-5 h-5 text-red-400" />
+                <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-red-400" />
               ) : (
-                <Unlock className="w-5 h-5 text-gray-400" />
+                <Unlock className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
               )}
             </button>
           )}
@@ -474,7 +455,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <button
               onClick={handleToggleAdminOverride}
               disabled={isUpdatingFeatures}
-              className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+              className={`p-2 sm:p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
                 isUpdatingFeatures
                   ? isDarkMode
                     ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -489,48 +470,24 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </button>
           )}
 
-          {/* Site Status Toggle */}
-          {siteStatus && (
-            <button
-              onClick={handleToggleSiteStatus}
-              disabled={isUpdatingSiteStatus}
-              className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
-                isUpdatingSiteStatus
-                  ? isDarkMode
-                    ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
-                    : 'bg-white/40 border-gray-200/30 cursor-not-allowed opacity-50'
-                  : isDarkMode
-                    ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-orange-500/10'
-                    : 'bg-white/80 border-gray-200/60 hover:bg-white/90 shadow-2xl shadow-orange-500/20'
-              }`}
-              title={getSiteStatusInfo()}
-            >
-              {isUpdatingSiteStatus ? (
-                <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <Globe className={`w-5 h-5 ${siteStatus.isUnderConstruction ? 'text-orange-400' : 'text-red-400'}`} />
-              )}
-            </button>
-          )}
-
           {/* External Services Button */}
           <button
             onClick={() => setShowExternalServices(true)}
-            className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+            className={`p-2 sm:p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
               isDarkMode
                 ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-pink-500/10'
                 : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-pink-500/10'
             }`}
             title="Deutsche Fotobuch-Services"
           >
-            <Heart className="w-5 h-5 text-pink-400" />
+            <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400" />
           </button>
           
           {/* ZIP Download Button */}
           <button
             onClick={handleDownloadAll}
             disabled={isDownloading || mediaItems.length === 0}
-            className={`p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+            className={`p-2 sm:p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
               isDownloading || mediaItems.length === 0
                 ? isDarkMode
                   ? 'bg-gray-800/40 border-gray-700/30 cursor-not-allowed opacity-50'
@@ -616,7 +573,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className={`p-3 rounded-full transition-colors duration-300 ${
+                <div className={`p-2 sm:p-3 rounded-full transition-colors duration-300 ${
                   isDarkMode ? 'bg-pink-500' : 'bg-pink-500'
                 }`}>
                   <Heart className="w-6 h-6 text-white" />
@@ -640,7 +597,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   isDarkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
                 }`}
               >
-                <Settings className="w-5 h-5" />
+                <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
 

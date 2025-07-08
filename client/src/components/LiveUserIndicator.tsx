@@ -89,12 +89,19 @@ export const LiveUserIndicator: React.FC<LiveUserIndicatorProps> = ({
         const duplicateSnapshot = await getDocs(duplicateQuery);
         console.log(`🔍 Found ${duplicateSnapshot.docs.length} existing entries for device ${deviceId}`);
         
-        // Delete only entries that match this exact device ID (to prevent ID confusion)
+        // CRITICAL FIX: Only delete entries for the EXACT same user + device combo
+        // Do not delete if username doesn't match - this prevents profile contamination
         const deletePromises = duplicateSnapshot.docs.map(doc => {
           const data = doc.data();
-          console.log(`🗑️ Deleting duplicate entry: ${doc.id} (user: ${data.userName}, device: ${data.deviceId})`);
-          return deleteDoc(doc.ref);
-        });
+          // Only delete if it's the exact same user and device combination
+          if (data.userName === currentUser && data.deviceId === deviceId) {
+            console.log(`🗑️ Deleting duplicate entry: ${doc.id} (user: ${data.userName}, device: ${data.deviceId})`);
+            return deleteDoc(doc.ref);
+          } else {
+            console.log(`⚠️ Skipping deletion of mismatched entry: ${doc.id} (user: ${data.userName}, device: ${data.deviceId}) - doesn't match current user ${currentUser}`);
+            return null;
+          }
+        }).filter(promise => promise !== null);
         
         await Promise.all(deletePromises);
         console.log(`✅ Cleaned up ${deletePromises.length} duplicate entries for device ${deviceId}`);
