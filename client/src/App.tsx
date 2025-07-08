@@ -23,6 +23,7 @@ import { BackToTopButton } from './components/BackToTopButton';
 import { NotificationCenter } from './components/NotificationCenter';
 import { PhotoChallenges } from './components/PhotoChallenges';
 import { RecapGenerator } from './components/RecapGenerator';
+import { SupabaseTest } from './components/SupabaseTest';
 
 
 import { useUser } from './hooks/useUser';

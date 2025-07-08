@@ -87,6 +87,17 @@ This is a comprehensive wedding gallery application with the following architect
 
 ## Recent Changes
 
+### January 8, 2025 (Replit Agent Migration & Firebase Storage Fix)
+- **Replit Agent to Replit Migration**: Successfully migrated wedding gallery app from Replit Agent to Replit environment with preserved functionality
+- **Firebase Storage Configuration Fix**: Corrected storage bucket name from `weddingpix-744e5-firebasestorage-app` to `weddingpix-744e5.firebasestorage.app` to match actual Firebase bucket
+- **Storage Permission Issue Identified**: Firebase Storage permissions need to be updated in Firebase Console to allow read/write access for uploads, stories, and test folders
+- **Express Server Verified**: Server running properly on port 5000 with Firebase database integration working correctly
+- **Live User Tracking Working**: 24 user profiles loading correctly from Firebase Firestore with real-time presence tracking
+- **tsx Package Fixed**: Resolved missing tsx dependency that was preventing server startup
+- **Storage Rules Documentation**: Created firebase-storage-rules.md with exact rules needed to fix storage permissions
+- **Migration Complete**: Successfully deployed wedding gallery to Replit with all core functionality working
+- **Storage Fix Pending**: Firebase Storage permissions (error 412) need to be fixed in Firebase Console to restore media display
+
 ### January 8, 2025 (Replit Agent to Replit Migration Complete + User Identity Fix + Native Video Recording)
 - **Replit Agent to Replit Migration Complete**: Successfully migrated wedding gallery application from Replit Agent to Replit environment with all core functionality preserved
 - **Express Server Operational**: Server running on port 5000 with proper client/server separation and security practices

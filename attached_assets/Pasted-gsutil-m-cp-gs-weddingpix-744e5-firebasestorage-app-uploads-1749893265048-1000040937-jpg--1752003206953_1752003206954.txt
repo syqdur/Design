@@ -1,0 +1,51 @@
+gsutil -m cp \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/1749893265048-1000040937.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/1750920233744-—Pngtree—3d instagram like heart message_6133836.png" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/1750950199436-489726476_4096659353989906_9087421244218697220_n.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/1751956379202-IMG_0014.jpeg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/STORY_1750004818770_Mauro.png" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750419812074-0-Wordmark-R gradient whole RGB-01.png" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750420050568-0-nicibuch_1653244600_2843944292520101802_8601371144.webp" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750420316183-0-71f49143-c378-4013-a2ee-d67bddc6267e.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750420689683-0-239eec13-7c43-4474-8013-056c4e9fe895.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750420845316-0-52aff4e2-6e84-466b-84fe-91349deb0f09.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750421119978-0-WhatsApp Video 2025-06-20 at 14.03.19.mp4" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750421398186-0-WhatsApp Video 2025-06-20 at 14.09.25.mp4" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750421603251-0-WhatsApp Video 2025-06-20 at 14.13.02.mp4" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750421862875-0-mavro.mp4_1703015239_3261449499317563957_9132802190.mp4" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750422145937-0-WhatsApp Video 2025-06-20 at 14.21.54.mp4" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750422262171-0-WhatsApp Video 2025-06-20 at 14.23.32.mp4" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750422431022-0-WhatsApp Video 2025-06-20 at 14.25.33.mp4" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750422608547-0-WhatsApp Video 2025-06-20 at 14.28.21.mp4" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750422767294-0-WhatsApp Video 2025-06-20 at 14.32.34.mp4" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750422933514-0-WhatsApp Video 2025-06-20 at 14.35.18.mp4" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750423316330-0-WhatsApp Image 2025-06-20 at 14.41.28.jpeg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750423477648-0-5bf3799b-3341-4b26-bcb6-470325961c41.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750423578152-0-WhatsApp Image 2025-06-20 at 14.46.03.jpeg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750423733660-0-WhatsApp Image 2025-06-20 at 14.47.58.jpeg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750423968425-0-770a1378-55e0-4b68-a50e-d1927487a2be.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750424244209-0-WhatsApp Image 2025-06-20 at 14.56.06.jpeg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750424465984-0-76405243-20e3-4b89-ae5d-b141006648e2.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750424656882-0-24ad7d4e-4ce7-4042-8979-a311f919cb50.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750424778157-0-d3dee819-26df-4ecd-acfe-8299342ee073.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750424917802-0-WhatsApp Video 2025-06-20 at 15.07.44.mp4" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750425059530-0-WhatsApp Image 2025-06-20 at 15.10.46.jpeg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750425243638-0-profil.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750442362794-0-613625a3f5966900044cbf6d.png" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750442909062-0-9aafee3d-abfe-4e9d-88dc-ce50ffa2b8da.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750443073961-0-WhatsApp Image 2025-06-20 at 20.10.55.jpeg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750600831500-0-1.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750602374639-0-IMG_20250622_162531_950.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750602481966-0-Screenshot_20250622-162658~2.png" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750602661496-0-Screenshot_20250622-162956.png" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750602775330-0-Screenshot_20250622-163220~2.png" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750602989980-0-IMG_6435.JPG" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750603062423-0-IMG_7600_MP.JPG" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750603112111-0-IMG_7714.JPG" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750603238631-0-IMG_7745.JPEG" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750603359572-0-IMG_7745.JPEG" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750603390934-0-IMG_8342 (1).jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750603469344-0-IMG_8433.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750603525710-0-IMG_8902.JPG" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750603616346-0-IMG_0486.jpg" \
+  "gs://weddingpix-744e5.firebasestorage.app/uploads/TIMELINE_1750603693496-0-Zwischenablage_06-22-2025_01.jpg" \

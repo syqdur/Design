@@ -6,6 +6,7 @@ import { SiteStatus, updateSiteStatus, updateFeatureToggles } from '../services/
 import { ShowcaseModal } from './ShowcaseModal';
 import { UserManagementModal } from './UserManagementModal';
 import { SpotifyAdmin } from './SpotifyAdmin';
+import { SupabaseTest } from './SupabaseTest';
 
 interface AdminPanelProps {
   isDarkMode: boolean;
@@ -36,6 +37,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [showShowcase, setShowShowcase] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
   const [showSpotifyAdmin, setShowSpotifyAdmin] = useState(false);
+  const [showSupabaseTest, setShowSupabaseTest] = useState(false);
 
   const handleAdminToggle = () => {
     onToggleAdmin(!isAdmin);
@@ -487,6 +489,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </button>
           )}
 
+          {/* Supabase Test Button */}
+          <button
+            onClick={() => setShowSupabaseTest(true)}
+            className={`p-2 sm:p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border ${
+              isDarkMode
+                ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-blue-500/10'
+                : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-blue-500/10'
+            }`}
+            title="Supabase Migration Test"
+          >
+            <Code className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
+          </button>
+
           {/* External Services Button */}
           <button
             onClick={() => setShowExternalServices(true)}
@@ -843,6 +858,53 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-xl transition-colors"
               >
                 Download starten
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUPABASE TEST MODAL */}
+      {showSupabaseTest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className={`rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto transition-colors duration-300 ${
+            isDarkMode ? 'bg-gray-800' : 'bg-white'
+          }`}>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <h3 className={`text-xl font-semibold transition-colors duration-300 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
+                🚀 Supabase Migration Test
+              </h3>
+              <button
+                onClick={() => setShowSupabaseTest(false)}
+                className={`p-2 rounded-full transition-colors duration-300 ${
+                  isDarkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+                }`}
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            {/* Supabase Test Component */}
+            <SupabaseTest 
+              userName={getUserDisplayName('Admin', 'system')}
+              deviceId="admin-system"
+              isDarkMode={isDarkMode}
+            />
+            
+            {/* Close Button */}
+            <div className="mt-6 text-center">
+              <button
+                onClick={() => setShowSupabaseTest(false)}
+                className={`px-6 py-2 rounded-xl transition-colors duration-300 ${
+                  isDarkMode 
+                    ? 'bg-gray-600 hover:bg-gray-500 text-gray-200' 
+                    : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
+                }`}
+              >
+                Schließen
               </button>
             </div>
           </div>
