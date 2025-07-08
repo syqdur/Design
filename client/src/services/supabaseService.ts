@@ -1,561 +1,480 @@
-import { supabase } from '../config/supabase'
-import type { 
-  MediaItem, 
-  Comment, 
-  Like, 
-  Story, 
-  LiveUser, 
-  UserProfile, 
-  TimelineEvent,
-  MediaTag,
-  LocationTag,
-  Notification,
-  SiteStatus,
-  StoryView
-} from '../config/supabase'
+import { supabase } from '../lib/supabase'
 
-// Storage service
-export const uploadFile = async (file: File, folder: string): Promise<string> => {
-  const fileName = `${Date.now()}-${file.name}`
-  const filePath = `${folder}/${fileName}`
-  
-  const { data, error } = await supabase.storage
-    .from('wedding-media')
-    .upload(filePath, file)
-  
-  if (error) {
-    console.error('Upload error:', error)
-    throw error
-  }
-  
-  const { data: { publicUrl } } = supabase.storage
-    .from('wedding-media')
-    .getPublicUrl(filePath)
-  
-  return publicUrl
-}
+// User Profile Service
+export const userProfileService = {
+  async createProfile(profile: {
+    user_name: string
+    device_id: string
+    display_name?: string
+    profile_picture?: string
+    bio?: string
+  }) {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .upsert([{
+        user_name: profile.user_name,
+        device_id: profile.device_id,
+        display_name: profile.display_name,
+        profile_picture: profile.profile_picture,
+        bio: profile.bio
+      }])
+      .select()
+      .single()
 
-export const deleteFile = async (url: string): Promise<void> => {
-  const urlParts = url.split('/')
-  const filePath = urlParts.slice(-2).join('/')
-  
-  const { error } = await supabase.storage
-    .from('wedding-media')
-    .remove([filePath])
-  
-  if (error) {
-    console.error('Delete error:', error)
-    throw error
-  }
-}
+    if (error) throw error
+    return data
+  },
 
-// Media items service
-export const getMediaItems = async (): Promise<MediaItem[]> => {
-  const { data, error } = await supabase
-    .from('media_items')
-    .select('*')
-    .order('created_at', { ascending: false })
-  
-  if (error) throw error
-  return data || []
-}
+  async getProfile(userName: string, deviceId: string) {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('user_name', userName)
+      .eq('device_id', deviceId)
+      .single()
 
-export const addMediaItem = async (item: Omit<MediaItem, 'id' | 'created_at' | 'updated_at'>): Promise<MediaItem> => {
-  const { data, error } = await supabase
-    .from('media_items')
-    .insert([item])
-    .select()
-    .single()
-  
-  if (error) throw error
-  return data
-}
+    if (error && error.code !== 'PGRST116') throw error
+    return data
+  },
 
-export const updateMediaItem = async (id: string, updates: Partial<MediaItem>): Promise<void> => {
-  const { error } = await supabase
-    .from('media_items')
-    .update({ ...updates, updated_at: new Date().toISOString() })
-    .eq('id', id)
-  
-  if (error) throw error
-}
+  async getAllProfiles() {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-export const deleteMediaItem = async (id: string): Promise<void> => {
-  const { error } = await supabase
-    .from('media_items')
-    .delete()
-    .eq('id', id)
-  
-  if (error) throw error
-}
+    if (error) throw error
+    return data || []
+  },
 
-// Comments service
-export const getComments = async (): Promise<Comment[]> => {
-  const { data, error } = await supabase
-    .from('comments')
-    .select('*')
-    .order('created_at', { ascending: true })
-  
-  if (error) throw error
-  return data || []
-}
+  async updateProfile(userName: string, deviceId: string, updates: {
+    display_name?: string
+    profile_picture?: string
+    bio?: string
+  }) {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .eq('user_name', userName)
+      .eq('device_id', deviceId)
+      .select()
+      .single()
 
-export const addComment = async (comment: Omit<Comment, 'id' | 'created_at'>): Promise<Comment> => {
-  const { data, error } = await supabase
-    .from('comments')
-    .insert([comment])
-    .select()
-    .single()
-  
-  if (error) throw error
-  return data
-}
+    if (error) throw error
+    return data
+  },
 
-export const deleteComment = async (id: string): Promise<void> => {
-  const { error } = await supabase
-    .from('comments')
-    .delete()
-    .eq('id', id)
-  
-  if (error) throw error
-}
-
-// Likes service
-export const getLikes = async (): Promise<Like[]> => {
-  const { data, error } = await supabase
-    .from('likes')
-    .select('*')
-  
-  if (error) throw error
-  return data || []
-}
-
-export const toggleLike = async (mediaId: string, userName: string, deviceId: string): Promise<void> => {
-  const { data: existing } = await supabase
-    .from('likes')
-    .select('id')
-    .eq('media_id', mediaId)
-    .eq('user_name', userName)
-    .eq('user_device_id', deviceId)
-    .single()
-  
-  if (existing) {
-    await supabase
-      .from('likes')
+  async deleteProfile(userName: string, deviceId: string) {
+    const { error } = await supabase
+      .from('user_profiles')
       .delete()
-      .eq('id', existing.id)
-  } else {
-    await supabase
-      .from('likes')
+      .eq('user_name', userName)
+      .eq('device_id', deviceId)
+
+    if (error) throw error
+  }
+}
+
+// Media Service
+export const mediaService = {
+  async uploadMedia(file: File, userName: string, deviceId: string, note?: string) {
+    // Upload file to storage
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`
+    const filePath = `uploads/${fileName}`
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('wedding-media')
+      .upload(filePath, file)
+
+    if (uploadError) throw uploadError
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('wedding-media')
+      .getPublicUrl(filePath)
+
+    // Create media record
+    const { data, error } = await supabase
+      .from('media_items')
+      .insert([{
+        url: publicUrl,
+        type: file.type.startsWith('video/') ? 'video' : 'image',
+        uploaded_by: userName,
+        uploaded_by_device_id: deviceId,
+        note: note || null
+      }])
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  },
+
+  async getMedia() {
+    const { data, error } = await supabase
+      .from('media_items')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return data || []
+  },
+
+  async deleteMedia(mediaId: string) {
+    const { error } = await supabase
+      .from('media_items')
+      .delete()
+      .eq('id', mediaId)
+
+    if (error) throw error
+  },
+
+  async updateMediaNote(mediaId: string, note: string) {
+    const { data, error } = await supabase
+      .from('media_items')
+      .update({
+        note,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', mediaId)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  }
+}
+
+// Comments Service
+export const commentsService = {
+  async addComment(mediaId: string, userName: string, deviceId: string, text: string) {
+    const { data, error } = await supabase
+      .from('comments')
       .insert([{
         media_id: mediaId,
         user_name: userName,
-        user_device_id: deviceId
+        user_device_id: deviceId,
+        text
       }])
-  }
-}
+      .select()
+      .single()
 
-// Stories service
-export const getStories = async (): Promise<Story[]> => {
-  const { data, error } = await supabase
-    .from('stories')
-    .select('*')
-    .gt('expires_at', new Date().toISOString())
-    .order('created_at', { ascending: false })
-  
-  if (error) throw error
-  return data || []
-}
+    if (error) throw error
+    return data
+  },
 
-export const addStory = async (story: Omit<Story, 'id' | 'created_at' | 'expires_at'>): Promise<Story> => {
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
-  
-  const { data, error } = await supabase
-    .from('stories')
-    .insert([{ ...story, expires_at: expiresAt }])
-    .select()
-    .single()
-  
-  if (error) throw error
-  return data
-}
+  async getComments(mediaId: string) {
+    const { data, error } = await supabase
+      .from('comments')
+      .select('*')
+      .eq('media_id', mediaId)
+      .order('created_at', { ascending: true })
 
-export const deleteStory = async (id: string): Promise<void> => {
-  const { error } = await supabase
-    .from('stories')
-    .delete()
-    .eq('id', id)
-  
-  if (error) throw error
-}
+    if (error) throw error
+    return data || []
+  },
 
-// Story views service
-export const getStoryViews = async (): Promise<StoryView[]> => {
-  const { data, error } = await supabase
-    .from('story_views')
-    .select('*')
-  
-  if (error) throw error
-  return data || []
-}
+  async getAllComments() {
+    const { data, error } = await supabase
+      .from('comments')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-export const addStoryView = async (storyId: string, viewerName: string, deviceId: string): Promise<void> => {
-  const { error } = await supabase
-    .from('story_views')
-    .insert([{
-      story_id: storyId,
-      viewer_name: viewerName,
-      viewer_device_id: deviceId
-    }])
-  
-  if (error && !error.message.includes('duplicate')) throw error
-}
+    if (error) throw error
+    return data || []
+  },
 
-// Live users service
-export const getLiveUsers = async (): Promise<LiveUser[]> => {
-  const { data, error } = await supabase
-    .from('live_users')
-    .select('*')
-    .order('last_seen', { ascending: false })
-  
-  if (error) throw error
-  return data || []
-}
-
-export const updateUserPresence = async (userName: string, deviceId: string): Promise<void> => {
-  const { error } = await supabase
-    .from('live_users')
-    .upsert({
-      user_name: userName,
-      device_id: deviceId,
-      last_seen: new Date().toISOString(),
-      is_active: true,
-      updated_at: new Date().toISOString()
-    })
-  
-  if (error) throw error
-}
-
-export const setUserOffline = async (userName: string, deviceId: string): Promise<void> => {
-  const { error } = await supabase
-    .from('live_users')
-    .update({
-      is_active: false,
-      updated_at: new Date().toISOString()
-    })
-    .eq('user_name', userName)
-    .eq('device_id', deviceId)
-  
-  if (error) throw error
-}
-
-// User profiles service
-export const getUserProfiles = async (): Promise<UserProfile[]> => {
-  const { data, error } = await supabase
-    .from('user_profiles')
-    .select('*')
-    .order('created_at', { ascending: false })
-  
-  if (error) throw error
-  return data || []
-}
-
-export const getUserProfile = async (userName: string, deviceId: string): Promise<UserProfile | null> => {
-  const { data, error } = await supabase
-    .from('user_profiles')
-    .select('*')
-    .eq('user_name', userName)
-    .eq('device_id', deviceId)
-    .single()
-  
-  if (error && error.code !== 'PGRST116') throw error
-  return data || null
-}
-
-export const updateUserProfile = async (userName: string, deviceId: string, updates: Partial<UserProfile>): Promise<void> => {
-  const { error } = await supabase
-    .from('user_profiles')
-    .upsert({
-      user_name: userName,
-      device_id: deviceId,
-      ...updates,
-      updated_at: new Date().toISOString()
-    })
-  
-  if (error) throw error
-}
-
-export const deleteUserProfile = async (userName: string, deviceId: string): Promise<void> => {
-  const { error } = await supabase
-    .from('user_profiles')
-    .delete()
-    .eq('user_name', userName)
-    .eq('device_id', deviceId)
-  
-  if (error) throw error
-}
-
-// Timeline events service
-export const getTimelineEvents = async (): Promise<TimelineEvent[]> => {
-  const { data, error } = await supabase
-    .from('timeline_events')
-    .select('*')
-    .order('date', { ascending: false })
-  
-  if (error) throw error
-  return data || []
-}
-
-export const addTimelineEvent = async (event: Omit<TimelineEvent, 'id' | 'created_at' | 'updated_at'>): Promise<TimelineEvent> => {
-  const { data, error } = await supabase
-    .from('timeline_events')
-    .insert([event])
-    .select()
-    .single()
-  
-  if (error) throw error
-  return data
-}
-
-export const updateTimelineEvent = async (id: string, updates: Partial<TimelineEvent>): Promise<void> => {
-  const { error } = await supabase
-    .from('timeline_events')
-    .update({ ...updates, updated_at: new Date().toISOString() })
-    .eq('id', id)
-  
-  if (error) throw error
-}
-
-export const deleteTimelineEvent = async (id: string): Promise<void> => {
-  const { error } = await supabase
-    .from('timeline_events')
-    .delete()
-    .eq('id', id)
-  
-  if (error) throw error
-}
-
-// Media tags service
-export const getMediaTags = async (): Promise<MediaTag[]> => {
-  const { data, error } = await supabase
-    .from('media_tags')
-    .select('*')
-  
-  if (error) throw error
-  return data || []
-}
-
-export const addMediaTag = async (tag: Omit<MediaTag, 'id' | 'created_at'>): Promise<MediaTag> => {
-  const { data, error } = await supabase
-    .from('media_tags')
-    .insert([tag])
-    .select()
-    .single()
-  
-  if (error) throw error
-  return data
-}
-
-export const deleteMediaTag = async (id: string): Promise<void> => {
-  const { error } = await supabase
-    .from('media_tags')
-    .delete()
-    .eq('id', id)
-  
-  if (error) throw error
-}
-
-// Location tags service
-export const getLocationTags = async (): Promise<LocationTag[]> => {
-  const { data, error } = await supabase
-    .from('location_tags')
-    .select('*')
-  
-  if (error) throw error
-  return data || []
-}
-
-export const addLocationTag = async (tag: Omit<LocationTag, 'id' | 'created_at'>): Promise<LocationTag> => {
-  const { data, error } = await supabase
-    .from('location_tags')
-    .insert([tag])
-    .select()
-    .single()
-  
-  if (error) throw error
-  return data
-}
-
-export const deleteLocationTag = async (id: string): Promise<void> => {
-  const { error } = await supabase
-    .from('location_tags')
-    .delete()
-    .eq('id', id)
-  
-  if (error) throw error
-}
-
-// Notifications service
-export const getNotifications = async (userName: string, deviceId: string): Promise<Notification[]> => {
-  const { data, error } = await supabase
-    .from('notifications')
-    .select('*')
-    .eq('user_name', userName)
-    .eq('user_device_id', deviceId)
-    .order('created_at', { ascending: false })
-  
-  if (error) throw error
-  return data || []
-}
-
-export const addNotification = async (notification: Omit<Notification, 'id' | 'created_at'>): Promise<Notification> => {
-  const { data, error } = await supabase
-    .from('notifications')
-    .insert([notification])
-    .select()
-    .single()
-  
-  if (error) throw error
-  return data
-}
-
-export const markNotificationAsRead = async (id: string): Promise<void> => {
-  const { error } = await supabase
-    .from('notifications')
-    .update({ is_read: true })
-    .eq('id', id)
-  
-  if (error) throw error
-}
-
-// Site status service
-export const getSiteStatus = async (): Promise<SiteStatus | null> => {
-  const { data, error } = await supabase
-    .from('site_status')
-    .select('*')
-    .single()
-  
-  if (error && error.code !== 'PGRST116') throw error
-  return data || null
-}
-
-export const updateSiteStatus = async (updates: Partial<SiteStatus>): Promise<void> => {
-  const { error } = await supabase
-    .from('site_status')
-    .upsert({
-      id: 'default',
-      ...updates,
-      updated_at: new Date().toISOString()
-    })
-  
-  if (error) throw error
-}
-
-// Real-time subscriptions
-export const subscribeToMediaItems = (callback: (payload: any) => void) => {
-  return supabase
-    .channel('media_items')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'media_items' }, callback)
-    .subscribe()
-}
-
-export const subscribeToComments = (callback: (payload: any) => void) => {
-  return supabase
-    .channel('comments')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, callback)
-    .subscribe()
-}
-
-export const subscribeToLikes = (callback: (payload: any) => void) => {
-  return supabase
-    .channel('likes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, callback)
-    .subscribe()
-}
-
-export const subscribeToStories = (callback: (payload: any) => void) => {
-  return supabase
-    .channel('stories')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'stories' }, callback)
-    .subscribe()
-}
-
-export const subscribeToLiveUsers = (callback: (payload: any) => void) => {
-  return supabase
-    .channel('live_users')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'live_users' }, callback)
-    .subscribe()
-}
-
-export const subscribeToNotifications = (userName: string, deviceId: string, callback: (payload: any) => void) => {
-  return supabase
-    .channel(`notifications_${userName}_${deviceId}`)
-    .on('postgres_changes', { 
-      event: '*', 
-      schema: 'public', 
-      table: 'notifications',
-      filter: `user_name=eq.${userName} AND user_device_id=eq.${deviceId}`
-    }, callback)
-    .subscribe()
-}
-
-// Challenge completions (PostgreSQL integration)
-export const getChallengeCompletions = async (userName: string, deviceId: string) => {
-  const { data, error } = await supabase
-    .from('challenge_completions')
-    .select('*')
-    .eq('user_name', userName)
-    .eq('device_id', deviceId)
-  
-  if (error) throw error
-  return data || []
-}
-
-export const toggleChallengeCompletion = async (challengeId: string, userName: string, deviceId: string) => {
-  const { data: existing } = await supabase
-    .from('challenge_completions')
-    .select('id')
-    .eq('challenge_id', challengeId)
-    .eq('user_name', userName)
-    .eq('device_id', deviceId)
-    .single()
-  
-  if (existing) {
-    await supabase
-      .from('challenge_completions')
+  async deleteComment(commentId: string) {
+    const { error } = await supabase
+      .from('comments')
       .delete()
-      .eq('id', existing.id)
-    return false
-  } else {
-    await supabase
-      .from('challenge_completions')
-      .insert([{
-        challenge_id: challengeId,
-        user_name: userName,
-        device_id: deviceId
-      }])
-    return true
+      .eq('id', commentId)
+
+    if (error) throw error
   }
 }
 
-export const getChallengeLeaderboard = async () => {
-  const { data, error } = await supabase
-    .from('challenge_completions')
-    .select('user_name, device_id')
-  
-  if (error) throw error
-  
-  const leaderboard: { [key: string]: number } = {}
-  
-  data?.forEach(completion => {
-    const key = `${completion.user_name}_${completion.device_id}`
-    leaderboard[key] = (leaderboard[key] || 0) + 1
-  })
-  
-  return Object.entries(leaderboard)
-    .map(([key, count]) => {
-      const [userName, deviceId] = key.split('_')
-      return { userName, deviceId, completedCount: count }
-    })
-    .sort((a, b) => b.completedCount - a.completedCount)
+// Likes Service
+export const likesService = {
+  async toggleLike(mediaId: string, userName: string, deviceId: string) {
+    // Check if like exists
+    const { data: existingLike } = await supabase
+      .from('likes')
+      .select('id')
+      .eq('media_id', mediaId)
+      .eq('user_name', userName)
+      .eq('user_device_id', deviceId)
+      .single()
+
+    if (existingLike) {
+      // Remove like
+      const { error } = await supabase
+        .from('likes')
+        .delete()
+        .eq('id', existingLike.id)
+
+      if (error) throw error
+      return false
+    } else {
+      // Add like
+      const { error } = await supabase
+        .from('likes')
+        .insert([{
+          media_id: mediaId,
+          user_name: userName,
+          user_device_id: deviceId
+        }])
+
+      if (error) throw error
+      return true
+    }
+  },
+
+  async getLikes(mediaId: string) {
+    const { data, error } = await supabase
+      .from('likes')
+      .select('*')
+      .eq('media_id', mediaId)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return data || []
+  },
+
+  async getAllLikes() {
+    const { data, error } = await supabase
+      .from('likes')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return data || []
+  }
+}
+
+// Stories Service
+export const storiesService = {
+  async uploadStory(file: File, userName: string, deviceId: string) {
+    // Upload file to storage
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`
+    const filePath = `stories/${fileName}`
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('wedding-media')
+      .upload(filePath, file)
+
+    if (uploadError) throw uploadError
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('wedding-media')
+      .getPublicUrl(filePath)
+
+    // Create story record
+    const { data, error } = await supabase
+      .from('stories')
+      .insert([{
+        url: publicUrl,
+        type: file.type.startsWith('video/') ? 'video' : 'image',
+        uploaded_by: userName,
+        uploaded_by_device_id: deviceId
+      }])
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  },
+
+  async getStories() {
+    const { data, error } = await supabase
+      .from('stories')
+      .select('*')
+      .gt('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return data || []
+  },
+
+  async deleteStory(storyId: string) {
+    const { error } = await supabase
+      .from('stories')
+      .delete()
+      .eq('id', storyId)
+
+    if (error) throw error
+  }
+}
+
+// Live Users Service
+export const liveUsersService = {
+  async updatePresence(userName: string, deviceId: string) {
+    const { data, error } = await supabase
+      .from('live_users')
+      .upsert([{
+        user_name: userName,
+        device_id: deviceId,
+        last_seen: new Date().toISOString(),
+        is_active: true,
+        updated_at: new Date().toISOString()
+      }])
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  },
+
+  async getActiveUsers() {
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
+    
+    const { data, error } = await supabase
+      .from('live_users')
+      .select('*')
+      .gt('last_seen', fiveMinutesAgo)
+      .eq('is_active', true)
+      .order('last_seen', { ascending: false })
+
+    if (error) throw error
+    return data || []
+  },
+
+  async setOffline(userName: string, deviceId: string) {
+    const { error } = await supabase
+      .from('live_users')
+      .update({
+        is_active: false,
+        updated_at: new Date().toISOString()
+      })
+      .eq('user_name', userName)
+      .eq('device_id', deviceId)
+
+    if (error) throw error
+  }
+}
+
+// Site Status Service
+export const siteStatusService = {
+  async getSiteStatus() {
+    const { data, error } = await supabase
+      .from('site_status')
+      .select('*')
+      .limit(1)
+      .single()
+
+    if (error) throw error
+    return data
+  },
+
+  async updateSiteStatus(updates: {
+    gallery_enabled?: boolean
+    stories_enabled?: boolean
+    music_enabled?: boolean
+    challenges_enabled?: boolean
+  }) {
+    const { data, error } = await supabase
+      .from('site_status')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  }
+}
+
+// Real-time Subscriptions
+export const subscriptions = {
+  subscribeToMedia(callback: (payload: any) => void) {
+    return supabase
+      .channel('media-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'media_items' }, callback)
+      .subscribe()
+  },
+
+  subscribeToComments(callback: (payload: any) => void) {
+    return supabase
+      .channel('comments-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, callback)
+      .subscribe()
+  },
+
+  subscribeToLikes(callback: (payload: any) => void) {
+    return supabase
+      .channel('likes-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'likes' }, callback)
+      .subscribe()
+  },
+
+  subscribeToLiveUsers(callback: (payload: any) => void) {
+    return supabase
+      .channel('live-users-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'live_users' }, callback)
+      .subscribe()
+  },
+
+  subscribeToStories(callback: (payload: any) => void) {
+    return supabase
+      .channel('stories-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'stories' }, callback)
+      .subscribe()
+  },
+
+  unsubscribe(subscription: any) {
+    return supabase.removeChannel(subscription)
+  }
+}
+
+// File upload helper function
+export const uploadFile = async (file: File, folder: string = 'uploads'): Promise<string> => {
+  try {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+    const filePath = `${folder}/${fileName}`;
+
+    const { data, error } = await supabase.storage
+      .from('wedding-media')
+      .upload(filePath, file);
+
+    if (error) throw error;
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('wedding-media')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    throw error;
+  }
+}
+
+// File deletion helper function
+export const deleteFile = async (url: string) => {
+  try {
+    // Extract file path from URL
+    const urlParts = url.split('/');
+    const fileName = urlParts[urlParts.length - 1];
+    const folder = urlParts[urlParts.length - 2];
+    const filePath = `${folder}/${fileName}`;
+
+    const { error } = await supabase.storage
+      .from('wedding-media')
+      .remove([filePath]);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Error deleting file:', error);
+    throw error;
+  }
 }
