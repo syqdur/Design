@@ -4,8 +4,8 @@ import { SpotifyCredentials, SelectedPlaylist, SpotifyTrack } from '../types';
 import { generateCodeVerifier, generateCodeChallenge } from '../utils/pkce';
 
 // Spotify API Configuration
-const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || '00f80ab84d074aafacc982e93f47942c';
-const SPOTIFY_CLIENT_SECRET = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET || 'e403ceac0ab847b58a1386c4e815a033';
+const SPOTIFY_CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || '7e01aa76ca854d1f8008a8ec811da449';
+const SPOTIFY_CLIENT_SECRET = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET || '998496c648024fcbaefdc8be021e3943';
 
 // 🔧 FIX: Dynamic redirect URI based on environment
 const getRedirectUri = (): string => {
