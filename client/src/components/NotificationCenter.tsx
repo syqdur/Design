@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, X } from 'lucide-react';
-import { subscribeToNotifications, markNotificationAsRead, markAllNotificationsAsRead } from '../services/notificationService';
+import { subscribeToNotifications, markNotificationAsRead, markAllNotificationsAsRead, requestNotificationPermission } from '../services/notificationService';
 
 interface Notification {
   id: string;
@@ -34,6 +34,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [permissionStatus, setPermissionStatus] = useState<NotificationPermission>(
+    typeof Notification !== 'undefined' ? Notification.permission : 'default'
+  );
 
   useEffect(() => {
     if (!userName || !deviceId) return;
@@ -71,6 +74,11 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     if (notifications.length > 0) {
       markAllNotificationsAsRead(userName, deviceId);
     }
+  };
+
+  const handleRequestPermission = async () => {
+    const granted = await requestNotificationPermission();
+    setPermissionStatus(granted ? 'granted' : 'denied');
   };
 
   const formatTime = (timestamp: string) => {
@@ -169,6 +177,35 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 </button>
               </div>
             </div>
+
+            {/* Permission Request */}
+            {permissionStatus !== 'granted' && (
+              <div className={`p-4 border-b ${
+                isDarkMode 
+                  ? 'border-gray-600 bg-gray-900' 
+                  : 'border-gray-200 bg-blue-50'
+              }`}>
+                <div className="text-center">
+                  <p className={`text-sm mb-2 ${
+                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    {permissionStatus === 'denied' 
+                      ? 'Browser-Benachrichtigungen sind deaktiviert' 
+                      : 'Aktiviere Browser-Benachrichtigungen für neue Kommentare und Likes'}
+                  </p>
+                  <button
+                    onClick={handleRequestPermission}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isDarkMode 
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                        : 'bg-blue-500 hover:bg-blue-600 text-white'
+                    }`}
+                  >
+                    {permissionStatus === 'denied' ? 'Erneut aktivieren' : 'Benachrichtigungen aktivieren'}
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Notifications List */}
             <div className="max-h-96 overflow-y-auto">
