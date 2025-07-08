@@ -116,16 +116,28 @@ class NotificationService {
 
       // Send browser notification if permission granted
       if (Notification.permission === 'granted') {
-        new Notification(notification.title, {
+        const browserNotification = new Notification(notification.title, {
           body: notification.message,
-          icon: '/icon-192x192.png',
-          badge: '/icon-72x72.png',
+          icon: '/icon-192x192.svg',
+          badge: '/icon-72x72.svg',
           tag: `tag-${mediaId}`,
           data: {
             mediaId,
             type: 'tag'
           }
         });
+
+        // Handle notification click
+        browserNotification.onclick = function(event) {
+          event.preventDefault();
+          window.focus();
+          window.dispatchEvent(new CustomEvent('navigateToMedia', {
+            detail: { mediaId }
+          }));
+          browserNotification.close();
+        };
+      } else {
+        console.warn('❌ Notification permission not granted:', Notification.permission);
       }
 
       console.log('✅ Tag notification sent');
@@ -163,16 +175,28 @@ class NotificationService {
       await addDoc(collection(db, 'notifications'), notification);
 
       if (Notification.permission === 'granted') {
-        new Notification(notification.title, {
+        const browserNotification = new Notification(notification.title, {
           body: notification.message,
-          icon: '/icon-192x192.png',
-          badge: '/icon-72x72.png',
+          icon: '/icon-192x192.svg',
+          badge: '/icon-72x72.svg',
           tag: `comment-${mediaId}`,
           data: {
             mediaId,
             type: 'comment'
           }
         });
+
+        // Handle notification click
+        browserNotification.onclick = function(event) {
+          event.preventDefault();
+          window.focus();
+          window.dispatchEvent(new CustomEvent('navigateToMedia', {
+            detail: { mediaId }
+          }));
+          browserNotification.close();
+        };
+      } else {
+        console.warn('❌ Notification permission not granted:', Notification.permission);
       }
 
       console.log('✅ Comment notification sent');
@@ -209,16 +233,28 @@ class NotificationService {
       await addDoc(collection(db, 'notifications'), notification);
 
       if (Notification.permission === 'granted') {
-        new Notification(notification.title, {
+        const browserNotification = new Notification(notification.title, {
           body: notification.message,
-          icon: '/icon-192x192.png',
-          badge: '/icon-72x72.png',
+          icon: '/icon-192x192.svg',
+          badge: '/icon-72x72.svg',
           tag: `like-${mediaId}`,
           data: {
             mediaId,
             type: 'like'
           }
         });
+
+        // Handle notification click
+        browserNotification.onclick = function(event) {
+          event.preventDefault();
+          window.focus();
+          window.dispatchEvent(new CustomEvent('navigateToMedia', {
+            detail: { mediaId }
+          }));
+          browserNotification.close();
+        };
+      } else {
+        console.warn('❌ Notification permission not granted:', Notification.permission);
       }
 
       console.log('✅ Like notification sent');
@@ -289,6 +325,44 @@ class NotificationService {
 }
 
 export const notificationService = new NotificationService();
+
+// Request notification permission with user feedback
+export const requestNotificationPermission = async (): Promise<boolean> => {
+  try {
+    if (!('Notification' in window)) {
+      console.warn('❌ This browser does not support notifications');
+      return false;
+    }
+
+    let permission = Notification.permission;
+    
+    if (permission === 'default') {
+      // Request permission with user-friendly message
+      permission = await Notification.requestPermission();
+    }
+    
+    if (permission === 'granted') {
+      console.log('✅ Notification permission granted');
+      
+      // Show a test notification
+      const testNotification = new Notification('Benachrichtigungen aktiviert! 🎉', {
+        body: 'Du wirst jetzt über neue Kommentare, Likes und Markierungen benachrichtigt.',
+        icon: '/icon-192x192.svg',
+        badge: '/icon-72x72.svg',
+        tag: 'permission-granted'
+      });
+      
+      setTimeout(() => testNotification.close(), 5000);
+      return true;
+    } else {
+      console.warn('❌ Notification permission denied');
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Error requesting notification permission:', error);
+    return false;
+  }
+};
 
 // Export standalone functions for easier use in components
 export const subscribeToNotifications = (
