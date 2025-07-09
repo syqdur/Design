@@ -512,17 +512,26 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
   return (
     <div className="mx-4 my-6 space-y-6">
       {/* Header - Mobile Optimized */}
-      <div className={`p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all duration-500 relative overflow-hidden backdrop-blur-sm shadow-lg border ${
+      <div className={`p-4 sm:p-6 rounded-2xl sm:rounded-3xl transition-all duration-500 relative overflow-hidden backdrop-blur-xl shadow-2xl border ${
         isDarkMode 
-          ? 'bg-black/40 border-white/10 shadow-black/40' 
-          : 'bg-white/60 border-white/30 shadow-gray-500/20'
+          ? 'bg-gray-800/40 border-gray-700/30 shadow-2xl shadow-pink-500/10' 
+          : 'bg-white/80 border-gray-200/40 shadow-2xl shadow-pink-500/10'
       }`}>
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 opacity-5">
+          <div className={`absolute top-0 right-0 w-20 h-20 rounded-full blur-xl ${
+            isDarkMode ? 'bg-pink-500' : 'bg-pink-300'
+          }`} style={{ transform: 'translate(30%, -30%)' }}></div>
+          <div className={`absolute bottom-0 left-0 w-16 h-16 rounded-full blur-xl ${
+            isDarkMode ? 'bg-pink-500' : 'bg-pink-500'
+          }`} style={{ transform: 'translate(-30%, 30%)' }}></div>
+        </div>
 
         <div className="relative z-10">
           <div className="flex items-start justify-between mb-4 sm:mb-6">
             <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
               <div className={`w-12 h-12 sm:w-16 sm:h-16 p-2 sm:p-3 rounded-xl sm:rounded-2xl transition-all duration-300 shadow-lg flex-shrink-0 backdrop-blur-sm ${
-                isDarkMode ? 'bg-black/30 border border-white/20' : 'bg-white/70 border border-white/40'
+                isDarkMode ? 'bg-gradient-to-br from-gray-800/60 to-pink-900/20 border border-gray-700/40' : 'bg-gradient-to-br from-white/80 to-pink-100/40 border border-gray-300/40'
               }`}>
                 <Camera className={`w-full h-full transition-all duration-300 ${
                   isDarkMode ? 'text-white' : 'text-gray-900'
@@ -560,11 +569,11 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
                 className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 touch-manipulation ${
                   showLeaderboard
                     ? isDarkMode
-                      ? 'bg-white/20 text-white border border-white/30 shadow-lg'
-                      : 'bg-gray-200 text-gray-900 border border-gray-300 shadow-lg'
+                      ? 'bg-neutral-700/60 text-white border border-neutral-600/40 shadow-lg'
+                      : 'bg-gray-200 text-gray-900 border border-gray-300/60 shadow-lg'
                     : isDarkMode
-                      ? 'bg-white/10 text-white/70 hover:bg-white/20 border border-white/20'
-                      : 'bg-white/60 text-gray-700 hover:bg-white/80 border border-gray-200'
+                      ? 'bg-neutral-800/40 text-neutral-300 hover:bg-neutral-700/60 border border-neutral-600/30'
+                      : 'bg-white/80 text-gray-700 hover:bg-white/90 border border-gray-200/50'
                 }`}
               >
                 <div className="flex items-center gap-1.5 sm:gap-2">
@@ -578,11 +587,11 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
 
           {/* Progress Bar */}
           <div className={`w-full h-3 rounded-full overflow-hidden ${
-            isDarkMode ? 'bg-black/30' : 'bg-white/40'
+            isDarkMode ? 'bg-neutral-800/60' : 'bg-gray-200/60'
           }`}>
             <div 
               className={`h-full transition-all duration-500 ease-out ${
-                isDarkMode ? 'bg-white/80' : 'bg-gray-900'
+                isDarkMode ? 'bg-neutral-400/80' : 'bg-gray-700'
               }`}
               style={{ width: `${completionPercentage}%` }}
             ></div>
@@ -599,11 +608,11 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
             className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap flex-shrink-0 backdrop-blur-sm shadow-lg border ${
               selectedCategory === category
                 ? isDarkMode
-                  ? 'bg-black/40 text-white border-white/20 shadow-black/60'
-                  : 'bg-white/80 text-gray-900 border-white/50 shadow-gray-500/40'
+                  ? 'bg-gradient-to-r from-gray-800/60 to-pink-900/30 text-white border-gray-700/40 shadow-black/60'
+                  : 'bg-gradient-to-r from-white/80 to-pink-100/50 text-gray-900 border-gray-300/50 shadow-gray-500/40'
                 : isDarkMode
-                  ? 'bg-black/20 text-white/90 hover:bg-black/40 border-white/10 hover:shadow-black/40'
-                  : 'bg-white/60 text-gray-900 hover:bg-white/80 border-white/30 hover:shadow-gray-500/30'
+                  ? 'bg-gray-800/40 text-gray-300 hover:bg-gradient-to-r hover:from-gray-800/60 hover:to-pink-900/20 border-gray-700/30 hover:shadow-black/40'
+                  : 'bg-white/60 text-gray-900 hover:bg-gradient-to-r hover:from-white/80 hover:to-pink-100/40 border-gray-200/50 hover:shadow-gray-500/30'
             }`}
           >
             {category === 'all' ? 'Alle' : categoryNames[category as keyof typeof categoryNames]}
@@ -613,14 +622,14 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
 
       {/* Leaderboard Section - Mobile Optimized */}
       {showLeaderboard && (
-        <div className={`p-4 sm:p-6 rounded-2xl sm:rounded-3xl backdrop-blur-sm border transition-all duration-500 shadow-lg ${
+        <div className={`p-4 sm:p-6 rounded-2xl sm:rounded-3xl backdrop-blur-xl border transition-all duration-500 shadow-2xl ${
           isDarkMode 
-            ? 'bg-black/40 border-white/10 shadow-black/40' 
-            : 'bg-white/60 border-white/30 shadow-gray-500/20'
+            ? 'bg-gray-800/40 border-gray-700/30 shadow-2xl shadow-pink-500/10' 
+            : 'bg-white/80 border-gray-200/40 shadow-2xl shadow-pink-500/10'
         }`}>
           <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div className={`w-10 h-10 sm:w-12 sm:h-12 p-2 rounded-xl sm:rounded-2xl transition-all duration-300 shadow-lg flex-shrink-0 backdrop-blur-sm ${
-              isDarkMode ? 'bg-black/30 border border-white/20' : 'bg-white/70 border border-white/40'
+              isDarkMode ? 'bg-gradient-to-br from-gray-800/60 to-pink-900/20 border border-gray-700/40' : 'bg-gradient-to-br from-white/80 to-pink-100/40 border border-gray-300/40'
             }`}>
               <Trophy className={`w-full h-full transition-all duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
@@ -648,19 +657,19 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
                   className={`flex items-center justify-between p-3 sm:p-4 rounded-xl sm:rounded-2xl backdrop-blur-sm transition-all duration-300 ${
                     index === 0
                       ? isDarkMode
-                        ? 'bg-white/15 border border-white/30'
-                        : 'bg-white/80 border border-white/50'
+                        ? 'bg-neutral-800/60 border border-neutral-600/40'
+                        : 'bg-white/90 border border-gray-300/60'
                       : index === 1
                         ? isDarkMode
-                          ? 'bg-white/12 border border-white/25'
-                          : 'bg-white/70 border border-white/45'
+                          ? 'bg-neutral-800/50 border border-neutral-600/35'
+                          : 'bg-white/85 border border-gray-300/50'
                         : index === 2
                           ? isDarkMode
-                            ? 'bg-white/10 border border-white/20'
-                            : 'bg-white/65 border border-white/40'
+                            ? 'bg-neutral-800/40 border border-neutral-600/30'
+                            : 'bg-white/80 border border-gray-300/40'
                           : isDarkMode
-                            ? 'bg-white/5 border border-white/10'
-                            : 'bg-white/60 border border-white/30'
+                            ? 'bg-neutral-800/30 border border-neutral-600/25'
+                            : 'bg-white/75 border border-gray-300/30'
                   }`}
                 >
                   <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
@@ -759,14 +768,14 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
           return (
             <div
               key={challenge.id}
-              className={`group relative rounded-2xl backdrop-blur-sm transition-all duration-500 shadow-lg flex flex-col cursor-pointer transform border ${
+              className={`group relative rounded-2xl backdrop-blur-xl transition-all duration-500 shadow-2xl flex flex-col cursor-pointer transform border ${
                 isCompleted 
                   ? 'p-2 sm:p-3 min-h-[80px] sm:min-h-[100px] scale-75 opacity-60' 
                   : 'p-4 sm:p-6 min-h-[160px] sm:min-h-[180px] scale-100 opacity-100'
               } ${
                 isDarkMode 
-                  ? 'bg-black/40 border-white/10 hover:bg-black/50 shadow-black/40' 
-                  : 'bg-white/60 border-white/30 hover:bg-white/80 shadow-gray-500/20'
+                  ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-2xl shadow-pink-500/10' 
+                  : 'bg-white/80 border-gray-200/40 hover:bg-white/95 shadow-2xl shadow-pink-500/10'
               } ${isCompleted ? 'ring-2 ring-green-400/60 shadow-green-400/20' : ''}`}
               onClick={() => {
                 if (!isCompleted) {
@@ -789,8 +798,8 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
               <div className="flex items-start justify-between mb-4">
                 <div className={`relative p-1.5 sm:p-2 rounded-lg transition-transform duration-300 backdrop-blur-sm ${
                   isDarkMode 
-                    ? 'bg-black/30 border border-white/20' 
-                    : 'bg-white/70 border border-white/40'
+                    ? 'bg-gradient-to-br from-gray-800/60 to-pink-900/20 border border-gray-700/40' 
+                    : 'bg-gradient-to-br from-white/80 to-pink-100/40 border border-gray-300/40'
                 }`}>
                   <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${
                     isDarkMode ? 'text-white' : 'text-gray-900'
@@ -800,8 +809,8 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
                   {completionCount > 0 && (
                     <span className={`text-xs px-2 py-1 rounded-full backdrop-blur-sm border font-medium ${
                       isDarkMode 
-                        ? 'bg-black/40 border-white/20 text-white' 
-                        : 'bg-white/80 border-white/60 text-gray-900'
+                        ? 'bg-gray-800/60 border-gray-700/40 text-white' 
+                        : 'bg-white/80 border-gray-300/60 text-gray-900'
                     }`}>
                       {completionCount}
                     </span>
@@ -835,8 +844,8 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
               <div className="flex items-center justify-between mt-4 gap-2">
                 <span className={`text-xs px-2 py-1 rounded-full backdrop-blur-sm border font-medium flex-shrink-0 ${
                   isDarkMode 
-                    ? 'bg-black/40 border-white/20 text-white' 
-                    : 'bg-white/80 border-white/50 text-gray-900'
+                    ? 'bg-gray-800/60 border-gray-700/40 text-white' 
+                    : 'bg-white/80 border-gray-300/50 text-gray-900'
                 }`}>
                   {categoryNames[challenge.category]}
                 </span>
@@ -856,16 +865,16 @@ export const PhotoChallenges: React.FC<PhotoChallengesProps> = ({ isDarkMode, is
       </div>
 
       {filteredChallenges.length === 0 && (
-        <div className={`text-center py-16 rounded-3xl backdrop-blur-sm border shadow-lg ${
+        <div className={`text-center py-16 rounded-3xl backdrop-blur-xl border shadow-2xl ${
           isDarkMode 
-            ? 'bg-black/40 border-white/10 shadow-black/40' 
-            : 'bg-white/60 border-white/30 shadow-gray-500/20'
+            ? 'bg-gray-800/40 border-gray-700/30 shadow-2xl shadow-pink-500/10' 
+            : 'bg-white/80 border-gray-200/40 shadow-2xl shadow-pink-500/10'
         }`}>
           <div className="relative mb-6">
             <Camera className={`w-20 h-20 mx-auto ${
-              isDarkMode ? 'text-white/80' : 'text-gray-700'
+              isDarkMode ? 'text-neutral-400' : 'text-gray-700'
             }`} />
-            <div className="absolute inset-0 rounded-full bg-white/10 animate-pulse"></div>
+            <div className="absolute inset-0 rounded-full bg-neutral-400/10 animate-pulse"></div>
           </div>
           <p className={`text-xl font-semibold ${
             isDarkMode ? 'text-white' : 'text-gray-900'

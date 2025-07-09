@@ -965,11 +965,11 @@ export const Timeline: React.FC<TimelineProps> = ({ isDarkMode, userName, isAdmi
                       eventType.color === 'pink' ? 'bg-gradient-to-br from-pink-400 to-pink-600 border-pink-200/30 shadow-lg shadow-pink-500/25' :
                       eventType.color === 'red' ? 'bg-gradient-to-br from-red-400 to-red-600 border-red-200/30 shadow-lg shadow-red-500/25' :
                       eventType.color === 'blue' ? 'bg-gradient-to-br from-blue-400 to-blue-600 border-blue-200/30 shadow-lg shadow-blue-500/25' :
-                      eventType.color === 'green' ? 'bg-gradient-to-br from-green-400 to-green-600 border-green-200/30 shadow-lg shadow-green-500/25' :
+                      eventType.color === 'green' ? 'bg-gradient-to-br from-blue-400 to-blue-600 border-green-200/30 shadow-lg shadow-green-500/25' :
                       eventType.color === 'yellow' ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 border-yellow-200/30 shadow-lg shadow-yellow-500/25' :
                       eventType.color === 'purple' ? 'bg-gradient-to-br from-pink-500 to-pink-500 border-pink-500/30 shadow-lg shadow-pink-500/25' :
                       eventType.color === 'indigo' ? 'bg-gradient-to-br from-indigo-400 to-indigo-600 border-indigo-200/30 shadow-lg shadow-indigo-500/25' :
-                      isDarkMode ? 'bg-gradient-to-br from-gray-600 to-gray-800 border-gray-400/30 shadow-lg shadow-gray-500/25' : 'bg-gradient-to-br from-gray-400 to-gray-600 border-gray-300/30 shadow-lg shadow-gray-400/25'
+                      isDarkMode ? 'bg-gradient-to-br from-blue-200/60 to-blue-300/60 border-blue-200/30 shadow-lg shadow-blue-300/25' : 'bg-gradient-to-br from-blue-100 to-blue-200 border-blue-100/30 shadow-lg shadow-blue-200/25'
                     }`}>
                       <span className="text-lg sm:text-2xl lg:text-3xl leading-none w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 flex items-center justify-center">
                         {eventType.icon}
