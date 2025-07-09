@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, MoreHorizontal, Trash2, Edit3, AlertTriangle, MapPin } from 'lucide-react';
-import { MediaItem, Comment, Like, MediaTag, LocationTag } from '../types';
+import { MediaItem, Comment, Like, LocationTag } from '../types';
 import { MediaTagging } from './MediaTagging';
 import { VideoThumbnail } from './VideoThumbnail';
-import { getMediaTags, getLocationTags, removeLocationTag } from '../services/firebaseService';
+import { getLocationTags, removeLocationTag } from '../services/firebaseService';
 
 interface InstagramPostProps {
   item: MediaItem;
@@ -48,14 +48,11 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
   const [imageLoading, setImageLoading] = useState(true);
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [editNoteText, setEditNoteText] = useState(item.noteText || '');
-  const [tags, setTags] = useState<MediaTag[]>([]);
+
   const [locationTags, setLocationTags] = useState<LocationTag[]>([]);
   const [showHeartOverlay, setShowHeartOverlay] = useState(false);
   
-  useEffect(() => {
-    const unsubscribe = getMediaTags(item.id, setTags);
-    return () => unsubscribe();
-  }, [item.id]);
+
 
   const loadLocationTags = async () => {
     try {
@@ -430,7 +427,6 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
         }`}>
           <MediaTagging
             mediaId={item.id}
-            tags={tags}
             currentUser={userName}
             currentDeviceId={getUserDeviceId ? getUserDeviceId() : ''}
             isAdmin={isAdmin}

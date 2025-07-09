@@ -607,3 +607,11 @@ html {
 .animate-pulse-slow {
   animation: pulse 3s infinite ease-in-out;
 }
+
+/* Pinterest-style masonry grid support */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

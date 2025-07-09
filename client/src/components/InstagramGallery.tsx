@@ -440,7 +440,7 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
             </div>
           )}
 
-          {/* Media Grid */}
+          {/* Pinterest-Style Masonry Grid */}
           {mediaItems.length > 0 && (
             <div>
               <h3 className={`text-lg font-semibold mb-3 px-3 transition-colors duration-300 ${
@@ -448,60 +448,109 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
               }`}>
                 📸 Medien ({mediaItems.length})
               </h3>
-              <div className="grid grid-cols-3 gap-1 px-3">
-                {mediaItems.map((item, mediaIndex) => {
-                  // Find the original index in the full items array
-                  const originalIndex = items.findIndex(i => i.id === item.id);
-                  const itemLikes = likes.filter(l => l.mediaId === item.id);
-                  const itemComments = comments.filter(c => c.mediaId === item.id);
-                  
-                  return (
-                    <div
-                      key={item.id}
-                      className="relative aspect-square cursor-pointer group"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        // Use popup instead of modal
-                        const mediaIndex = mediaItems.findIndex(mediaItem => mediaItem.id === item.id);
-                        handleMediaClick(mediaIndex);
-                      }}
-                    >
-                      {/* Media Content */}
-                      <div className="w-full h-full overflow-hidden">
-                        {item.type === 'video' ? (
-                          <VideoThumbnail
-                            src={item.url}
-                            className="w-full h-full"
-                            showPlayButton={true}
-                          />
-                        ) : (
-                          <img
-                            src={item.url}
-                            alt={item.noteText || item.note || 'Uploaded media'}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                          />
-                        )}
-                      </div>
-                      
-                      {/* Hover overlay */}
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                        <div className="text-white text-center">
-                          <div className="flex items-center justify-center gap-4 text-sm font-medium">
-                            <span className="flex items-center gap-1">
-                              <span>❤️</span>
-                              {itemLikes.length}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <span>💬</span>
-                              {itemComments.length}
-                            </span>
+              <div className="px-3">
+                <div 
+                  className="columns-2 sm:columns-3 lg:columns-4 gap-3 space-y-3"
+                  style={{ columnFill: 'balance' }}
+                >
+                  {mediaItems.map((item, mediaIndex) => {
+                    const itemLikes = likes.filter(l => l.mediaId === item.id);
+                    const itemComments = comments.filter(c => c.mediaId === item.id);
+                    
+                    return (
+                      <div
+                        key={item.id}
+                        className={`relative break-inside-avoid mb-3 rounded-2xl overflow-hidden cursor-pointer group transition-all duration-300 hover:scale-[1.02] shadow-lg backdrop-blur-sm border ${
+                          isDarkMode 
+                            ? 'bg-black/40 border-white/10 shadow-black/40 hover:shadow-black/60' 
+                            : 'bg-white/60 border-white/30 shadow-gray-500/20 hover:shadow-gray-500/40'
+                        }`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const mediaIndex = mediaItems.findIndex(mediaItem => mediaItem.id === item.id);
+                          handleMediaClick(mediaIndex);
+                        }}
+                      >
+                        {/* Media Content */}
+                        <div className="relative w-full">
+                          {item.type === 'video' ? (
+                            <VideoThumbnail
+                              src={item.url}
+                              className="w-full h-auto"
+                              showPlayButton={true}
+                            />
+                          ) : (
+                            <img
+                              src={item.url}
+                              alt={item.noteText || item.note || 'Uploaded media'}
+                              className="w-full h-auto object-cover"
+                              loading="lazy"
+                            />
+                          )}
+                          
+                          {/* Overlay on hover */}
+                          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <div className="text-white text-sm font-medium bg-black/50 backdrop-blur-sm rounded-full px-3 py-1">
+                              {item.type === 'video' ? '▶️ Video ansehen' : '🖼️ Foto ansehen'}
+                            </div>
                           </div>
                         </div>
+                        
+                        {/* Content Preview */}
+                        <div className="p-3">
+                          <div className="flex items-start gap-2">
+                            {/* Profile Picture */}
+                            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
+                              <img 
+                                src={getUserAvatar?.(item.uploadedBy, item.deviceId) || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(item.uploadedBy)}&backgroundColor=transparent`}
+                                alt={item.uploadedBy}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            
+                            {/* User Info and Stats */}
+                            <div className="flex-1 min-w-0">
+                              <div className={`font-medium text-xs transition-colors duration-300 ${
+                                isDarkMode ? 'text-white' : 'text-gray-900'
+                              }`}>
+                                {getUserDisplayName?.(item.uploadedBy, item.deviceId) || item.uploadedBy}
+                              </div>
+                              
+                              {/* Stats */}
+                              <div className="flex items-center gap-2 mt-1">
+                                <div className="flex items-center gap-1">
+                                  <span className="text-red-500 text-xs">❤️</span>
+                                  <span className={`text-xs transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                  }`}>
+                                    {itemLikes.length}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-blue-500 text-xs">💬</span>
+                                  <span className={`text-xs transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                  }`}>
+                                    {itemComments.length}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Caption Preview */}
+                          {item.caption && (
+                            <div className={`mt-2 text-xs line-clamp-2 transition-colors duration-300 ${
+                              isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              {item.caption}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           )}

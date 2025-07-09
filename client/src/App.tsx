@@ -20,7 +20,7 @@ import { PublicRecapPage } from './components/PublicRecapPage';
 import { AdminLoginModal } from './components/AdminLoginModal';
 import { UserProfileModal } from './components/UserProfileModal';
 import { BackToTopButton } from './components/BackToTopButton';
-import { NotificationCenter } from './components/NotificationCenter';
+
 import { PhotoChallenges } from './components/PhotoChallenges';
 import { VideoRecorder } from './components/VideoRecorder';
 
@@ -45,13 +45,13 @@ import {
   createOrUpdateUserProfile,
   uploadUserProfilePicture,
   UserProfile,
-  createTestNotification
+
 } from './services/firebaseService';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from './config/firebase';
 import { subscribeSiteStatus, SiteStatus } from './services/siteStatusService';
 import { getUserName, getDeviceId } from './utils/deviceId';
-import { notificationService, initializePushNotifications } from './services/notificationService';
+
 import {
   subscribeStories,
   subscribeAllStories,
@@ -232,47 +232,7 @@ function App() {
     return unsubscribe;
   }, [userName, deviceId]);
 
-  // Initialize notification service when user is logged in
-  useEffect(() => {
-    if (!userName) return;
 
-    const initNotifications = async () => {
-      try {
-        const initialized = await notificationService.init();
-        if (initialized) {
-          await notificationService.subscribeToPush(userName, deviceId);
-          console.log('✅ Push notifications initialized');
-        }
-        
-        // Initialize real push notifications for Android/iPhone
-        await initializePushNotifications();
-      } catch (error) {
-        console.log('⚠️ Push notifications not available:', error);
-      }
-    };
-
-    initNotifications();
-
-    // Handle navigation events from service worker (real push notifications)
-    const handleServiceWorkerNavigation = (event: any) => {
-      const { mediaId } = event.detail;
-      if (mediaId) {
-        // Navigate to media and open modal
-        setActiveTab('gallery');
-        const mediaIndex = mediaItems.findIndex(item => item.id === mediaId);
-        if (mediaIndex !== -1) {
-          setCurrentImageIndex(mediaIndex);
-          setModalOpen(true);
-        }
-      }
-    };
-
-    window.addEventListener('navigateToMedia', handleServiceWorkerNavigation);
-    
-    return () => {
-      window.removeEventListener('navigateToMedia', handleServiceWorkerNavigation);
-    };
-  }, [userName, deviceId]);
 
   // Subscribe to stories when user is logged in
   useEffect(() => {
@@ -457,19 +417,6 @@ function App() {
     try {
       await addComment(mediaId, text, userName, deviceId);
       
-      // Find the media owner to send notification
-      const mediaItem = mediaItems.find(item => item.id === mediaId);
-      if (mediaItem && mediaItem.uploadedBy !== userName) {
-        await notificationService.sendCommentNotification(
-          mediaItem.uploadedBy,
-          mediaItem.deviceId,
-          userName,
-          deviceId,
-          mediaId,
-          text
-        );
-      }
-      
       // Ensure user profile exists for proper display name sync
       await createOrUpdateUserProfile(userName, deviceId, {});
     } catch (error) {
@@ -490,18 +437,6 @@ function App() {
     
     try {
       await toggleLike(mediaId, userName, deviceId);
-      
-      // Send notification for likes (simplified approach)
-      const mediaItem = mediaItems.find(item => item.id === mediaId);
-      if (mediaItem && mediaItem.uploadedBy !== userName) {
-        await notificationService.sendLikeNotification(
-          mediaItem.uploadedBy,
-          mediaItem.deviceId,
-          userName,
-          deviceId,
-          mediaId
-        );
-      }
     } catch (error) {
       console.error('Error toggling like:', error);
     }
@@ -597,16 +532,7 @@ function App() {
     });
   };
 
-  const handleNavigateToMedia = (mediaId: string) => {
-    // Find the media item in the current media list
-    const mediaIndex = mediaItems.findIndex(item => item.id === mediaId);
-    if (mediaIndex !== -1) {
-      // Switch to gallery tab and open the media modal
-      setActiveTab('gallery');
-      setCurrentImageIndex(mediaIndex);
-      setModalOpen(true);
-    }
-  };;
+
 
   // Real-time profile synchronization - polling for profile changes
   useEffect(() => {
@@ -924,37 +850,9 @@ function App() {
               </div>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
-              {/* Notification Center */}
-              {userName && (
-                <NotificationCenter
-                  userName={userName}
-                  deviceId={deviceId}
-                  isDarkMode={isDarkMode}
-                  onNavigateToMedia={handleNavigateToMedia}
-                />
-              )}
+
               
-              {/* Temporary Test Notification Button - For debugging */}
-              {userName && isAdmin && (
-                <button
-                  onClick={async () => {
-                    try {
-                      await createTestNotification(userName, deviceId);
-                      console.log('🧪 Test notification created successfully!');
-                    } catch (error) {
-                      console.error('❌ Failed to create test notification:', error);
-                    }
-                  }}
-                  className={`p-2 rounded-full text-xs transition-all duration-300 ${
-                    isDarkMode 
-                      ? 'bg-pink-500 hover:bg-pink-600 text-white' 
-                      : 'bg-pink-400 hover:bg-pink-500 text-white'
-                  }`}
-                  title="Create Test Notification"
-                >
-                  TEST
-                </button>
-              )}
+
               
               {/* Pure Glassmorphism Profile Edit Button - FIXED für Mobile */}
               <button
