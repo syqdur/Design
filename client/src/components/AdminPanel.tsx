@@ -6,6 +6,7 @@ import { SiteStatus, updateSiteStatus, updateFeatureToggles } from '../services/
 import { ShowcaseModal } from './ShowcaseModal';
 import { UserManagementModal } from './UserManagementModal';
 import { SpotifyAdmin } from './SpotifyAdmin';
+import { RecapGenerator } from './RecapGenerator';
 
 interface AdminPanelProps {
   isDarkMode: boolean;
@@ -34,6 +35,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [showShowcase, setShowShowcase] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
   const [showSpotifyAdmin, setShowSpotifyAdmin] = useState(false);
+  const [showRecapGenerator, setShowRecapGenerator] = useState(false);
 
   const handleAdminToggle = () => {
     onToggleAdmin(!isAdmin);
@@ -342,6 +344,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             title="Spotify Admin"
           >
             <Music className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
+          </button>
+
+          {/* SHOTSTACK RECAP BUTTON */}
+          <button
+            onClick={() => setShowRecapGenerator(true)}
+            className={`p-2 sm:p-3 rounded-full backdrop-blur-xl transition-all duration-300 hover:scale-105 border flex-shrink-0 ${
+              isDarkMode
+                ? 'bg-gray-800/40 border-gray-700/30 hover:bg-gray-800/60 shadow-lg shadow-purple-500/10'
+                : 'bg-white/60 border-gray-200/40 hover:bg-white/80 shadow-lg shadow-purple-500/10'
+            }`}
+            title="Shotstack Video Recap"
+          >
+            <Video className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
           </button>
 
 
@@ -830,6 +845,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Shotstack Recap Generator Modal */}
+      {showRecapGenerator && (
+        <RecapGenerator
+          isOpen={showRecapGenerator}
+          onClose={() => setShowRecapGenerator(false)}
+          mediaItems={mediaItems}
+          isDarkMode={isDarkMode}
+        />
       )}
     </>
   );

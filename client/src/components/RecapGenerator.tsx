@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Video, Download, Play, Pause, Settings, RefreshCw } from 'lucide-react';
-import { ShotstackService } from '../services/shotstackService';
+import { X, Video, Download, Play, Pause, Settings, RefreshCw, AlertCircle, CheckCircle, Clock } from 'lucide-react';
+import { ShotstackRecapService, createShotstackService } from '../services/shotstackRecapService';
 import { MediaItem } from '../types';
 
 interface RecapGeneratorProps {
@@ -68,25 +68,20 @@ export const RecapGenerator: React.FC<RecapGeneratorProps> = ({
       setError('');
       setVideoUrl('');
 
-      // Initialize Shotstack service
-      const shotstack = new ShotstackService(apiKey, 'stage');
+      // Initialize improved Shotstack service
+      const shotstack = createShotstackService(apiKey);
 
-      // Convert media items to Shotstack format
-      const mediaFiles = await shotstack.getMediaFilesFromFirebase(filteredMedia);
+      // Convert media items to proper format
+      const mediaAssets = shotstack.convertMediaItems(filteredMedia);
 
-      setStatus('Sende Anfrage an Shotstack...');
+      setStatus('Validiere Medien und sende Anfrage...');
       setProgress(10);
 
-      // Create recap video
-      const result = await shotstack.createRecapVideo(mediaFiles, {
-        title: settings.title,
-        totalDuration: settings.duration,
-        resolution: settings.resolution,
-        aspectRatio: settings.aspectRatio
-      });
+      // Create recap video with improved error handling
+      const result = await shotstack.createWeddingRecap(mediaAssets, settings);
 
       if (!result.success) {
-        setError(result.error || 'Fehler beim Erstellen des Recaps');
+        setError(`${result.error}: ${result.details || ''}`);
         return;
       }
 
@@ -94,13 +89,13 @@ export const RecapGenerator: React.FC<RecapGeneratorProps> = ({
       setStatus('Recap wird erstellt...');
       setProgress(20);
 
-      // Wait for render completion
-      const videoUrl = await shotstack.waitForRender(result.renderId!, (progress) => {
-        setProgress(20 + (progress * 0.8)); // Scale progress to 20-100%
-        setStatus(`Erstelle Recap... ${Math.round(progress)}%`);
+      // Wait for render completion with progress updates
+      const videoUrl = await shotstack.waitForCompletion(result.renderId!, (progress) => {
+        setProgress(20 + (progress.progress * 0.8)); // Scale progress to 20-100%
+        setStatus(`Erstelle Recap... ${Math.round(progress.progress)}%`);
       });
 
-      setVideoUrl(videoUrl || '');
+      setVideoUrl(videoUrl);
       setStatus('Recap erfolgreich erstellt!');
       setProgress(100);
 

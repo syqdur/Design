@@ -92,11 +92,10 @@ export class ShotstackService {
         ]
       };
 
-      // Output configuration
+      // Output configuration - Fixed format
       const output = {
         format: 'mp4',
-        resolution,
-        aspectRatio,
+        resolution: this.mapResolution(resolution),
         fps: 25,
         quality: 'medium'
       };
@@ -184,13 +183,15 @@ export class ShotstackService {
     let currentStart = 0;
     
     return mediaFiles.map((media, index) => {
+      const validUrl = this.validateMediaUrl(media.url);
+      
       const asset = media.type === 'video' ? {
         type: 'video',
-        src: media.url,
+        src: validUrl,
         trim: 2 // Skip first 2 seconds
       } : {
         type: 'image',
-        src: media.url
+        src: validUrl
       };
 
       const clip = {
@@ -293,14 +294,44 @@ export class ShotstackService {
   }
 
   /**
+   * Map resolution names to Shotstack format
+   */
+  private mapResolution(resolution: string): string {
+    const resolutionMap: { [key: string]: string } = {
+      'preview': 'preview',
+      'mobile': 'mobile',
+      'sd': 'sd',
+      'hd': 'hd',
+      'fhd': '1080'
+    };
+    return resolutionMap[resolution] || 'hd';
+  }
+
+  /**
+   * Validate and fix media URLs for Shotstack
+   */
+  private validateMediaUrl(url: string): string {
+    // Ensure URL is accessible
+    if (url.startsWith('https://firebasestorage.googleapis.com')) {
+      // Add alt=media to Firebase URLs if not present
+      if (!url.includes('alt=media')) {
+        const separator = url.includes('?') ? '&' : '?';
+        return `${url}${separator}alt=media`;
+      }
+    }
+    return url;
+  }
+
+  /**
    * Probe media file to get metadata
    */
   async probeMedia(url: string) {
     try {
+      const validUrl = this.validateMediaUrl(url);
       const response = await axios.get(
         `${this.baseUrl}/probe`,
         {
-          params: { url },
+          params: { url: validUrl },
           headers: {
             'x-api-key': this.config.apiKey
           }
