@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, List, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Grid, List, ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { MediaItem, Comment, Like } from '../types';
 import { InstagramPost } from './InstagramPost';
 import { NotePost } from './NotePost';
@@ -45,6 +45,7 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
   const [notesSliderIndex, setNotesSliderIndex] = useState(0);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
+  const [downloadingItems, setDownloadingItems] = useState<Set<string>>(new Set());
 
   const noteItems = items.filter(item => item.type === 'note');
   const mediaItems = items.filter(item => item.type !== 'note');
@@ -72,6 +73,70 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
 
   const handlePopupClose = () => {
     setIsPopupOpen(false);
+  };
+
+  const handleDownload = async (item: MediaItem, event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    if (downloadingItems.has(item.id) || !item.url || item.isUnavailable) return;
+    
+    setDownloadingItems(prev => new Set(prev).add(item.id));
+    
+    try {
+      // Create filename with timestamp and user
+      const timestamp = new Date().toISOString().slice(0, 10);
+      const fileExtension = item.type === 'video' ? 'mp4' : 'jpg';
+      const username = item.uploadedBy.replace(/[^a-zA-Z0-9]/g, '');
+      const filename = `hochzeit_${username}_${timestamp}.${fileExtension}`;
+      
+      // For Firebase URLs, we can try direct download or use a different approach
+      if (item.url.includes('firebase') || item.url.includes('googleapis')) {
+        // Create a link that opens the image in a new tab for download
+        const link = document.createElement('a');
+        link.href = item.url;
+        link.target = '_blank';
+        link.download = filename;
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        // For other URLs, try the fetch approach
+        const response = await fetch(item.url, {
+          mode: 'cors',
+          credentials: 'omit'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      // Fallback: open image in new tab
+      try {
+        window.open(item.url, '_blank', 'noopener,noreferrer');
+      } catch (fallbackError) {
+        alert('Download nicht möglich. Bitte versuchen Sie es über den Browser (Rechtsklick → Bild speichern).');
+      }
+    } finally {
+      setDownloadingItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(item.id);
+        return newSet;
+      });
+    }
   };
 
   const handlePopupNext = () => {
@@ -493,6 +558,22 @@ export const InstagramGallery: React.FC<InstagramGalleryProps> = ({
                             <div className="text-white text-sm font-medium bg-black/50 backdrop-blur-sm rounded-full px-3 py-1">
                               {item.type === 'video' ? '▶️ Video ansehen' : '🖼️ Foto ansehen'}
                             </div>
+                          </div>
+                          
+                          {/* Download Button Overlay - positioned bottom-left */}
+                          <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <button 
+                              onClick={(e) => handleDownload(item, e)}
+                              disabled={downloadingItems.has(item.id) || !item.url || item.isUnavailable}
+                              className={`transition-all duration-300 transform hover:scale-110 bg-black/50 backdrop-blur-sm rounded-full p-1.5 ${
+                                downloadingItems.has(item.id) || !item.url || item.isUnavailable
+                                  ? 'text-gray-400 cursor-not-allowed' 
+                                  : 'text-white hover:text-blue-400 cursor-pointer'
+                              }`}
+                              title={downloadingItems.has(item.id) ? 'Download läuft...' : 'Foto/Video speichern'}
+                            >
+                              <Download className={`w-4 h-4 ${downloadingItems.has(item.id) ? 'animate-pulse' : ''}`} />
+                            </button>
                           </div>
                         </div>
                         
