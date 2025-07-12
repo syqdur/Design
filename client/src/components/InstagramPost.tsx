@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, MessageCircle, MoreHorizontal, Trash2, Edit3, AlertTriangle, MapPin } from 'lucide-react';
+import { Heart, MessageCircle, MoreHorizontal, Trash2, Edit3, AlertTriangle, MapPin, Download } from 'lucide-react';
 import { MediaItem, Comment, Like, LocationTag } from '../types';
 import { MediaTagging } from './MediaTagging';
 import { VideoThumbnail } from './VideoThumbnail';
@@ -51,6 +51,7 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
 
   const [locationTags, setLocationTags] = useState<LocationTag[]>([]);
   const [showHeartOverlay, setShowHeartOverlay] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   
 
 
@@ -182,6 +183,66 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
         console.error('Error removing location tag:', error);
         alert('Fehler beim Entfernen des Standort-Tags. Bitte versuchen Sie es erneut.');
       }
+    }
+  };
+
+  const handleDownload = async (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    if (isDownloading || !item.url || item.isUnavailable) return;
+    
+    setIsDownloading(true);
+    
+    try {
+      // Create filename with timestamp and user
+      const timestamp = new Date().toISOString().slice(0, 10);
+      const fileExtension = item.type === 'video' ? 'mp4' : 'jpg';
+      const username = item.uploadedBy.replace(/[^a-zA-Z0-9]/g, '');
+      const filename = `hochzeit_${username}_${timestamp}.${fileExtension}`;
+      
+      // For Firebase URLs, we can try direct download or use a different approach
+      if (item.url.includes('firebase') || item.url.includes('googleapis')) {
+        // Create a link that opens the image in a new tab for download
+        const link = document.createElement('a');
+        link.href = item.url;
+        link.target = '_blank';
+        link.download = filename;
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        // For other URLs, try the fetch approach
+        const response = await fetch(item.url, {
+          mode: 'cors',
+          credentials: 'omit'
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      // Fallback: open image in new tab
+      try {
+        window.open(item.url, '_blank', 'noopener,noreferrer');
+      } catch (fallbackError) {
+        alert('Download nicht möglich. Bitte versuchen Sie es über den Browser (Rechtsklick → Bild speichern).');
+      }
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -398,27 +459,44 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({
             )}
           </div>
           
-          {/* Location Tags Overlay - positioned bottom-left */}
-          {locationTags.length > 0 && (
-            <div className="absolute bottom-4 left-4 flex flex-wrap gap-1 max-w-[60%] opacity-90 group-hover:opacity-100 transition-opacity duration-300">
-              {locationTags.map((locationTag) => {
-                const canRemove = isAdmin || item.uploadedBy === userName;
-                return (
-                  <div
-                    key={locationTag.id}
-                    onClick={canRemove ? (e) => handleRemoveLocationTag(locationTag, e) : undefined}
-                    className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-black/50 backdrop-blur-sm text-white border border-white/20 ${
-                      canRemove ? 'cursor-pointer hover:bg-red-500/50 hover:border-red-400/50 transition-colors duration-200' : ''
-                    }`}
-                    title={canRemove ? 'Klicken zum Entfernen' : locationTag.name}
-                  >
-                    <MapPin className="w-3 h-3" />
-                    <span className="truncate max-w-24">{locationTag.name}</span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          {/* Download Button Overlay - positioned bottom-left */}
+          <div className="absolute bottom-4 left-4 flex flex-col items-start gap-2 opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+            {/* Download Button */}
+            <button 
+              onClick={handleDownload}
+              disabled={isDownloading || !item.url || item.isUnavailable}
+              className={`transition-all duration-300 transform hover:scale-110 bg-black/50 backdrop-blur-sm rounded-full p-2 ${
+                isDownloading || !item.url || item.isUnavailable
+                  ? 'text-gray-400 cursor-not-allowed' 
+                  : 'text-white hover:text-blue-400 cursor-pointer'
+              }`}
+              title={isDownloading ? 'Download läuft...' : 'Foto/Video speichern'}
+            >
+              <Download className={`w-6 h-6 ${isDownloading ? 'animate-pulse' : ''}`} />
+            </button>
+            
+            {/* Location Tags - positioned below download button */}
+            {locationTags.length > 0 && (
+              <div className="flex flex-wrap gap-1 max-w-[200px]">
+                {locationTags.map((locationTag) => {
+                  const canRemove = isAdmin || item.uploadedBy === userName;
+                  return (
+                    <div
+                      key={locationTag.id}
+                      onClick={canRemove ? (e) => handleRemoveLocationTag(locationTag, e) : undefined}
+                      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-black/50 backdrop-blur-sm text-white border border-white/20 ${
+                        canRemove ? 'cursor-pointer hover:bg-red-500/50 hover:border-red-400/50 transition-colors duration-200' : ''
+                      }`}
+                      title={canRemove ? 'Klicken zum Entfernen' : locationTag.name}
+                    >
+                      <MapPin className="w-3 h-3" />
+                      <span className="truncate max-w-24">{locationTag.name}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Media Tags - positioned below media */}
